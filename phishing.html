@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phishing Detectives – Year 8 Digital Technologies</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1d2433;--mu:#5d6679;--ac:#4f46e5;--acs:#e8e7fd;--ok:#16794a;--oks:#d9f4e6;--no:#b42318;--nos:#fde4e1;--wa:#9a5b00;--was:#fff0cf;--bd:#d9deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131722;--card:#1c2231;--tx:#e8ecf5;--mu:#9aa5bd;--ac:#8b85ff;--acs:#2a2c5a;--ok:#5ad39a;--oks:#173a2a;--no:#ff8f84;--nos:#4a1f1c;--wa:#f5c15c;--was:#47360f;--bd:#33405a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131722;--card:#1c2231;--tx:#e8ecf5;--mu:#9aa5bd;--ac:#8b85ff;--acs:#2a2c5a;--ok:#5ad39a;--oks:#173a2a;--no:#ff8f84;--nos:#4a1f1c;--wa:#f5c15c;--was:#47360f;--bd:#33405a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:1280px;margin:0 auto;padding:18px 32px}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+h1{font-size:1.25rem;margin:0;flex:1 1 200px}
+input.nm{padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit;width:100%;max-width:230px}
+.dots{display:flex;gap:6px;margin:8px 0 14px;flex-wrap:wrap}
+.dot{flex:1 1 60px;min-width:56px;padding:6px 2px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--mu);font-size:.78rem;cursor:pointer;text-align:center}
+.dot.on{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}.dot.dn{border-color:var(--ok);color:var(--ok)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 6px;font-size:1.2rem}.tip{background:var(--acs);border-radius:10px;padding:12px 14px;margin:10px 0}
+.tip b{color:var(--ac)}.tip ul{margin:6px 0 0;padding-left:20px}
+.msg{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:10px 0;background:var(--bg)}
+.ch{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;line-height:2;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.ch:hover{background:var(--acs)}.ch.sel{background:var(--was);outline:1px solid var(--wa)}
+.ch.ok{background:var(--oks);outline:1px solid var(--ok)}.ch.miss{background:var(--was);outline:2px dashed var(--wa)}.ch.bad{background:var(--nos);text-decoration:line-through}
+.chk{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;border:0;border-radius:9px;padding:9px 14px;background:var(--ac);color:#fff;cursor:pointer;font-weight:600}
+button.g{background:var(--acs);color:var(--ac)}button:disabled{opacity:.45;cursor:default}
+.fb{margin-top:8px;font-size:.93rem}.fb p{margin:4px 0}
+.q{margin:14px 0 4px;font-weight:600}textarea{width:100%;min-height:68px;padding:9px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit;resize:vertical}
+textarea:focus,input:focus{outline:2px solid var(--ac)}
+.row{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:8px 0}.row .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.opts button{background:var(--acs);color:var(--ac)}.opts button.p{background:var(--ac);color:#fff}.opts button.r{background:var(--ok);color:#fff}.opts button.w{background:var(--no);color:#fff}
+.nav{display:flex;justify-content:space-between;gap:8px;margin:6px 0 30px}
+.pb{height:8px;background:var(--bd);border-radius:5px;overflow:hidden;margin:8px 0}.pb i{display:block;height:100%;background:var(--ok)}
+.sm{color:var(--mu);font-size:.88rem}
+@media(min-width:900px){body{font-size:18px}.two{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;align-items:start}.two>.l{position:sticky;top:10px}.dot{font-size:.9rem}}
+.xp{text-align:right;font-size:.95rem}.bg{font-size:1.4rem;margin-left:4px}.bg.off{filter:grayscale(1);opacity:.3}
+.gc{font-size:1.4rem;padding:30px 20px;border:2px dashed var(--ac);border-radius:14px;margin:16px 0;text-align:center;background:var(--bg)}.gc+.opts{justify-content:center}.gc+.opts button{font-size:1.1rem;padding:12px 22px}.big{font-size:1.4rem;text-align:center;padding:22px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140px);background:var(--ac);color:#fff;padding:12px 22px;border-radius:12px;font-weight:700;transition:.3s;z-index:9}#toast.show{transform:translate(-50%,0)}
+</style></head><body><div class="w">
+<header><h1>🎣 Phishing Detectives <span class="sm">Year 8 Digital Technologies</span></h1>
+<input class="nm" id="nm" placeholder="Your name" aria-label="Your name"><div class="xp" id="xp"></div></header>
+<div class="dots" id="dots"></div><div id="main"></div>
+<div class="nav"><button class="g" id="pv">← Back</button><button id="nx">Next →</button></div></div><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const KEY="phish8";
+let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+S.a=S.a||{};S.f=S.f||{};S.c=S.c||{};S.s=S.s||{};S.g=S.g||[];S.b=S.b||[];S.step=S.step||0;S.name=S.name||"";
+const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const TOOL=`<div class="tip"><b>🧰 Red-flag toolkit</b><ul><li>⏰ <b>Urgency</b> – “act now!” stops you thinking</li><li>🎁 <b>Too good to be true</b> – prizes, huge discounts</li><li>🔑 <b>Asks for passwords, codes or bank details</b></li><li>💸 <b>Asks for money upfront</b></li><li>🔗 <b>Unexpected links</b> or a sender you can’t verify</li></ul></div>`;
+const HOW="Tap the parts of the message that look suspicious (tap again to undo). Then press <b>Check my clues</b>.";
+const P1=["What is the difference between a scam and phishing?","List three ways a scammer might contact someone.","Why might a scammer want someone’s personal information?","Give two examples of personal information that should not be shared with strangers online."];
+const QA=["What makes this message appear legitimate?","Identify three details that might indicate it is a scam.","Why would a scammer want the recipient’s bank details and date of birth?","Why is the administration fee suspicious?","What should the recipient do?"];
+const QB=["Why might someone trust this message?","What details would you check before clicking the link?","How could a fake shopping website use this message to steal information?","What is the safest way to check whether the offer is genuine?"];
+const QC=["Why might this message seem harmless?","Why could these questions be a problem?","How might a scammer use answers to questions like these?","Should you provide this information? Explain your answer."];
+const SA=["Why might you believe your friend is genuinely asking for help?","What is a verification code used for?","Why should you never send the code to your friend?","What might happen if you share it?","How could you check whether your friend’s account has been compromised?"];
+const SB=["Why might someone believe this message is genuine?","Identify three details that should make you cautious.","What information might the fake website try to collect?","How could you check whether you are actually expecting a parcel?","What should you do instead of clicking the link?"];
+const SC=["What makes this email appear trustworthy?","Identify two features that could indicate phishing.","Why might a scammer pretend to be school IT support?","How could you check whether the email is genuine?","What should you do if you have already entered your password into the website?"];
+const MSG={
+A:"Subject: Your prize claim – Reference GR48291|!From: Promotions Team – Global Rewards^Only a name is shown – a real sender has an address you can check|Dear Customer,|!We are pleased to inform you that your email address has been selected in our monthly customer giveaway.^You never entered – an unexpected prize is a classic hook|You are eligible to receive a prize of $8,500.|!please complete the attached claim form with your full name, date of birth, residential address and bank account details.^Asks for sensitive personal and bank details|!A refundable administration fee of $35 is required to process your claim.^Real prizes don’t need money upfront|!Please respond within 48 hours to avoid forfeiting your prize.^Fake deadline – urgency stops you thinking|Kind regards, Customer Promotions Team",
+B:"!From: StyleStreet Customer Offers^Only a display name – check the full sender address matches the real shop|Subject: Your exclusive member discount|Hi there,|!As a valued online shopper, you have been selected for an additional 70% discount on your next purchase.^Too good to be true|!This offer is available for the next 24 hours.^Time pressure|!Simply sign in to your account using the link below to activate your discount.^Logging in through an email link can lead to a fake copy of the shop|[Activate my discount]|Thank you for shopping with us!",
+C:"Hey!|I’m doing one of those fun quizzes about childhood memories.|!What was the name of your first pet? Also, what suburb did you grow up in?^These are common security-question answers|!Mine was Max and I grew up in Joondalup!^Sharing first makes it feel safe, so you share back",
+SA:"Hey, can you help me out?|I’m trying to log into my account on my new phone, but it’s asking me for a verification code.|!I’ve sent it to your number by mistake.^Codes go to the account owner’s phone – this is the trick|!Can you send me the code when it arrives?^Never share a verification code with anyone|Thanks!",
+SB:"!From: Parcel Delivery^No real company, parcel or tracking number named|We attempted to deliver your parcel today but were unable to complete delivery.|Your parcel is being held at our local distribution centre.|!A redelivery fee of $2.95 is required.^Unexpected fee – small amounts lure you into giving card details|!Please confirm your delivery details using the link below: parcel-redelivery.example^Unfamiliar link, not an official delivery site",
+SC:"Subject: Action required – School account security|Dear Student,|Our IT department has detected unusual login activity on your school account.|!To prevent temporary suspension of your account, please confirm your username and password^A threat – and real IT never asks for your password|!using the secure verification page below.^A link you haven’t checked|!You must complete this process by 5:00 pm today.^Deadline creates panic|If you have already completed this verification, no further action is required.|School IT Support"};
+const parse=k=>MSG[k].split("|").map(c=>c[0]=="!"?{f:1,t:c.slice(1).split("^")[0],w:c.split("^")[1]}:{f:0,t:c});
+const SORT=[["An unexpected email says you have won a prize and asks for your bank details.","phish","Unexpected prize + bank details = phishing."],["Your teacher posts an assignment reminder in your usual school learning platform.","legit","Expected, from the usual trusted place."],["An unknown sender offers a free phone if you click a link and enter your details.","phish","Too good to be true, unknown sender, link + details."],["You receive five identical promotional emails from a company you do not recognise.","spam","Unwanted, repeated advertising – no clear attempt to steal info."],["A message says your account will be closed unless you enter your password immediately.","phish","Threat + urgency + asks for your password."]];
+const L={legit:"Legitimate",spam:"Spam",phish:"Possible phishing"};
+const ST=[
+{t:"Warm-up",h:"⚡ Warm-up: Phish or Legit?",tip:`<b>🎮 How to play:</b> 8 quick-fire messages. Go with your gut! Every correct answer earns <b>XP</b>, and a streak of 5 unlocks a badge. You’ll learn the tricks in the next steps, then come back to beat your score.`,game:1},
+{t:"Part 1",h:"Understanding scams",tip:`<b>🧠 Key ideas</b><ul><li>A <b>scam</b> is a dishonest attempt to trick someone into giving away money, personal information or access to an account.</li><li><b>Phishing</b> is a scam where someone <b>pretends to be a trusted person or organisation</b> (a bank, a shop, a friend, your school) to “fish” for passwords or bank details.</li></ul>You’re a detective now – your job is to spot the tricks.`,q:["p1",P1]},
+{t:"2A",h:"Spot the scam: A – The prize notification",tip:TOOL,m:"A",intro:"Some details may make it seem genuine. Look for clues.",q:["a",QA]},
+{t:"2B",h:"Spot the scam: B – The online shopping offer",tip:`<b>🥇 Golden rule:</b> don’t use the link. Go to the real website or app yourself and check there.`,m:"B",intro:"You regularly shop online and receive this email:",q:["b",QB]},
+{t:"2C",h:"Spot the scam: C – The security question",tip:`<b>💡 Did you know?</b> Questions like “first pet?” and “what suburb did you grow up in?” are often the <b>same security questions websites use</b> to let you recover an account.`,m:"C",intro:"You receive a message from someone you have recently started chatting with online:",q:["c",QC]},
+{t:"Part 3",h:"Is it spam?",tip:`<b>📬 Spam</b> = unwanted or unsolicited messages, often sent in large numbers. Some is just annoying advertising; some is designed to scam. <b>Phishing</b> tries to trick you into handing over information. A message can be both!`,sort:1,q:["s",["Choose two messages and explain the clues that helped you classify them."]]},
+{t:"4A",h:"Scenario A – A friend in need",tip:`<b>🔐 Verification codes</b> are temporary codes sent to the <b>account owner’s</b> phone to prove it’s really them. Treat them like a password.`,m:"SA",intro:"You receive a message from your friend’s social media account. A few minutes later, a text arrives containing a six-digit verification code.",q:["sa",SA]},
+{t:"4B",h:"Scenario B – The unknown link",tip:`<b>📦 Tip:</b> scammers send these to thousands of people. Some of them <i>are</i> waiting for a parcel, so it feels real. Check your order or the delivery company’s official app.`,m:"SB",intro:"You receive this text message:",q:["sb",SB]},
+{t:"4C",h:"Scenario C – Password panic",tip:`<b>🏫 Caught out?</b> If you’ve already typed your password into a suspicious page: change it straight away on the real site, tell your teacher or IT, and change it anywhere else you reuse it.`,m:"SC",intro:"You receive an email that appears to come from your school’s IT support team.",q:["sc",SC]},
+{t:"Hand in",h:"Hand in your work",hand:1}];
+const allQ=ST.filter(s=>s.q).flatMap(s=>s.q[1].map((_,i)=>s.q[0]+i));
+const done=()=>allQ.filter(k=>(S.a[k]||"").trim()).length;
+const $=s=>document.querySelector(s);
+
+const G=[["Your streaming account payment failed. Update your card within 24 hours or it will be cancelled.","phish"],["Mum: Don’t forget your swimming bag today 🏊","legit"],["🎉 You’ve won a FREE iPhone! Tap here to claim your prize now →","phish"],["Library notice, sent through your school portal: your book is due back on Friday.","legit"],["The 12th identical sale email from ‘MegaDeals4U’ this week, from a company you’ve never heard of.","spam"],["Hi it’s Jess, I’m locked out of my account. Can you send me the code that just got texted to you?","phish"],["Your Instagram login code is 482913. Don’t share it with anyone. (You just tried to log in.)","legit"],["FINAL WARNING: pay this fine immediately or the police will visit your home.","phish"]];
+const RK=[[0,"Rookie 🐣"],[60,"Cyber Cadet 🛡️"],[150,"Detective 🕵️"],[260,"Senior Detective 🔎"],[380,"Chief Phish Hunter 🎣"]];
+const gs=()=>S.g.filter((c,i)=>c==G[i][1]).length;
+const runs=()=>{let b=0,c=0;S.g.forEach((x,i)=>{c=x==G[i][1]?c+1:0;b=Math.max(b,c)});return[b,c]};
+const bs=()=>runs()[0];
+const bd=()=>[["🎣","First Catch",Object.values(S.c).some(v=>v)],["🔥","On Fire",bs()>=5],["🕵️","Sharp Eye",Object.keys(S.c).some(k=>S.c[k]&&parse(k).every((c,i)=>!c.f||(S.f[k]||[]).includes(i)))],["🏆","Sorting Star",SORT.every((r,i)=>S.s[i]==r[1])],["✍️","Finisher",done()==allQ.length]];
+function xp(){let x=0;ST.forEach(s=>{if(s.m&&S.c[s.m]){const sel=S.f[s.m]||[];parse(s.m).forEach((c,i)=>{if(sel.includes(i))x+=c.f?10:-3})}});SORT.forEach((r,i)=>{if(S.s[i]==r[1])x+=10});return Math.max(0,x+gs()*5+bs()*3+done()*5)}
+const rk=()=>RK.filter(k=>xp()>=k[0]).pop();
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}
+function xpUI(){const x=xp(),nx=RK.find(k=>k[0]>x),B=bd();
+ B.forEach(b=>{if(b[2]&&!S.b.includes(b[1])){S.b.push(b[1]);toast("🏅 Badge unlocked: "+b[0]+" "+b[1])}});
+ $("#xp").innerHTML=`<b>⭐ ${x} XP</b> · ${rk()[1]}${nx?` <span class="sm">(${nx[0]-x} to next rank)</span>`:""}<div>${B.map(b=>`<span title="${b[1]}" class="bg ${b[2]?"":"off"}">${b[0]}</span>`).join("")}</div>`}
+function gameHTML(){const n=S.g.length;
+ if(n>=G.length)return `<div class="big">🎉 Round complete!<br><b>${gs()} / ${G.length}</b> correct · best streak 🔥 ${bs()}</div><p class="sm" style="text-align:center">Head to <b>Next →</b> to learn the tricks, then come back and try to beat your score.</p><div class="chk" style="justify-content:center"><button class="g" data-gr="1">🔄 Play again</button></div>`;
+ const p=n&&G[n-1];
+ return `<div class="pb"><i style="width:${n/G.length*100}%"></i></div><div class="sm">Card ${n+1} of ${G.length} · streak 🔥 ${runs()[1]}</div><div class="gc">${esc(G[n][0])}</div><div class="opts">${Object.keys(L).map(o=>`<button data-gm="${o}">${L[o]}</button>`).join("")}</div>${n?`<div class="fb" style="text-align:center">${S.g[n-1]==p[1]?"✅ Last one: correct! +5 XP":"❌ Last one was actually: "+L[p[1]]}</div>`:""}`}
+function msgHTML(k){const ch=parse(k),sel=S.f[k]||[],chk=S.c[k];
+ const nf=ch.filter(c=>c.f).length;
+ const h=ch.map((c,i)=>{const on=sel.includes(i);let cl="ch";
+  if(chk){cl+=c.f?(on?" ok":" miss"):(on?" bad":"")}else if(on)cl+=" sel";
+  return `<span class="${cl}" data-k="${k}" data-i="${i}">${esc(c.t)}</span> `}).join("");
+ let fb="";
+ if(chk){const hit=ch.filter((c,i)=>c.f&&sel.includes(i)).length;
+  fb=`<div class="fb"><p><b>You found ${hit} of ${nf} red flags.</b> 🟢 = spotted, 🟡 dashed = missed, struck-through = looked suspicious but was fine.</p>`+ch.filter(c=>c.f).map(c=>`<p>🚩 <i>${esc(c.t.slice(0,48))}${c.t.length>48?"…":""}</i> – ${esc(c.w)}</p>`).join("")+"</div>"}
+ return `<div class="msg">${h}</div><div class="chk"><button data-chk="${k}" ${chk?"disabled":""}>🔍 Check my clues</button>${chk?`<button class="g" data-retry="${k}">Try again</button>`:""}</div>${fb}`}
+
+function render(){
+ const s=ST[S.step];$("#nm").value=S.name;xpUI();
+ $("#dots").innerHTML=ST.map((x,i)=>`<button class="dot ${i==S.step?"on":""}" data-go="${i}">${x.t}</button>`).join("");
+ let h=`<div class="card"><h2>${s.h}</h2>`;
+ if(s.tip)h+=`<div class="tip">${s.tip}</div>`;
+ let l="",r="";if(s.game)l=gameHTML();if(s.m)l=`<p>${s.intro} <span class="sm">${HOW}</span></p>`+msgHTML(s.m);
+ if(s.sort){l+=`<p class="sm">Classify each message. You’ll get instant feedback.</p>`+SORT.map((r,i)=>{const c=S.s[i];
+  return `<div class="row"><b>${i+1}.</b> ${esc(r[0])}<div class="opts">${Object.keys(L).map(o=>`<button data-so="${i}|${o}" class="${c==o?(r[1]==o?"r":"w"):""}">${L[o]}</button>`).join("")}</div>${c?`<div class="fb">${c==r[1]?"✅ Correct! ":"❌ Not quite – think again or see the clue: "}${c==r[1]?esc(r[2]):""}</div>`:""}</div>`}).join("")}
+ if(s.q)r=s.q[1].map((q,i)=>`<div class="q">${i+1}. ${esc(q)}</div><textarea data-a="${s.q[0]+i}" placeholder="Type your answer…">${esc(S.a[s.q[0]+i]||"")}</textarea>`).join("");
+ h+=l&&r?`<div class="two"><div class="l">${l}</div><div>${r}</div></div>`:l+r;if(s.hand){const n=done(),t=allQ.length;
+  h+=`<p>⭐ <b>${xp()} XP</b> – rank: <b>${rk()[1]}</b><br>Badges: ${bd().map(b=>`<span class="bg ${b[2]?"":"off"}" title="${b[1]}">${b[0]}</span>`).join("")}<br>You have answered <b>${n} of ${t}</b> questions.</p><div class="pb"><i style="width:${n/t*100}%"></i></div>
+  <p>1. Check you’ve typed your name at the top.<br>2. Press <b>Download my work</b> – it saves a Word file.<br>3. Open Google Classroom and attach the file to the assignment, then press <b>Turn in</b>.</p>
+  <div class="chk"><button id="dl">⬇️ Download my work (.docx)</button><button class="g" id="cp">📋 Copy my answers</button></div><div class="fb" id="hm"></div>
+  <p class="sm">Your work saves automatically on this device as you go, so you can close this page and come back.</p>`}
+ $("#main").innerHTML=h+"</div>";
+ $("#pv").disabled=S.step==0;$("#nx").disabled=S.step==ST.length-1;sv()}
+
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.go!=null){S.step=+t.dataset.go;render();scrollTo(0,0)}
+ else if(t.classList.contains("ch")&&!S.c[t.dataset.k]){const k=t.dataset.k,i=+t.dataset.i,a=S.f[k]=S.f[k]||[];a.includes(i)?a.splice(a.indexOf(i),1):a.push(i);render()}
+ else if(t.dataset.chk){const k=t.dataset.chk;S.c[k]=1;render();const sel=S.f[k]||[];if(parse(k).every((c,i)=>!c.f||sel.includes(i)))toast("🎯 Perfect! Every red flag found")}
+ else if(t.dataset.retry){S.c[t.dataset.retry]=0;S.f[t.dataset.retry]=[];render()}
+ else if(t.dataset.so){const[i,o]=t.dataset.so.split("|");S.s[i]=o;render()}
+ else if(t.dataset.gm){S.g.push(t.dataset.gm);render()}else if(t.dataset.gr){S.g=[];render()}else if(t.id=="dl")dl();else if(t.id=="cp")cp()});
+document.addEventListener("input",e=>{if(e.target.dataset.a){S.a[e.target.dataset.a]=e.target.value;sv();xpUI()}if(e.target.id=="nm"){S.name=e.target.value;sv()}});
+$("#pv").onclick=()=>{S.step--;render();scrollTo(0,0)};$("#nx").onclick=()=>{S.step++;render();scrollTo(0,0)};
+
+function lines(){const o=[["T","Scams and Phishing – Year 8 Digital Technologies"],["P","Name: "+(S.name||"(not entered)")],["P","Date: "+new Date().toLocaleDateString("en-AU")],["P",`Detective XP: ${xp()} · Rank: ${rk()[1]} · Badges: ${bd().filter(b=>b[2]).map(b=>b[1]).join(", ")||"none yet"}`]];
+ ST.forEach(s=>{if(s.hand||s.game)return;o.push(["H",s.t+" – "+s.h]);
+  if(s.m){const ch=parse(s.m),sel=S.f[s.m]||[],nf=ch.filter(c=>c.f).length,hit=ch.filter((c,i)=>c.f&&sel.includes(i)).length;
+   o.push(["P",S.c[s.m]?`Red flags spotted in the interactive: ${hit} of ${nf}.`:"Red-flag hunt: not checked."])}
+  if(s.sort){let sc=0;SORT.forEach((r,i)=>{const c=S.s[i];if(c==r[1])sc++;o.push(["P",`${i+1}. ${r[0]} → ${c?L[c]:"(no answer)"}`])});o.push(["P",`Sorting score: ${sc} of ${SORT.length}.`])}
+  if(s.q)s.q[1].forEach((q,i)=>{o.push(["Q",(i+1)+". "+q]);o.push(["A",(S.a[s.q[0]+i]||"").trim()||"(no answer)"])})});return o}
+const X=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function para(k,t){const f={T:'<w:b/><w:sz w:val="36"/>',H:'<w:b/><w:color w:val="4F46E5"/><w:sz w:val="28"/>',Q:"<w:b/>",A:'<w:color w:val="1F4E79"/>',P:""}[k];
+ return t.split("\n").map(l=>`<w:p><w:pPr><w:spacing w:before="${k=="H"?"300":"80"}" w:after="60"/></w:pPr><w:r><w:rPr>${f}</w:rPr><w:t xml:space="preserve">${X(l)}</w:t></w:r></w:p>`).join("")}
+async function dl(){const hm=$("#hm");
+ try{const d=await claude.use("downloads");if(!d||!window.JSZip)throw 0;
+  const z=new JSZip(),NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+  z.file("[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  z.file("_rels/.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  z.file("word/document.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${lines().map(l=>para(...l)).join("")}</w:body></w:document>`);
+  const blob=await z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  await d.save({filename:"Phishing - "+(S.name||"Student").replace(/[^\w ]/g,"")+".docx",data:blob});
+  hm.textContent="✅ Saved! Now attach the file in Google Classroom and press Turn in."}
+ catch(err){hm.textContent=err&&err.code=="declined"?"Download cancelled – press the button again when you’re ready.":"Download isn’t available here. Use “Copy my answers”, paste into a Google Doc, and hand that in."}}
+async function cp(){const t=lines().map(l=>l[1]).join("\n");
+ try{await navigator.clipboard.writeText(t);$("#hm").textContent="✅ Copied! Paste into a Google Doc and hand it in."}
+ catch(e){$("#hm").textContent="Couldn’t copy automatically – try the download button instead."}}
+render();
+</script></body></html>
