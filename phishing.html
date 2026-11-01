@@ -147,13 +147,13 @@ const X=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]
 function para(k,t){const f={T:'<w:b/><w:sz w:val="36"/>',H:'<w:b/><w:color w:val="4F46E5"/><w:sz w:val="28"/>',Q:"<w:b/>",A:'<w:color w:val="1F4E79"/>',P:""}[k];
  return t.split("\n").map(l=>`<w:p><w:pPr><w:spacing w:before="${k=="H"?"300":"80"}" w:after="60"/></w:pPr><w:r><w:rPr>${f}</w:rPr><w:t xml:space="preserve">${X(l)}</w:t></w:r></w:p>`).join("")}
 async function dl(){const hm=$("#hm");
- try{const d=await claude.use("downloads");if(!d||!window.JSZip)throw 0;
+ try{let d=null;try{d=await window.claude.use("downloads")}catch(e){}if(!window.JSZip)throw 0;
   const z=new JSZip(),NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
   z.file("[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
   z.file("_rels/.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
   z.file("word/document.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${lines().map(l=>para(...l)).join("")}</w:body></w:document>`);
   const blob=await z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
-  await d.save({filename:"Phishing - "+(S.name||"Student").replace(/[^\w ]/g,"")+".docx",data:blob});
+  const fn="Phishing - "+(S.name||"Student").replace(/[^\w ]/g,"")+".docx";if(d)await d.save({filename:fn,data:blob});else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
   hm.textContent="✅ Saved! Now attach the file in Google Classroom and press Turn in."}
  catch(err){hm.textContent=err&&err.code=="declined"?"Download cancelled – press the button again when you’re ready.":"Download isn’t available here. Use “Copy my answers”, paste into a Google Doc, and hand that in."}}
 async function cp(){const t=lines().map(l=>l[1]).join("\n");
