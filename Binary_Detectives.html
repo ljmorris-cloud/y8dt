@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Binary Detectives – Year 8 Digital Technologies</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1d2433;--mu:#5d6679;--ac:#4f46e5;--acs:#e8e7fd;--ok:#16794a;--oks:#d9f4e6;--no:#b42318;--nos:#fde4e1;--bd:#d9deea;--off:#d5dae6;--offt:#5d6679;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#131722;--card:#1c2231;--tx:#e8ecf5;--mu:#9aa5bd;--ac:#8b85ff;--acs:#2a2c5a;--ok:#5ad39a;--oks:#173a2a;--no:#ff8f84;--nos:#4a1f1c;--bd:#33405a;--off:#2b3347;--offt:#9aa5bd;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#131722;--card:#1c2231;--tx:#e8ecf5;--mu:#9aa5bd;--ac:#8b85ff;--acs:#2a2c5a;--ok:#5ad39a;--oks:#173a2a;--no:#ff8f84;--nos:#4a1f1c;--bd:#33405a;--off:#2b3347;--offt:#9aa5bd;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:1500px;margin:0 auto;padding:20px 40px}.qg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:0 18px}
+header{display:flex;gap:10px;align-items:center;flex-wrap:wrap}h1{font-size:1.2rem;margin:0;flex:1 1 220px}
+input.nm,.in{padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit}
+input.nm{width:100%;max-width:220px}.in{width:100%;max-width:230px;font-family:ui-monospace,Menlo,monospace;letter-spacing:1px}
+.dots{display:flex;gap:5px;margin:10px 0;flex-wrap:wrap}
+.dot{flex:1 1 70px;padding:6px 2px;font-size:.78rem;background:var(--card);color:var(--mu);border:1px solid var(--bd)}
+.dot.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 8px;font-size:1.2rem}h3{margin:18px 0 6px;font-size:1.05rem}
+.tip{background:var(--acs);border-radius:10px;padding:10px 14px;margin:10px 0}.tip ul{margin:6px 0 0;padding-left:20px}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--ac);color:#fff;margin-right:6px}
+button{font:inherit;border:0;border-radius:9px;padding:9px 14px;background:var(--ac);color:#fff;cursor:pointer;font-weight:600}
+button.g{background:var(--acs);color:var(--ac)}button:disabled{opacity:.45;cursor:default}
+.chk,.opts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.q{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:10px 0}
+.fb{margin-top:6px;font-size:.93rem}.sm{color:var(--mu);font-size:.88rem}
+.cds{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:8px 0}
+.cd{border:2px solid var(--bd);border-radius:8px;padding:4px 0;text-align:center;background:var(--off);color:var(--offt);font-weight:700;line-height:1.2}
+.cd.on{background:#ffd23f;color:#222;border-color:#e0a800}.cd small{display:block;font-size:.7rem}.cd b{font-size:1.25rem}
+.big{font-size:1.3rem;text-align:center;font-family:ui-monospace,Menlo,monospace}
+.cas,.cw,.ct{border:2px dashed var(--ac);border-radius:12px;padding:10px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border:1px solid var(--bd);padding:4px 6px;text-align:center}
+.in.ok{background:var(--oks)}.in.no{background:var(--nos)}
+.stp{background:var(--acs);border-radius:14px;padding:14px 20px;margin:12px 0;text-align:center}.stp .sn{font-weight:700;color:var(--ac);font-size:1rem}.stp .sq{font-size:2.2rem;font-weight:700;margin:4px 0}.stp .sq b{color:var(--ac)}.stp .ss{font-size:1.15rem}.cas .opts{justify-content:center}.cas .opts button,.cas>button{font-size:1.25rem;padding:14px 28px}.ht{margin-top:10px}.ht th{background:var(--acs);color:var(--ac);font-size:.8rem}.ht td.y{background:var(--oks);color:var(--ok);font-weight:700}.ht td.n{background:var(--nos);color:var(--no);font-weight:700}.ht td b{font-family:ui-monospace,Menlo,monospace;font-size:1.05rem}
+.bulb{font-size:1.2rem;background:var(--off);color:var(--tx)}.bulb.on{background:#ffd23f;color:#222}
+.nav{display:flex;justify-content:space-between;margin:6px 0 30px}textarea{width:100%;min-height:70px;padding:9px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140px);background:var(--ac);color:#fff;padding:12px 22px;border-radius:12px;font-weight:700;transition:.3s;z-index:9}#toast.show{transform:translate(-50%,0)}
+@media(min-width:900px){body{font-size:21px}h1{font-size:1.7rem}h2{font-size:1.7rem}h3{font-size:1.3rem}.card{padding:30px 36px}.dot{font-size:1rem;padding:10px 4px}.tag{font-size:.9rem}button{font-size:1.05rem;padding:12px 20px}.in{max-width:340px;font-size:1.25rem;padding:10px 12px}input.nm{max-width:300px;font-size:1.05rem}.cds{max-width:1000px;gap:10px}.cd{padding:12px 0}.cd small{font-size:.95rem}.cd b{font-size:2.1rem}.big{font-size:2.2rem}table{font-size:1.05rem}td,th{padding:8px 12px}.ht td b{font-size:1.3rem}.cas,.cw,.ct{padding:22px}.q{padding:16px}textarea{min-height:110px;font-size:1.05rem}}
+</style></head><body><div class="w">
+<header><h1>💡 Binary Detectives <span class="sm">Year 8 Digital Technologies</span></h1><input class="nm" id="nm" placeholder="Your name" aria-label="Your name"><div id="sc"></div></header>
+<div class="dots" id="dots"></div><div id="main"></div>
+<div class="nav"><button class="g" id="pv">← Back</button><button id="nx">Next →</button></div></div><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const KEY="bin8";let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+S.a=S.a||{};S.step=S.step||0;S.name=S.name||"";
+const sv=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const PV=[128,64,32,16,8,4,2,1],b8=n=>n.toString(2).padStart(8,"0"),nz=s=>s.replace(/^0+(?=.)/,"");
+/* ---------- questions ---------- */
+const Q=[];const QM={};
+const add=(id,sec,type,p,ans,hint,pre)=>{const q={id,sec,type,p,ans:String(ans),hint,pre};Q.push(q);QM[id]=q};
+add("b1","1 Bits","num","How many different digits can binary use?",2,"Think: a switch is on or off.");
+add("b2","1 Bits","num","Which digit means ON?",1,"0 means off, so the other digit means on.");
+add("p1","2 Powers of 2","num","Keep doubling: 1, 2, 4, 8, 16, 32, 64, … What is the next number?",128,"64 × 2.");
+add("p2","2 Powers of 2","num","2⁴ means 2 × 2 × 2 × 2. What is that as a normal number?",16,"2 × 2 = 4, × 2 = 8, × 2 = ?");
+for(let k=4;k<16;k++)add("k"+k,"3 Counting (guided)","bin","Count in binary: write "+k+" in binary",k.toString(2),"Add 1 to the previous row.");
+[["n1","101","110"],["n2","111","1000"],["n3","1011","1100"],["n4","10011","10100"],["n5","1111","10000"]].forEach(r=>add(r[0],"3 Counting (independent)","bin","What is the next binary number after "+r[1]+"?",r[2],"Add 1 to the right-hand digit. If it’s 1 + 1, write 0 and carry the 1 left."));
+[["g1","00000101"],["g2","00001101"],["g3","00010110"]].forEach(r=>add(r[0],"4 Binary to decimal (guided)","num","What is "+r[1]+" in decimal?",parseInt(r[1],2),"Add the numbers on the yellow (ON) cards only.",r[1]));
+["100","1010","10101","11110","1010010","1110001","10001000","11000011","1101110","11111111"].forEach((b,i)=>add("i"+i,"4 Binary to decimal (independent)","num","Convert binary "+b+" to decimal.",parseInt(b,2),"Line it up under 128 64 32 16 8 4 2 1 (start from the right), then add the place values with a 1."));
+add("c45","5 Decimal to binary (guided)","cas","Cascade: convert 45 to binary");add("c134","5 Decimal to binary (guided)","cas","Cascade: convert 134 to binary");
+[153,203,108,82,200].forEach(n=>add("d"+n,"5 Decimal to binary (independent)","bin","Convert "+n+" to binary.",b8(n),"Go left to right: is it ≥ 128? Subtract if yes. Then 64, 32, 16, 8, 4, 2, 1."));
+add("r1","6 Reflect","txt","Why do computers use binary (only 0s and 1s)?");
+add("r2","6 Reflect","txt","In your own words, explain the steps to convert binary to decimal.");
+add("r3","6 Reflect","txt","In your own words, explain the steps to convert decimal to binary. What was the trickiest part?");
+/* ---------- widgets ---------- */
+const cards=b=>`<div class="cds">${PV.map((v,i)=>`<div class="cd ${b[i]=="1"?"on":""}"><small>${v}</small><b>${b[i]}</b></div>`).join("")}</div>`;
+function fb(id){const a=S.a[id];if(!a||!a.t&&!a.ok)return"";if(a.ok)return"✅ <b>Correct!</b>";const q=QM[id];return"❌ Not quite. "+esc(q.hint)+(a.t>=3?` The answer is <b>${esc(q.ans)}</b> – work out how you get it.`:"")}
+function qh(id){const q=QM[id],a=S.a[id]||{};
+ if(q.type=="txt")return`<div class="q"><b>${esc(q.p)}</b><textarea data-id="${id}" placeholder="Type your answer…">${esc(a.v||"")}</textarea></div>`;
+ return`<div class="q"><b>${esc(q.p)}</b>${q.pre?cards(q.pre):""}<div class="chk"><input class="in" data-id="${id}" inputmode="numeric" value="${esc(a.v||"")}" ${a.ok?"disabled":""} placeholder="${q.type=="bin"?"binary, e.g. 10110":"your answer"}"><button data-ck="${id}" ${a.ok?"disabled":""}>Check</button></div><div class="fb" id="f-${id}">${fb(id)}</div></div>`}
+const qs=ids=>`<div class="qg">${ids.map(qh).join("")}</div>`;
+function judge(id,v){const q=QM[id];v=v.trim();return q.type=="bin"?/^[01]+$/.test(v)&&nz(v)==nz(q.ans):v!==""&&+v==+q.ans}
+const CW={};
+const cwH=id=>{const c=CW[id],tot=c.b.reduce((s,x,i)=>s+x*PV[i],0);let t="";
+ if(c.tg){const hit=tot==c.tg[c.t];t=`<p>🎯 Target: <b>${c.tg[c.t]}</b> – tap cards to flip them ON/OFF until the total matches.</p>`+(hit?`<p><b>✅ Yes!</b> ${nz(c.b.join(""))} = ${tot}. ${c.t<c.tg.length-1?`<button data-cwn="${id}">Next target →</button>`:"All targets done 🎉"}</p>`:"")}
+ return`${t}<div class="cds">${c.b.map((x,i)=>`<button class="cd ${x?"on":""}" data-cw="${id}|${i}"><small>${PV[i]}</small><b>${x}</b></button>`).join("")}</div><div class="big">${c.b.join("")} = <b>${tot}</b></div>`};
+const cw=(id,init,tg)=>{CW[id]=CW[id]||{b:init.split("").map(Number),t:0,tg};return`<div class="cw" id="cw-${id}">${cwH(id)}</div>`};
+const CT={n:0};
+const ctH=()=>{const n=CT.n,b=b8(n);let k=0;if(n>0){let m=n-1;while(m&1){k++;m>>=1}}
+ return`<div class="cds">${PV.map((v,i)=>`<div class="cd ${b[i]=="1"?"on":""}"><small>${v}</small><b>${b[i]}</b></div>`).join("")}</div><div class="big">${n} = ${b}</div><p class="fb">${n==0?"Start: every switch is OFF.":k==0?"Last switch flipped ON. No carry needed.":`1 + 1 = 10 in binary, so we write 0 and <b>carry</b> the 1 to the next column. We carried <b>${k}</b> time${k>1?"s":""} this step.`}</p><div class="opts"><button data-ct="1" ${n>=255?"disabled":""}>+1</button><button class="g" data-ct="0">↺ Reset</button><span class="sm">Jump to:</span>${[7,63,127,254].map(j=>`<button class="g" data-ct="${j}">${j}</button>`).join("")}<span class="sm">then press +1!</span></div>`};
+const C={};
+const cinit=(id,N,mode)=>{if(!C[id]){const a=S.a[id];C[id]=a&&a.ok&&mode=="g"?{N,i:8,r:0,b:a.v,h:[],e:a.t||0,mode}:{N,i:0,r:N,b:"",h:[],e:0,mode}}return C[id]};
+const casH=id=>{const c=C[id],m=c.mode,done=c.i>=8;let ctl;
+ if(done)ctl=`<p class="fb">🎉 <b>${c.N} = ${c.b}</b> in binary.${m=="g"?(c.e?` (${c.e} slip-up${c.e>1?"s":""} on the way – that’s how we learn!)`:" No mistakes!"):""}</p>`+(m=="m"?`<button class="g" data-cr="${id}">↺ Watch again</button>`:"");
+ else ctl=`<div class="stp"><div class="sn">🔍 Step ${c.i+1} of 8</div><div class="sq">Is <b>${c.r}</b> ≥ <b>${PV[c.i]}</b>?</div><div class="ss">🤔 Is there enough left to take the <b>${PV[c.i]}</b> card?</div></div>`+(m=="m"?`<button data-cm="${id}">Show this step ▶</button>`:`<div class="opts"><button data-cy="${id}">✅ Yes – write 1</button><button class="g" data-cn="${id}">❌ No – write 0</button></div>`);
+ return`<div class="cds">${PV.map((v,i)=>`<div class="cd ${c.b[i]=="1"?"on":""}"><small>${v}</small><b>${i<c.i?c.b[i]:"·"}</b></div>`).join("")}</div><div>Still to place: <b>${c.r}</b></div><div class="big" style="letter-spacing:.35em;margin:10px 0"><span class="sm" style="letter-spacing:0;font-family:system-ui,sans-serif;font-size:.5em">Your binary number:</span><br>${PV.map((v,i)=>i<c.i?`<b>${c.b[i]}</b>`:"_").join(" ")}</div>${ctl}${c.msg?`<p class="fb">⚠️ ${esc(c.msg)}</p>`:""}${c.h.length?`<table class="ht"><tr><th>Card</th><th>What’s left</th><th>Left ≥ card?</th><th>Write</th><th>Left after</th></tr>${c.h.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="${r[2]?"y":"n"}">${r[2]?"Yes ✔":"No ✘"}</td><td><b>${r[2]}</b></td><td>${r[3]}${r[2]?` <span class="sm">(${r[1]} − ${r[0]})</span>`:""}</td></tr>`).join("")}</table>`:""}`};
+const cas=(id,N,m)=>{cinit(id,N,m);return`<div class="cas" id="cas-${id}">${casH(id)}</div>`};
+function cstep(id,bit){const c=C[id],v=PV[c.i],o=c.r;c.msg="";if(bit)c.r-=v;c.b+=bit?"1":"0";c.h.push([v,o,bit?1:0,c.r]);c.i++;
+ if(c.i>=8&&c.mode=="g"){S.a[id]={v:c.b,ok:1,t:c.e};sv();scUI()}}
+/* ---------- steps ---------- */
+const ST=[
+{t:"Start",h:"👋 Welcome to Binary Detectives",b:()=>`<p><b>This page will teach you step by step.</b> Type your name at the top, then work through every step in order using the <b>Next →</b> button.</p>
+<div class="tip"><b>🎯 By the end you will be able to:</b><ul><li>Count in binary</li><li>Convert binary → decimal</li><li>Convert decimal → binary</li><li>Explain why computers use binary</li></ul></div>
+<div class="tip"><b>🪜 Each skill has three stages</b><ul><li><span class="tag">WATCH</span> I show you an example. Read it and play with it.</li><li><span class="tag">TRY</span> You do it with help. The page checks and gives hints.</li><li><span class="tag">SOLO</span> You do it on your own.</li></ul></div>
+<p>At the end you press <b>Download my work</b> and hand in the Word file to your teacher. Wrong answer? Read the hint and try again – you can’t break anything. 💪</p>`},
+{t:"1 Bits",h:"1️⃣ What is binary?",b:()=>`<p><span class="tag">WATCH</span> Computers are made of billions of tiny <b>switches</b>. Each switch is either <b>ON</b> or <b>OFF</b>. Nothing in between.</p>
+<p>We write <b>OFF as 0</b> and <b>ON as 1</b>. Each 0 or 1 is called a <b>bit</b> (short for <b>bi</b>nary dig<b>it</b>). “Bi” means <b>two</b> – binary uses just two digits.</p>
+<p>Try it – tap the switch: <button class="bulb" data-bulb>⚫ 0 = OFF</button></p>
+<h3>✅ Quick check</h3>${qs(["b1","b2"])}`},
+{t:"2 Powers",h:"2️⃣ The binary place values",b:()=>`<p><span class="tag">WATCH</span> In normal numbers (<b>base 10</b>) each place is worth <b>10 times</b> the one on its right: 1, 10, 100, 1000…</p>
+<p>In binary (<b>base 2</b>) each place is worth <b>2 times</b> the one on its right. Start at 1 and keep doubling:</p>
+<table><tr><th>Power</th><th>2⁷</th><th>2⁶</th><th>2⁵</th><th>2⁴</th><th>2³</th><th>2²</th><th>2¹</th><th>2⁰</th></tr><tr><th>Value</th><td>128</td><td>64</td><td>32</td><td>16</td><td>8</td><td>4</td><td>2</td><td>1</td></tr></table>
+<p class="sm">The little number (index) says how many 2s you multiply: 2³ = 2 × 2 × 2 = 8. And 2⁰ = 1.</p>
+<p><span class="tag">TRY</span> Think of each value as a <b>card</b>. A card that is <b>ON (yellow)</b> counts. A card that is OFF doesn’t. Make each target number:</p>
+${cw("t",  "00000000",[5,12,37,100,255])}
+<h3>✅ Quick check</h3>${qs(["p1","p2"])}`},
+{t:"3 Count",h:"3️⃣ Counting in binary",b:()=>`<p><span class="tag">WATCH</span> In base 10 we have digits 0–9. After <b>9</b> we run out, so we <b>carry</b>: write 0 and add 1 to the next column → <b>10</b>.</p>
+<p>Binary only has 0 and 1, so we run out much sooner! After <b>1</b> we carry: 1 + 1 = <b>10</b>. A byte is 8 bits. Press +1 and watch the carries – then use the jump buttons to see a big carry:</p>
+<div class="ct" id="ct">${ctH()}</div>
+<p><span class="tag">TRY</span> You fill in the table. The first four rows are done for you. Add 1 each time, carrying when you need to. Then press <b>Check my table</b>.</p>
+<table><tr><th>Decimal</th><th>Binary</th></tr>${[0,1,2,3].map(k=>`<tr><td>${k}</td><td><b>${b8(k)}</b></td></tr>`).join("")}${Array.from({length:12},(_,j)=>{const k=j+4,a=S.a["k"+k]||{};return`<tr><td>${k}</td><td><input class="in ${a.ok?"ok":a.t?"no":""}" data-id="k${k}" data-row="1" inputmode="numeric" maxlength="8" placeholder="00000000" value="${esc(a.v||"")}" style="max-width:210px"></td></tr>`}).join("")}</table>
+<div class="chk"><button data-tbl="1">Check my table</button><span class="fb" id="tf"></span></div>
+<h3>💪 <span class="tag">SOLO</span> On your own</h3>${qs(["n1","n2","n3","n4","n5"])}`},
+{t:"4 Bin→Dec",h:"4️⃣ Binary → decimal",b:()=>`<p><span class="tag">WATCH</span> To convert binary to decimal: <b>line the bits up under the place values, then add the values that have a 1.</b></p>
+<p>Example: <b>10011011</b>. The cards below are already set. Tap any card to see how the total changes.</p>
+${cw("m","10011011")}
+<p>ON cards: 128 + 16 + 8 + 2 + 1 = <b>155</b>. The OFF cards (64, 32, 4) add <b>0</b>. So <b>10011011 = 155</b>.</p>
+<p class="sm">Short binary numbers? Imagine zeros in front. 101 is the same as 00000101.</p>
+<h3><span class="tag">TRY</span> With the cards showing</h3>${qs(["g1","g2","g3"])}
+<h3>💪 <span class="tag">SOLO</span> On your own</h3><p class="sm">No cards now. Write 128 64 32 16 8 4 2 1 on paper to help you if you like.</p>${qs(Array.from({length:10},(_,i)=>"i"+i))}`},
+{t:"5 Dec→Bin",h:"5️⃣ Decimal → binary",b:()=>`<p><span class="tag">WATCH</span> To convert decimal to binary, work from the <b>biggest card</b> (128) to the smallest (1). At each card ask: <b>“Is what’s left ≥ this card?”</b></p>
+<ul><li><b>Yes</b> → write <b>1</b> and <b>subtract</b> the card from what’s left.</li><li><b>No</b> → write <b>0</b>. Nothing changes.</li></ul>
+<p>Watch me convert <b>175</b>. Press the button for each step:</p>${cas("c175",175,"m")}
+<p class="sm">Check it: 128 + 32 + 8 + 4 + 2 + 1 = 175 ✔</p>
+<h3><span class="tag">TRY</span> Now you decide each step</h3><p>Answer Yes or No at every step. The page checks you.</p>${cas("c45",45,"g")}${cas("c134",134,"g")}
+<h3>💪 <span class="tag">SOLO</span> On your own</h3><p class="sm">Type all 8 digits. Use the same cascade method on paper if it helps.</p>${qs(["d153","d203","d108","d82","d200"])}`},
+{t:"6 Reflect",h:"6️⃣ Explain your thinking",b:()=>`<p>Good detectives can <b>explain</b> what they did. Write a few full sentences for each.</p>${qs(["r1","r2","r3"])}`},
+{t:"Hand in",hand:1,h:"📤 Hand in your work"}];
+/* ---------- app ---------- */
+const sc=()=>{const L=Q.filter(q=>q.type!="txt");return[L.filter(q=>(S.a[q.id]||{}).ok).length,L.length]};
+const scUI=()=>{const s=sc();$("#sc").innerHTML=`<b>✅ ${s[0]} / ${s[1]}</b> correct`};
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000)}
+function render(){const s=ST[S.step];$("#nm").value=S.name;scUI();
+ $("#dots").innerHTML=ST.map((x,i)=>`<button class="dot ${i==S.step?"on":""}" data-go="${i}">${x.t}</button>`).join("");
+ let h=`<div class="card"><h2>${s.h}</h2>`;
+ if(s.hand){const a=sc(),w=Q.filter(q=>q.type=="txt"&&(S.a[q.id]||{}).v).length;
+  h+=`<p>You got <b>${a[0]} of ${a[1]}</b> questions correct and wrote <b>${w} of 3</b> reflections.</p><div class="tip">1. Check your name is typed at the top.<br>2. Press <b>Download my work</b> – it saves a Word file.<br>3. Hand the file in to your teacher.</div><p class="sm">Questions you haven’t got right yet show as “not yet correct”. Go back and fix them before you download if you can.</p><div class="chk"><button id="dl">⬇️ Download my work (.docx)</button><button class="g" id="cp">📋 Copy my answers</button></div><div class="fb" id="hm"></div>`}
+ else h+=s.b();
+ $("#main").innerHTML=h+"</div>";$("#pv").disabled=S.step==0;$("#nx").disabled=S.step==ST.length-1;sv()}
+document.addEventListener("click",e=>{const t=e.target,d=t.dataset;
+ if(d.go!=null){S.step=+d.go;render();scrollTo(0,0)}
+ else if(d.ck){const id=d.ck,v=$('[data-id="'+id+'"]').value,a=S.a[id]=S.a[id]||{};a.v=v;a.t=(a.t||0)+1;if(judge(id,v)){a.ok=1;toast("✅ Correct!")}sv();$("#f-"+id).innerHTML=fb(id);if(a.ok){$('[data-id="'+id+'"]').disabled=true;t.disabled=true}scUI()}
+ else if(d.tbl){let n=0;for(let k=4;k<16;k++){const el=$('[data-id="k'+k+'"]'),a=S.a["k"+k]=S.a["k"+k]||{};a.v=el.value;a.t=(a.t||0)+1;a.ok=judge("k"+k,el.value)?1:0;if(a.ok)n++;el.className="in "+(a.ok?"ok":"no")}sv();scUI();$("#tf").textContent=n==12?"✅ All 12 correct! Great counting.":`${n} of 12 correct. Red rows need another look – add 1 to the row above, carrying when 1 + 1.`}
+ else if(d.cw!=null){const[id,i]=d.cw.split("|");CW[id].b[i]^=1;$("#cw-"+id).innerHTML=cwH(id)}
+ else if(d.cwn){CW[d.cwn].t++;$("#cw-"+d.cwn).innerHTML=cwH(d.cwn)}
+ else if(d.ct!=null){CT.n=d.ct=="1"?Math.min(255,CT.n+1):+d.ct;$("#ct").innerHTML=ctH()}
+ else if(d.cm||d.cy||d.cn||d.cr){const id=d.cm||d.cy||d.cn||d.cr,c=C[id];
+  if(d.cr){C[id]=null;cinit(id,c.N,"m")}
+  else if(d.cm)cstep(id,c.r>=PV[c.i]);
+  else if(d.cy){if(c.r>=PV[c.i])cstep(id,1);else{c.e++;c.msg=`Not quite – ${c.r} is smaller than ${PV[c.i]}, so the ${PV[c.i]} card does NOT fit. Try again.`}}
+  else{if(c.r<PV[c.i])cstep(id,0);else{c.e++;c.msg=`Not quite – ${c.r} is at least ${PV[c.i]}, so the ${PV[c.i]} card DOES fit. Try again.`}}
+  $("#cas-"+id).innerHTML=casH(id)}
+ else if(d.bulb!=null){t.classList.toggle("on");t.textContent=t.classList.contains("on")?"💡 1 = ON":"⚫ 0 = OFF"}
+ else if(t.id=="dl")dl();else if(t.id=="cp")cp()});
+document.addEventListener("input",e=>{const t=e.target;if(t.id=="nm"){S.name=t.value;sv()}else if(t.dataset.id&&!S.a[t.dataset.id]?.ok){const a=S.a[t.dataset.id]=S.a[t.dataset.id]||{};a.v=t.value;sv()}});
+$("#pv").onclick=()=>{S.step--;render();scrollTo(0,0)};$("#nx").onclick=()=>{S.step++;render();scrollTo(0,0)};
+/* ---------- docx ---------- */
+function lines(){const s=sc(),o=[["T","Binary Numbers – Year 8 Digital Technologies"],["P","Name: "+(S.name||"(not entered)")],["P","Date: "+new Date().toLocaleDateString("en-AU")],["P",`Score: ${s[0]} of ${s[1]} questions correct`]];let sec="";
+ Q.forEach(q=>{if(q.sec!=sec){sec=q.sec;o.push(["H",sec])}const a=S.a[q.id]||{};o.push(["Q",q.p]);
+  o.push(["A",q.type=="txt"?(a.v||"").trim()||"(no answer)":q.type=="cas"?(a.ok?`${a.v} – completed with ${a.t||0} slip-up(s)`:"(not completed)"):`${(a.v||"").trim()||"(no answer)"} – ${a.ok?"correct ✔":"not yet correct"}${a.t?` (${a.t} attempt${a.t>1?"s":""})`:""}`])});return o}
+const X=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const para=(k,t)=>{const f={T:'<w:b/><w:sz w:val="36"/>',H:'<w:b/><w:color w:val="4F46E5"/><w:sz w:val="28"/>',Q:"<w:b/>",A:'<w:color w:val="1F4E79"/>',P:""}[k];
+ return t.split("\n").map(l=>`<w:p><w:pPr><w:spacing w:before="${k=="H"?"300":"80"}" w:after="60"/></w:pPr><w:r><w:rPr>${f}</w:rPr><w:t xml:space="preserve">${X(l)}</w:t></w:r></w:p>`).join("")};
+async function dl(){const hm=$("#hm");
+ try{let d=null;try{d=await window.claude.use("downloads")}catch(e){}if(!window.JSZip)throw 0;
+  const z=new JSZip(),NS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+  z.file("[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  z.file("_rels/.rels",'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  z.file("word/document.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${lines().map(l=>para(...l)).join("")}</w:body></w:document>`);
+  const blob=await z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  const fn="Binary - "+(S.name||"Student").replace(/[^\w ]/g,"")+".docx";
+  if(d)await d.save({filename:fn,data:blob});else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove()}
+  hm.textContent="✅ Saved! Now hand the file in to your teacher."}
+ catch(err){hm.textContent=err&&err.code=="declined"?"Download cancelled – press the button again when you’re ready.":"Download isn’t available here. Use “Copy my answers”, paste into a Google Doc, and hand that in."}}
+async function cp(){try{await navigator.clipboard.writeText(lines().map(l=>l[1]).join("\n"));$("#hm").textContent="✅ Copied! Paste into a Google Doc and hand it in."}catch(e){$("#hm").textContent="Couldn’t copy automatically – try the download button instead."}}
+render();
+</script></body></html>
