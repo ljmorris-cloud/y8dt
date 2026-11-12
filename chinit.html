@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chin it Whiteboard</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#14213d;--muted:#5c677d;--accent:#4f46e5;--accent-ink:#fff;--line:#c9d1e3;--big-bg:#fff;--big-ink:#111;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#1a1f2e;--ink:#f1f3f9;--muted:#9aa4bd;--accent:#7c78ff;--accent-ink:#0b0d14;--line:#323a52;--big-bg:#000;--big-ink:#fff}}
+:root[data-theme="dark"]{--bg:#10131c;--card:#1a1f2e;--ink:#f1f3f9;--muted:#9aa4bd;--accent:#7c78ff;--accent-ink:#0b0d14;--line:#323a52;--big-bg:#000;--big-ink:#fff}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;width:min(100%,520px);display:flex;flex-direction:column;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+h1{margin:0;font-size:1.4rem}
+p{margin:0;color:var(--muted);font-size:.95rem}
+textarea{width:100%;min-height:90px;resize:vertical;font:inherit;font-size:1.1rem;padding:12px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+textarea:focus{outline:none;border-color:var(--accent)}
+button{font:inherit;font-weight:700;font-size:1.2rem;padding:14px 20px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button:hover{filter:brightness(1.08)}
+#big{position:fixed;inset:0;background:var(--big-bg);color:var(--big-ink);display:none;align-items:center;justify-content:center;text-align:center;cursor:pointer;padding:3vmin;z-index:10;overflow:hidden}
+#big.on{display:flex}
+#bigText{font-weight:800;line-height:1.05;white-space:pre-wrap;overflow-wrap:anywhere;width:100%;max-height:100%}
+#hint{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:14px;color:var(--big-ink);opacity:.45;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="card" id="small">
+  <h1>✍️ Type here</h1>
+  <p>Write your answer, then press <b>Chin it</b> to show it BIG.</p>
+  <textarea id="box" placeholder="Type your text…" autofocus></textarea>
+  <button id="go" type="button">Chin it</button>
+</div>
+
+<div id="big" role="button" tabindex="0" aria-label="Click to make the text small again">
+  <div id="bigText"></div>
+  <div id="hint">Click anywhere to go back</div>
+</div>
+
+<script>
+const box=document.getElementById("box"),go=document.getElementById("go"),
+big=document.getElementById("big"),bt=document.getElementById("bigText");
+
+function fit(){
+  // find the largest font size where the text fits inside the screen
+  const maxH=Math.floor(big.clientHeight*0.94), maxW=Math.floor(big.clientWidth*0.94);
+  let lo=8,hi=2000;
+  bt.style.width=maxW+"px";
+  while(hi-lo>1){
+    const mid=(lo+hi)>>1;
+    bt.style.fontSize=mid+"px";
+    if(bt.scrollHeight<=maxH && bt.scrollWidth<=maxW) lo=mid; else hi=mid;
+  }
+  bt.style.fontSize=lo+"px";
+}
+function show(){
+  const t=box.value.trim();
+  if(!t){box.focus();return}
+  bt.textContent=t;
+  big.classList.add("on");
+  fit();
+}
+function hide(){
+  big.classList.remove("on");
+  box.value="";
+  box.focus();
+}
+go.addEventListener("click",show);
+big.addEventListener("click",hide);
+big.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "||e.key==="Escape"){e.preventDefault();hide()}});
+box.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();show()}});
+window.addEventListener("resize",()=>{if(big.classList.contains("on"))fit()});
+</script>
+</body>
+</html>
