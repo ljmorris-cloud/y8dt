@@ -66,6 +66,176 @@ header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font
 <div class="sh"><div class="brand">AVELEY SECONDARY COLLEGE<strong>EXPLICIT DIRECT INSTRUCTION</strong></div><div class="tag">YEAR 8 DIGITAL TECHNOLOGIES · DATA REPRESENTATION: PIXELS, RGB AND GRAYSCALE</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><span id="dbstatus" class="dbstatus">Connecting to class response collection…</span><button class="th" onclick="theme()" title="Light or dark">🌓</button></header>
 <div class="progress"><div class="bar" id="bar"></div></div><main id="app"></main><div id="toast"></div>
 
+<!-- WE DO QUESTION LIST. Order here = database question numbers 1..N.
+     The teacher dashboard imports the 'q' text from this block; the page uses 'id' to link each question to its database row. -->
+<script id="we-do-questions" type="application/json">
+{
+ "version": 1,
+ "questions": [
+  {
+   "id": "1t1",
+   "section": "Skill 1: Bytes and switches",
+   "q": "How many bits make one byte?"
+  },
+  {
+   "id": "1t2",
+   "section": "Skill 1: Bytes and switches",
+   "q": "With 2 bits, how many different patterns can you make? (They are 00, 01, 10, 11.)"
+  },
+  {
+   "id": "1t3",
+   "section": "Skill 1: Bytes and switches",
+   "q": "With 3 bits, how many different patterns can you make?"
+  },
+  {
+   "id": "1t4",
+   "section": "Skill 1: Bytes and switches",
+   "q": "A byte has 8 bits, so it’s 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2. How many patterns is that?"
+  },
+  {
+   "id": "1t5",
+   "section": "Skill 1: Bytes and switches",
+   "q": "Patterns start counting at 0. What is the largest number one byte can show?"
+  },
+  {
+   "id": "4t1",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "How many bytes does one pixel use?"
+  },
+  {
+   "id": "4t2",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "What colour is rgb(0, 255, 0)?"
+  },
+  {
+   "id": "4t3",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "Type the RGB values for pure blue as R,G,B (for example 1,2,3)."
+  },
+  {
+   "id": "4t4",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "Yellow is red light and green light mixed. Type its RGB values as R,G,B."
+  },
+  {
+   "id": "rt0",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "One colour channel is 1 byte and a pixel has 3 channels. How many bits is 3 bytes?"
+  },
+  {
+   "id": "rtr",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "Use the sliders to make pure red. Type its RGB values as R,G,B."
+  },
+  {
+   "id": "rtg",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "Use the sliders to make pure green. Type its RGB values as R,G,B."
+  },
+  {
+   "id": "ac",
+   "section": "Skill 2: Pixels and RGB",
+   "q": "RGB is an additive colour model: light adds together. What do you get when red, green and blue are all at 255?"
+  },
+  {
+   "id": "4t5",
+   "section": "Skill 3: Hex colour codes",
+   "q": "In hex, 255 is ff and 0 is 00. What is the hex code for rgb(255, 0, 0)? (6 characters, the # is optional)"
+  },
+  {
+   "id": "ht1",
+   "section": "Skill 3: Hex colour codes",
+   "q": "Hexadecimal has 16 digits: 0–9, then A, B, C, D, E, F. What is the decimal value of F?"
+  },
+  {
+   "id": "ht2",
+   "section": "Skill 3: Hex colour codes",
+   "q": "The hex pair ff means 255. What number does the hex pair 00 mean?"
+  },
+  {
+   "id": "ht3",
+   "section": "Skill 3: Hex colour codes",
+   "q": "How many bytes are in a hex colour like #ff0000? (Each pair of hex digits is one byte.)"
+  },
+  {
+   "id": "ht4",
+   "section": "Skill 3: Hex colour codes",
+   "q": "Are #ff0000 and #0000ff the same colour?"
+  },
+  {
+   "id": "ht5",
+   "section": "Skill 3: Hex colour codes",
+   "q": "Use the sliders to make yellow, rgb(255, 255, 0). What is its hex code?"
+  },
+  {
+   "id": "gt0",
+   "section": "Skill 4: Grayscale",
+   "q": "Sort each pixel: is it a gray or a colour? One decision per click."
+  },
+  {
+   "id": "gt1",
+   "section": "Skill 4: Grayscale",
+   "q": "How many numbers does one grayscale pixel need?"
+  },
+  {
+   "id": "gt2",
+   "section": "Skill 4: Grayscale",
+   "q": "How many bytes does one grayscale pixel use?"
+  },
+  {
+   "id": "gt3",
+   "section": "Skill 4: Grayscale",
+   "q": "A gray pixel has brightness 128. Type it as RGB values: R,G,B."
+  },
+  {
+   "id": "gt4",
+   "section": "Skill 4: Grayscale",
+   "q": "How many different shades of gray can one grayscale pixel show?"
+  },
+  {
+   "id": "gt5",
+   "section": "Skill 4: Grayscale",
+   "q": "A grayscale image is 10 pixels wide and 10 tall. At 1 byte per pixel, how many bytes is it?"
+  },
+  {
+   "id": "bt1",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "How many bits are in 1 byte?"
+  },
+  {
+   "id": "bt2",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "How many different values can 1 byte hold?"
+  },
+  {
+   "id": "bt3",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "All 8 bits are given to red. Which colour can you NOT make?"
+  },
+  {
+   "id": "bt4",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "In a 3-3-2 split, red gets 3 bits. How many red shades (levels) is that?"
+  },
+  {
+   "id": "bt5",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "Blue only gets 2 bits. How many blue shades (levels) is that?"
+  },
+  {
+   "id": "bt6",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "Multiply the levels in a 3-3-2 split: 8 × 8 × 4 = ? colours in total."
+  },
+  {
+   "id": "bt7",
+   "section": "Skill 5: Why 1 byte isn’t enough",
+   "q": "Red has 8 shades (levels) between 0 and 255, so there are 7 jumps. About how big is each jump? (255 ÷ 7, rounded to a whole number)"
+  }
+ ]
+}
+</script>
+
 <script id="logic">
 const PV=[128,64,32,16,8,4,2,1];
 const b2d=s=>parseInt(s,2),d2b=n=>n.toString(2).padStart(8,"0"),pw=k=>2**k;
@@ -173,7 +343,9 @@ const $=id=>document.getElementById(id),SK=["","Bytes and switches","Pixels and 
 // Supabase: student responses are collected only for WE DO questions.
 const SUPABASE_URL="https://agkixedmhuxskfdrfbcn.supabase.co";
 const SUPABASE_KEY="sb_publishable_F6OHTBrA9vYWhWLUagmWvA_tojihS8U";
-const ACCESS_TOKEN="1fffc619-0994-45a6-9aab-daa18bf92935";
+const ACCESS_TOKEN="db3d258a-588c-431c-a9df-37bf369e56bf";
+// Database question numbers (1..N, in the order of the we-do-questions block) -> this page's internal question ids.
+const CODE_MAP=Object.fromEntries(JSON.parse(document.getElementById("we-do-questions").textContent).questions.map((q,i)=>[String(i+1),q.id]));
 let supabaseClient=null,dbQuestionIds={},pendingResponses={};
 function dbStatus(message){const e=$("dbstatus");if(e)e.textContent=message}
 async function flushResponse(id){
@@ -194,11 +366,18 @@ async function startDatabase(){
   supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   const {error:authError}=await supabaseClient.auth.signInAnonymously();
   if(authError)throw new Error("Student sign-in failed: "+authError.message);
+  // Has the teacher deleted this lesson? If so, close WE DO (YOU DO and I DO are untouched).
+  const {data:lessonState,error:stateError}=await supabaseClient.rpc("get_lesson_status",{p_access_token:ACCESS_TOKEN});
+  if(!stateError){
+   const gone=lessonState==="deleted";
+   if(gone!==!!S.weClosed){S.weClosed=gone;save();render()}
+   if(gone){dbStatus("WE DO is closed because this lesson was removed by your teacher. Your YOU DO work is still here.");return}
+  }
   const {data,error}=await supabaseClient.rpc("get_lesson_questions",{p_access_token:ACCESS_TOKEN});
   if(error)throw new Error("Lesson question retrieval failed: "+error.message);
   if(!data||!data.length)throw new Error("No questions were returned for this lesson.");
   dbQuestionIds={};
-  data.forEach(row=>{if(row.question_code&&row.question_id)dbQuestionIds[row.question_code]=row.question_id});
+  data.forEach(row=>{if(row.question_code&&row.question_id)dbQuestionIds[CODE_MAP[row.question_code]||row.question_code]=row.question_id});
   const expected=Q.filter(q=>q.st==="t").length;
   const matched=Q.filter(q=>q.st==="t"&&dbQuestionIds[q.id]).length;
   if(matched!==expected)dbStatus("Connected, but "+matched+" of "+expected+" WE DO questions are linked. Please check lesson setup.");
@@ -227,9 +406,11 @@ async function exportJSON(){const fn=`Data Representation - ${(S.name||"").trim(
  if(DL){try{await DL.save({filename:fn,data:blob});return dmsg("✅ Exported. Keep that file safe.")}catch(e){if(e&&e.code=="declined")return dmsg("No worries. Click again when you’re ready.")}}
  try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);dmsg("✅ Exported. Check your Downloads folder.")}catch(e){dmsg("The download didn’t work here.")}}
 function importJSON(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result),d=o&&o.data;if(!d||typeof d.q!="object")throw 0;S=Object.assign(DEF(),d,{th:S.th});S.st=Object.assign(DEF().st,S.st);while(S.r.length<5)S.r.push("");save();render();dmsg("✅ Work imported.")}catch(e){dmsg("That file isn’t a saved-work file from this page.")}};r.readAsText(f)}
-function wipe(){try{localStorage.removeItem(KEY)}catch(e){}S=DEF();W.px.fill(null);Z.grid=zmk();G.st=0;G.t=null;G.g=[];document.documentElement.removeAttribute("data-theme");render();scrollTo(0,0)}
+function wipe(){const wc=S.weClosed;try{localStorage.removeItem(KEY)}catch(e){}S=DEF();if(wc)S.weClosed=true;W.px.fill(null);Z.grid=zmk();G.st=0;G.t=null;G.g=[];document.documentElement.removeAttribute("data-theme");render();scrollTo(0,0)}
 const qs=id=>S.q[id]||(S.q[id]={n:0,t:0,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]});
-const done=sk=>Q.filter(q=>(!sk||q.sk==sk)&&qs(q.id).d).length,tot=sk=>Q.filter(q=>!sk||q.sk==sk).length;
+// When the teacher has deleted the lesson, its WE DO questions are closed: they no longer count and are not shown.
+const live=q=>!(S.weClosed&&q.st==="t");
+const done=sk=>Q.filter(q=>live(q)&&(!sk||q.sk==sk)&&qs(q.id).d).length,tot=sk=>Q.filter(q=>live(q)&&(!sk||q.sk==sk)).length;
 function theme(){const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=S.th=dark?"light":"dark";save()}
 if(S.th)document.documentElement.dataset.theme=S.th;
 let tt;function toast(){const m=["✅ Nice one!","🎉 Correct!","🔥 You’ve got it!","⭐ Spot on!"];$("toast").textContent=m[Math.floor(Math.random()*m.length)];$("toast").className="s";clearTimeout(tt);tt=setTimeout(()=>$("toast").className="",1400)}
@@ -388,15 +569,15 @@ function welcome(){return `<div class="card"><div class="kicker">START · WELCOM
 <div class="card"><h2>🧭 How this page works</h2><ul><li>Each skill has 3 steps: <b>I DO</b> (watch a worked example), <b>WE DO</b> (guided practice with hints), <b>YOU DO</b> (on your own).</li><li>In Try, a wrong answer gets a hint. After 3 tries the answer is shown.</li><li>Your score <b>✅ x / y</b> is at the top. Your progress saves on this computer.</li><li>After the 5 skills, play the <b>🎯 Guess the colour</b> game: type the exact R, G and B to match a colour.</li><li>At the end you <b>Reflect</b> and <b>download a Word file</b> to hand in.</li></ul></div></div>
 ${datapanel()}<details class="card cue"><summary><b>TEACHER CUE</b> · 🧑‍🏫 Notes for the teacher or relief teacher</summary><p>About 55–60 minutes. Students work through the tabs in order at their own pace; the page checks everything and gives hints. Follows the Pixels and RGB slides: bytes and switches, pixels and RGB, hex colour codes, then grayscale, followed by an optional colour guessing game. Students have already learnt binary. Ask early finishers to explain why a byte stops at 255. Students download a .docx (name, score, every answer and attempts, reflections) and submit it as evidence.</p></details>
 <div class="ctr"><button class="btn" onclick="go('1')">Let’s go! ➡</button></div>`}
-function skill(sk){const st=S.st[sk],qs_=Q.filter(q=>q.sk==sk),lst=x=>qs_.filter(q=>q.st==x);
- let h=`<div class="kicker">SKILL ${sk} OF 5 · ${STG[st].toUpperCase()}</div><h1>Skill ${sk}: ${SK[sk]}</h1><div class="lo">🎯 ${SUB[sk]}</div><div class="tabs">${["w","t","s"].map(x=>`<button class="${st==x?"on":""}" onclick="S.st[${sk}]='${x}';save();render()">${STG[x]}</button>`).join("")}</div>`;
+function skill(sk){const st=(S.weClosed&&S.st[sk]=="t")?"s":S.st[sk],qs_=Q.filter(q=>q.sk==sk),lst=x=>qs_.filter(q=>q.st==x);
+ let h=`<div class="kicker">SKILL ${sk} OF 5 · ${STG[st].toUpperCase()}</div><h1>Skill ${sk}: ${SK[sk]}</h1><div class="lo">🎯 ${SUB[sk]}</div><div class="tabs">${["w","t","s"].filter(x=>!(S.weClosed&&x=="t")).map(x=>`<button class="${st==x?"on":""}" onclick="S.st[${sk}]='${x}';save();render()">${STG[x]}</button>`).join("")}</div>`;
  if(st=="w")h+=`<div class="card"><div class="kicker">I DO</div><h2>Watch me model it</h2>${sk==1?w1():sk==2?w6():sk==3?w5():sk==4?w7():w11()}</div>${sk==5?`<div class="card"><h2>💡 The dimmer demo</h2>${w13()}</div><div class="card"><h2>🧮 Squeeze a colour into 1 byte</h2>${w12()}</div>`:""}${sk==4?`<div class="card"><h2>🧱 Layers: RGB to grayscale (it’s all arrays of numbers)</h2>${w9()}</div><div class="card"><h2>🔬 Explore: grayscale or RGB?</h2>${w8()}</div>`:""}<div class="cfu"><b>CHECK FOR UNDERSTANDING</b> · answer before you move on</div><div class="qg">${card(lst("c")[0],"⚡")}</div>`;
  else{h+=`<h2>${st=="t"?"WE DO · Try it together (hints and 3 tries)":"YOU DO · On your own (no hints!)"}</h2><div class="qg">${lst(st).map((q,i)=>card(q,i+1)).join("")}</div>`}
- const nx=st=="w"?`S.st[${sk}]='t'`:st=="t"?`S.st[${sk}]='s'`:`S.pg='${sk<5?sk+1:"g"}'`;
+ const nx=st=="w"?`S.st[${sk}]='${S.weClosed?"s":"t"}'`:st=="t"?`S.st[${sk}]='s'`:`S.pg='${sk<5?sk+1:"g"}'`;
  return h+`<div class="ctr"><button class="btn" onclick="${nx};save();render();scrollTo(0,0)">${st=="s"?(sk<5?"Next skill ➡":"Play the guessing game ➡"):"Next step ➡"}</button></div>`}
 function reflect(){return `<h1>✍️ Reflect</h1><p>Explain in your own words. Full sentences, please!</p><div class="qg">${RP.map((p,i)=>`<div class="card"><div class="qh"><span class="n">${i+1}</span>${p}</div><textarea oninput="S.r[${i}]=this.value;save();$('wc${i}').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length+' words'">${S.r[i]||""}</textarea><small id="wc${i}">${S.r[i].trim().split(/\s+/).filter(Boolean).length} words</small></div>`).join("")}</div><div class="ctr"><button class="btn" onclick="go('h')">Hand in ➡</button></div>`}
 const strip=s=>s.replace(/<[^>]+>/g,"");
-function rows(){return Q.map(q=>{const s=qs(q.id),i=Q.filter(z=>z.sk==q.sk).indexOf(q)+1;return{sk:q.sk,n:`${q.sk}.${i}`,p:strip(q.p),a:s.a||"—",res:s.d?"Correct":s.rev?"Not yet correct (answer was shown)":s.n?"Not yet correct":"Not attempted",c:s.d?"1B8A4B":"B7791F",tries:s.n}})}
+function rows(){return Q.filter(live).map(q=>{const s=qs(q.id),i=Q.filter(z=>z.sk==q.sk).indexOf(q)+1;return{sk:q.sk,n:`${q.sk}.${i}`,p:strip(q.p),a:s.a||"—",res:s.d?"Correct":s.rev?"Not yet correct (answer was shown)":s.n?"Not yet correct":"Not attempted",c:s.d?"1B8A4B":"B7791F",tries:s.n}})}
 function handin(){const sub=[1,2,3,4,5].map(k=>`<tr><td>${SK[k]}</td><td>${done(k)} / ${tot(k)}</td></tr>`).join("");
  return `<h1>📄 Hand in</h1><div class="card"><div class="big">Your name: ${nm()}</div><p>📅 ${new Date().toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"})} &nbsp; ✅ Score: <b>${done()} / ${tot()}</b></p><table><tr><th>Skill</th><th>Correct</th></tr>${sub}</table><p>Anything marked “not yet correct” is still included, so go back and try again if you have time. 💪</p>
 <div class="ctr"><button class="btn" onclick="dl()">⬇ Download my Word file</button><button class="btn" onclick="cp()">📋 Copy my answers</button></div><div id="hm" class="fb info" style="display:none"></div><textarea id="ct" style="display:none;margin-top:12px"></textarea></div>${datapanel()}`}
