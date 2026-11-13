@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Representation: Pixels, RGB and Grayscale</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f2f6fc;--card:#fff;--ink:#14213d;--mut:#55627f;--pri:#3b5bdb;--pi:#fff;--ok:#146c3b;--okb:#dff5e8;--no:#a61e1e;--nob:#fde7e7;--inf:#7a5200;--infb:#fff1cc;--line:#cfd8ec;--hl:#e8eeff;--on:#ffd43b;--oni:#3a2e00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1325;--card:#19203d;--ink:#eef1ff;--mut:#a9b3d6;--pri:#7c9bff;--pi:#0b1030;--ok:#7bf0ad;--okb:#12382a;--no:#ffa3a3;--nob:#401c25;--inf:#ffd988;--infb:#3b2f10;--line:#2f3a66;--hl:#26305e}}
+:root[data-theme="dark"]{--bg:#0e1325;--card:#19203d;--ink:#eef1ff;--mut:#a9b3d6;--pri:#7c9bff;--pi:#0b1030;--ok:#7bf0ad;--okb:#12382a;--no:#ffa3a3;--nob:#401c25;--inf:#ffd988;--infb:#3b2f10;--line:#2f3a66;--hl:#26305e}
+*{box-sizing:border-box}html{scroll-padding-top:90px}body{margin:0;background:var(--bg);color:var(--ink);font:21px/1.55 system-ui,"Segoe UI",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:2px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+nav{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:center}
+nav button,.th{font:inherit;font-size:18px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+nav button.on{background:var(--pri);color:var(--pi);border-color:var(--pri);font-weight:700}
+#sc{font-weight:800;background:var(--okb);color:var(--ok);border-radius:999px;padding:6px 18px}
+.dbstatus{font-size:14px;color:var(--mut);padding:4px 8px;max-width:100%;text-align:center}
+main{max-width:1500px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2.1em;margin:.2em 0}h2{font-size:1.5em;margin:.2em 0 .5em}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:22px}
+.big{background:var(--hl);border-radius:16px;padding:16px 20px;font-size:1.1em;margin:14px 0}
+.qg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,620px),1fr));gap:22px;align-items:start}.qg .card{margin:0}
+.qh{font-size:1.1em;margin-bottom:12px}.qh .n{display:inline-block;background:var(--pri);color:var(--pi);border-radius:50%;width:1.7em;height:1.7em;text-align:center;font-weight:700;margin-right:8px}
+.btn,.opt,.yn{font:inherit;font-weight:700;border:3px solid var(--pri);background:var(--card);color:var(--pri);border-radius:16px;padding:12px 26px;cursor:pointer;margin:6px}
+.btn{background:var(--pri);color:var(--pi)}.btn:disabled{opacity:.4;cursor:default}.ctr{text-align:center;margin-top:12px}
+.opt{display:block;width:100%;text-align:left;margin:8px 0}.opt.x{border-color:var(--no);color:var(--no);background:var(--nob)}.opt.v{border-color:var(--ok);color:var(--ok);background:var(--okb)}
+.yn{min-width:200px;font-size:1.1em}
+input[type=text],input[type=number],textarea{font:inherit;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:100%}input.s{width:220px}textarea{min-height:130px}
+.fb{margin-top:12px;padding:12px 16px;border-radius:14px;font-weight:600}.fb.ok{background:var(--okb);color:var(--ok)}.fb.no{background:var(--nob);color:var(--no)}.fb.info{background:var(--infb);color:var(--inf)}
+.g{display:grid;grid-template-columns:repeat(8,minmax(0,84px));gap:8px;justify-content:center;margin:14px 0}.c{text-align:center;border-radius:14px;padding:4px}.c.cur{background:var(--hl);outline:3px solid var(--pri)}.c small{display:block;color:var(--mut);font-weight:700}
+.bt{display:block;width:100%;font:inherit;font-size:1.5em;font-weight:800;border:3px solid var(--line);border-radius:12px;padding:6px 0;background:var(--bg);color:var(--ink)}.bt.b1{background:var(--on);color:var(--oni);border-color:var(--on)}.bt.b_{color:var(--mut)}button.bt{cursor:pointer}
+table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:2px solid var(--line);padding:6px 12px;text-align:center}th{background:var(--hl)}tr.y td{background:var(--okb);color:var(--ok)}tr.n td{background:var(--nob);color:var(--no)}tr.hl td{background:var(--hl);font-weight:700}
+.chips span{display:inline-block;font-family:ui-monospace,Consolas,monospace;background:var(--on);color:var(--oni);border-radius:10px;padding:2px 12px;margin:4px;font-weight:700}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 22px}.tabs button{font:inherit;font-weight:700;font-size:1.05em;padding:10px 26px;border-radius:14px;border:3px solid var(--pri);background:var(--card);color:var(--pri);cursor:pointer}.tabs button.on{background:var(--pri);color:var(--pi)}
+.eq{font-family:ui-monospace,Consolas,monospace;font-size:1.15em;overflow-x:auto}.scroll{overflow-x:auto}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--ok);color:var(--pi);padding:14px 30px;border-radius:999px;font-weight:800;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}#toast.s{opacity:1}
+input[type=range]{width:100%;height:34px;accent-color:var(--pri);margin:4px 0 14px}
+ul{padding-left:1.2em}details{margin-top:14px}summary{cursor:pointer;font-weight:700}
+@media(max-width:700px){body{font-size:19px}.g{grid-template-columns:repeat(8,1fr);gap:4px}.bt{font-size:1.1em}.card{padding:16px}}
+.zr{display:grid;grid-template-columns:80px 1fr 90px 120px;gap:10px;align-items:center;margin:6px 0}.zr input[type=range]{margin:0}
+.lk{display:block;background:var(--hl);border-radius:14px;padding:10px 14px;margin-bottom:10px;font-weight:700;cursor:pointer}.lk input{width:24px;height:24px;vertical-align:-5px;margin-right:8px}
+.ramp{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));gap:6px;margin:10px 0}.ramp button,.zg button{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:10px;padding:10px 0;cursor:pointer}
+.zg{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:520px;margin:12px auto}.zg button{aspect-ratio:1;padding:2px;font-size:16px;line-height:1.1;font-family:ui-monospace,Consolas,monospace}
+.hx{table-layout:fixed;min-width:760px}.hx th,.hx td{padding:10px 2px;font-weight:800;font-family:ui-monospace,Consolas,monospace}.hx th:first-child{width:110px;padding:10px 8px;font-family:inherit}.hx td.hv{background:var(--on);color:var(--oni)}
+.br{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:6px 8px;margin:10px 0}.br>span:last-child{grid-column:1/-1}.rib{display:flex;gap:4px;margin:4px 0}.rib i{flex:1;min-height:38px;border-radius:6px;font-style:normal;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}.sb{font:inherit;font-weight:800;font-size:26px;line-height:1;width:48px;height:48px;border-radius:10px;border:2px solid var(--pri);background:var(--pri);color:var(--pi);cursor:pointer;padding:0}@media(max-width:700px){.br{grid-template-columns:70px 1fr}.br>span:last-child{grid-column:1/-1}}
+.lr{display:flex;align-items:center;gap:18px;margin:10px 0}.lp{width:170px;height:64px;border-radius:12px;border:3px solid var(--line);flex:none}.ld{font-size:1.05em}.dm2{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;margin-top:10px}.dm2>.fb{flex:1 1 320px;margin:0}.dm2>.rs{flex:1 1 400px}
+.strip{display:flex;height:56px;border-radius:10px;overflow:hidden;margin:6px 0 16px}.strip i{flex:1}tr.hl td{background:color-mix(in srgb,var(--gold) 25%,var(--card))}
+.zg{max-width:640px}.zg button{font-size:19px}
+.al{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;align-items:center;margin:14px 0}.ag{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.ag button{font:inherit;font-family:ui-monospace,Consolas,monospace;font-weight:700;color:#14213d;border:2px solid rgba(0,0,0,.25);padding:6px 0;min-width:52px;cursor:pointer;font-size:16px}.ag button.sel{outline:4px solid var(--pri);outline-offset:1px;position:relative;z-index:1}.al b{display:block;text-align:center;margin-bottom:4px}.ar{font-size:50px;font-weight:800}
+.bits{display:flex;gap:4px;align-items:center;margin:6px 0}.bits i{font-style:normal;font-family:ui-monospace,Consolas,monospace;font-weight:700;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#14213d}.bits span{margin-left:10px}
+@media(max-width:700px){.zr{grid-template-columns:60px 1fr 76px}.zr code{display:none}}
+:root{--bg:#f1f5f9;--card:#fff;--ink:#12233c;--mut:#53677d;--pri:#1761ad;--pi:#fff;--ok:#167a53;--okb:#e2f6e9;--no:#a34228;--nob:#fdeee9;--line:#c6d7e7;--hl:#e4f0fb;--on:#f0b22d;--oni:#102b51;--navy:#102b51;--gold:#f0b22d}
+body{font-family:Arial,Helvetica,sans-serif}body::before{background:var(--navy)}
+.sh{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:6px solid var(--gold)}
+.brand{font-size:13px;letter-spacing:2px;font-weight:700}.brand strong{display:block;font-size:22px;letter-spacing:0}
+.tag{background:#e8f2ff;color:#12345a;padding:6px 12px;border-radius:5px;font-size:12px;font-weight:700}
+header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font-weight:700;background:var(--card);color:var(--ink);border:1px solid var(--line)}nav button.on{background:var(--pri);color:var(--pi);border-color:var(--pri)}
+.progress{height:9px;background:var(--line)}.bar{height:100%;width:0;background:#2d9b73;transition:width .2s}
+.card{border-radius:10px;border:1px solid var(--line);box-shadow:0 2px 8px #1734510a}.btn,.opt,.yn,.tabs button{border-radius:8px}h1,h2{color:var(--ink)}
+.kicker{font-size:13px;color:var(--pri);font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.lo{background:var(--hl);border-left:6px solid var(--pri);padding:12px 18px;margin:15px 0;font-weight:600;border-radius:0 8px 8px 0}.big{border-left:6px solid var(--pri);border-radius:0 10px 10px 0}
+.cue{border-left:5px solid var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--card));padding:12px 16px}details.cue summary{cursor:pointer}
+.cfu{border-left:5px solid #1c9a91;background:color-mix(in srgb,#1c9a91 14%,var(--card));padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+</style></head><body>
+<div class="sh"><div class="brand">AVELEY SECONDARY COLLEGE<strong>EXPLICIT DIRECT INSTRUCTION</strong></div><div class="tag">YEAR 8 DIGITAL TECHNOLOGIES · DATA REPRESENTATION: PIXELS, RGB AND GRAYSCALE</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><span id="dbstatus" class="dbstatus">Connecting to class response collection…</span><button class="th" onclick="theme()" title="Light or dark">🌓</button></header>
+<div class="progress"><div class="bar" id="bar"></div></div><main id="app"></main><div id="toast"></div>
+
+<script id="logic">
+const PV=[128,64,32,16,8,4,2,1];
+const b2d=s=>parseInt(s,2),d2b=n=>n.toString(2).padStart(8,"0"),pw=k=>2**k;
+const Q=[],Qm={},add=o=>{Q.push(o);Qm[o.id]=o};
+const dbl=b=>Array(b).fill(2).join(" × ");
+const pat=(id,st,b,x)=>add({id,sk:1,st,k:"n",p:`With <b>${b} bits</b>, how many different patterns can you make? ${x||""}`,a:pw(b),
+ h:v=>Number(v)==b*2?`That’s ${b} × 2. Each extra bit <i>doubles</i> the count, so multiply 2 by itself once for every bit.`:Number(v)==b*b?"Not squared. Start with 2 patterns for 1 bit, then double for each extra bit.":`Start with 2 patterns for 1 bit, then double for each extra bit: ${dbl(b)}.`,e:`${dbl(b)} = ${pw(b)}.`});
+// Skill 1
+add({id:"1c",sk:1,st:"c",k:"mc",p:"Which sentence is correct?",o:["A byte is a group of 8 bits","A bit is a group of 8 bytes","A byte is a single 0 or 1","A bit and a byte are the same thing"],a:0,h:"A bit is just one 0 or 1. A byte is the bigger group made from several bits.",e:"A bit is one 0 or 1, and a byte is 8 bits together."});
+add({id:"1t1",sk:1,st:"t",k:"mc",p:"How many bits make <b>one byte</b>?",o:[4,8,16,10],a:1,h:"Look back at the Watch step: a byte is a group of bits, and the group has a fixed size.",e:"1 byte = 8 bits."});
+pat("1t2","t",2,"(They are 00, 01, 10, 11.)");pat("1t3","t",3);
+add({id:"1t4",sk:1,st:"t",k:"n",p:"A byte has 8 bits, so it’s 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2. How many patterns is that?",a:pw(8),h:"Keep doubling: 2, 4, 8, 16, 32, 64, 128, … one doubling for each of the 8 bits.",e:"Eight 2s multiplied together make 256."});
+add({id:"1t5",sk:1,st:"t",k:"n",p:"Patterns start counting at <b>0</b>. What is the <b>largest number</b> one byte can show?",a:pw(8)-1,h:v=>Number(v)==256?"256 is how many patterns there are, but counting starts at 0, so the biggest number is one less.":"There are 256 patterns and the first one is 0. The last one is 256 − 1.",e:"0 is a pattern too, so 256 patterns run from 0 to 255."});
+add({id:"1s1",sk:1,st:"s",k:"mc",p:"What is a <b>bit</b>?",o:["A single 0 or 1","A group of 8 digits","A colour","A type of file"],a:0});
+pat("1s2","s",4);pat("1s3","s",5);
+add({id:"1s4",sk:1,st:"s",k:"n",p:"How many <b>bytes</b> are in 24 bits?",a:24/8});
+add({id:"1s5",sk:1,st:"s",k:"n",p:"What is the <b>smallest</b> number one byte can show?",a:b2d("00000000")});
+add({id:"1s6",sk:1,st:"s",k:"n",p:"One pixel stores 3 bytes (red, green and blue). How many <b>bits</b> is that?",a:3*8});
+add({id:"1s7",sk:1,st:"s",k:"n",p:"One colour channel is 1 byte. How many <b>different values</b> can it show?",a:pw(8)});
+// Skill 2
+add({id:"2c",sk:2,st:"c",k:"n",p:"What is the place value of the <b>4th bit from the right</b>?",a:PV[PV.length-4],h:"From the right the place values go 1, 2, 4 … keep doubling until you reach the 4th one.",e:"1, 2, 4, 8: the 4th from the right is 8."});
+["00001011","10000001","01100100"].forEach((s,i)=>add({id:"2t"+(i+1),sk:2,st:"t",k:"b2d",bits:s,p:`Convert <b>${s}</b> to decimal, one bit at a time.`,a:b2d(s)}));
+["00000101","00110011","10000000","11000000","01010101","11111111"].forEach((s,i)=>add({id:"2s"+(i+1),sk:2,st:"s",k:"n",p:`Convert <b>${s}</b> to decimal.`,a:b2d(s)}));
+add({id:"2s7",sk:2,st:"s",k:"mc",p:"Which binary number is <b>bigger</b>?",o:["01111111","10000000"],a:b2d("01111111")>b2d("10000000")?0:1});
+// Skill 3
+add({id:"3c",sk:3,st:"c",k:"mc",p:"You have <b>100</b> left. Does <b>64</b> fit into 100?",o:["Yes → write 1 and subtract","No → write 0 and keep going"],a:64<=100?0:1,h:"Is 64 smaller than or equal to 100? If so it fits.",e:"64 ≤ 100, so it fits: write 1 and work out 100 − 64."});
+[13,100,200].forEach((n,i)=>add({id:"3t"+(i+1),sk:3,st:"t",k:"d2b",n,p:`Write <b>${n}</b> as an 8-bit binary number, one place value at a time.`,a:d2b(n)}));
+[5,37,64,129,170,255].forEach((n,i)=>add({id:"3s"+(i+1),sk:3,st:"s",k:"n",bin:1,p:`Write <b>${n}</b> as an 8-bit binary number.`,a:d2b(n)}));
+// Skill 4: RGB
+const hx=n=>n.toString(16).padStart(2,"0"),hex=(r,g,b)=>hx(r)+hx(g)+hx(b),rg=a=>a.join(",");
+add({id:"4c",sk:4,st:"c",k:"mc",p:"In a hex colour like <b>#ff0000</b>, the <b>first two</b> digits control which channel?",o:["Red","Green","Blue"],a:0,h:"Hex is always written in the order R, G, B, so the first pair belongs to the first colour in the name.",e:"Hex is written red, green, blue: #RRGGBB."});
+add({id:"4t1",sk:4,st:"t",k:"mc",p:"How many <b>bytes</b> does one pixel use?",o:[1,3,8,24],a:1,h:"Each of the 3 channels (red, green, blue) uses one byte.",e:"3 channels × 1 byte = 3 bytes (24 bits)."});
+add({id:"4t2",sk:4,st:"t",k:"mc",p:"What colour is <b>rgb(0, 255, 0)</b>?",o:["Red","Green","Blue","Yellow"],a:1,h:"Only the middle channel is turned up to 255. Which colour sits in the middle of R, G, B?",e:"Green is full on, red and blue are off."});
+add({id:"4t3",sk:4,st:"t",k:"n",txt:1,ph:"R,G,B",p:"Type the RGB values for <b>pure blue</b> as R,G,B (for example 1,2,3).",a:rg([0,0,255]),h:"Blue is the LAST channel. Red and green are off (0) and blue is full (255).",e:"Pure blue is rgb(0, 0, 255)."});
+add({id:"4t4",sk:4,st:"t",k:"n",txt:1,ph:"R,G,B",p:"<b>Yellow</b> is red light and green light mixed. Type its RGB values as R,G,B.",a:rg([255,255,0]),h:"Turn red and green both fully on (255) and leave blue off (0).",e:"Yellow is rgb(255, 255, 0)."});
+add({id:"4t5",sk:4,st:"t",k:"n",txt:1,hex:1,ph:"6 characters",p:"In hex, 255 is <b>ff</b> and 0 is <b>00</b>. What is the hex code for <b>rgb(255, 0, 0)</b>? (6 characters, the # is optional)",a:hex(255,0,0),h:"Write red, green, blue as pairs: red = ff, green = 00, blue = 00.",e:"#ff0000 is red."});
+add({id:"4s1",sk:4,st:"s",k:"n",txt:1,ph:"R,G,B",p:"Type the RGB values for <b>white</b> as R,G,B.",a:rg([255,255,255])});
+add({id:"4s2",sk:4,st:"s",k:"n",txt:1,ph:"R,G,B",p:"Type the RGB values for <b>black</b> as R,G,B.",a:rg([0,0,0])});
+add({id:"4s3",sk:4,st:"s",k:"n",txt:1,hex:1,ph:"6 characters",p:"What is the hex code for <b>pure green</b>?",a:hex(0,255,0)});
+add({id:"4s4",sk:4,st:"s",k:"n",txt:1,hex:1,ph:"6 characters",p:"What is the hex code for <b>pure blue</b>?",a:hex(0,0,255)});
+add({id:"4s5",sk:4,st:"s",k:"mc",p:"In <b>#3366ff</b>, which two digits are the <b>green</b> channel?",o:["33","66","ff"],a:["33","66","ff"].indexOf("3366ff".slice(2,4))});
+add({id:"4s6",sk:4,st:"s",k:"n",p:"How many <b>bits</b> are in one colour channel?",a:8});
+add({id:"4s7",sk:4,st:"s",k:"n",txt:1,ph:"R,G,B",p:"Convert the hex colour <b>#ff00ff</b> to RGB values, as R,G,B.",a:rg([parseInt("ff",16),parseInt("00",16),parseInt("ff",16)])});
+add({id:"4s8",sk:4,st:"s",k:"n",txt:1,hex:1,ph:"6 characters",p:"What is the hex code for <b>yellow</b>?",a:hex(255,255,0)});
+add({id:"1r1",sk:1,st:"t",k:"n",p:"🔁 Binary refresher: convert <b>11111111</b> to decimal.",a:b2d("11111111"),h:"Add every place value, because every bit is 1: 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1.",e:"All eight place values added together make 255, the biggest value a byte can hold."});
+add({id:"1r2",sk:1,st:"t",k:"n",p:"🔁 Binary refresher: convert <b>00001011</b> to decimal.",a:b2d("00001011"),h:"Only add the place values that sit under a 1: 8, 2 and 1.",e:"8 + 2 + 1 = 11."});
+// follows the slides: bytes -> pixels and RGB -> hex colour codes (binary already taught)
+const HX=["4c","4t5","4s3","4s4","4s5","4s7","4s8"];
+Qm["4s8"].p="What is the hex code for <b>white</b>?";Qm["4s8"].a=hex(255,255,255);
+Q.splice(0,Q.length,...Q.filter(q=>!q.id.startsWith("1r")&&q.sk!=2&&q.sk!=3));
+Q.forEach(q=>{if(q.sk==4)q.sk=HX.includes(q.id)?3:2});
+add({id:"rc",sk:2,st:"c",k:"mc",p:"What is a <b>pixel</b>?",o:["A tiny square of colour that a picture is built from","A type of file","A group of 8 bits","The power button on a screen"],a:0,h:"Think about a picture on a screen being built from lots of tiny dots.",e:"An image is a grid of pixels, and each pixel is one colour."});
+add({id:"rt0",sk:2,st:"t",k:"n",p:"One colour channel is 1 byte and a pixel has 3 channels. How many <b>bits</b> is 3 bytes?",a:3*8,h:"1 byte = 8 bits, so 3 bytes = 3 × 8.",e:"3 × 8 = 24 bits."});
+add({id:"rtr",sk:2,st:"t",k:"n",txt:1,ph:"R,G,B",p:"Use the sliders to make <b>pure red</b>. Type its RGB values as R,G,B.",a:rg([255,0,0]),h:"Red is the FIRST channel. Turn it fully on (255) and switch green and blue off (0).",e:"Pure red is rgb(255, 0, 0)."});
+add({id:"rtg",sk:2,st:"t",k:"n",txt:1,ph:"R,G,B",p:"Use the sliders to make <b>pure green</b>. Type its RGB values as R,G,B.",a:rg([0,255,0]),h:"Green is the MIDDLE channel. Turn it fully on (255) and switch red and blue off (0).",e:"Pure green is rgb(0, 255, 0)."});
+add({id:"rs7",sk:2,st:"s",k:"n",p:"Each channel has 256 values and a pixel has 3 channels. How many <b>different colours</b> can one pixel show? (256 × 256 × 256)",a:256**3});
+add({id:"rs8",sk:2,st:"s",k:"n",p:"A tiny image is <b>10 pixels wide and 10 pixels tall</b>. How many <b>bytes</b> does it need at 3 bytes per pixel?",a:10*10*3});
+add({id:"rs9",sk:2,st:"s",k:"n",txt:1,ph:"R,G,B",p:"Type the RGB values for <b>magenta</b> (red and blue full on, green off) as R,G,B.",a:rg([255,0,255])});
+add({id:"ht1",sk:3,st:"t",k:"mc",p:"Hexadecimal has 16 digits: 0–9, then A, B, C, D, E, F. What is the decimal value of <b>F</b>?",o:[10,14,15,16],a:[10,14,15,16].indexOf(parseInt("f",16)),h:"A = 10, B = 11, C = 12, D = 13, E = 14 … keep counting up to F.",e:"A is 10 and F is 15, so there are 16 digits in total (hexa = six + decimal = ten)."});
+add({id:"ht2",sk:3,st:"t",k:"n",p:"The hex pair <b>ff</b> means 255. What number does the hex pair <b>00</b> mean?",a:parseInt("00",16),h:"Zero in hex is just 0, so 00 is the smallest a byte can be.",e:"00 = 0, the lowest value a byte can hold."});
+add({id:"ht3",sk:3,st:"t",k:"n",p:"How many <b>bytes</b> are in a hex colour like <b>#ff0000</b>? (Each pair of hex digits is one byte.)",a:"ff0000".length/2,h:"Count the pairs of digits: ff, 00, 00.",e:"3 pairs = 3 bytes: one each for red, green and blue."});
+add({id:"ht4",sk:3,st:"t",k:"mc",p:"Are <b>#ff0000</b> and <b>#0000ff</b> the same colour?",o:["Yes, they use the same digits","No, the order of the bytes matters"],a:1,h:"Which pair is red and which pair is blue in each code?",e:"The first pair is red and the last pair is blue, so the order changes the colour."});
+add({id:"ht5",sk:3,st:"t",k:"n",txt:1,hex:1,ph:"6 characters",p:"Use the sliders to make <b>yellow</b>, rgb(255, 255, 0). What is its hex code?",a:hex(255,255,0),h:"Red = ff, green = ff, blue = 00. Write the pairs in that order.",e:"#ffff00 is yellow."});
+add({id:"hs6",sk:3,st:"s",k:"n",p:"What is the <b>biggest value</b> (in decimal) that one hex pair like ff can show?",a:parseInt("ff",16)});
+add({id:"hs7",sk:3,st:"s",k:"mc",p:"As the blue value goes up from 0 to 255, which part of the hex code changes?",o:["The first 2 characters","The middle 2 characters","The last 2 characters"],a:2});
+
+// Skill 4: Grayscale (+ additive colour)
+add({id:"ac",sk:2,st:"t",k:"mc",p:"RGB is an <b>additive</b> colour model: light adds together. What do you get when red, green and blue are all at 255?",o:["White","Black","Gray","Brown"],a:0,h:"Additive means the light adds up, so full red + green + blue is the brightest it can be.",e:"rgb(255, 255, 255) is white. Pigments (CMYK) are subtractive and get darker when mixed."});
+add({id:"as",sk:2,st:"s",k:"mc",p:"Which colour model is <b>subtractive</b> (mixing makes it darker)?",o:["RGB","CMYK"],a:1});
+add({id:"gc",sk:4,st:"c",k:"mc",p:"In a gray pixel, how do the R, G and B values compare?",o:["They are all the same","They are all different","Only red is used","Only blue is used"],a:0,h:"Look at white (255, 255, 255) and black (0, 0, 0). What do you notice about the three numbers?",e:"In gray, R = G = B. Only the brightness changes."});
+add({id:"gt0",sk:4,st:"t",k:"gk",px:[[120,120,120],[255,0,0],[30,30,30],[200,200,60],[255,255,255]],p:"Sort each pixel: is it a <b>gray</b> or a <b>colour</b>? One decision per click."});
+add({id:"gt1",sk:4,st:"t",k:"mc",p:"How many numbers does one <b>grayscale</b> pixel need?",o:[1,2,3,24],a:0,h:"Grayscale keeps brightness only, and brightness is a single number.",e:"One number (1 byte) holds the brightness, from 0 to 255."});
+add({id:"gt2",sk:4,st:"t",k:"n",p:"How many <b>bytes</b> does one grayscale pixel use?",a:1*1,h:"One channel, and each channel is one byte.",e:"1 channel × 1 byte = 1 byte."});
+add({id:"gt3",sk:4,st:"t",k:"n",txt:1,ph:"R,G,B",p:"A gray pixel has brightness <b>128</b>. Type it as RGB values: R,G,B.",a:rg([128,128,128]),h:"In a gray all three channels are equal, so write 128 three times.",e:"rgb(128, 128, 128) is a medium gray."});
+add({id:"gt4",sk:4,st:"t",k:"n",p:"How many different <b>shades of gray</b> can one grayscale pixel show?",a:pw(8),h:"One byte can show 256 different values.",e:"1 byte = 256 values (0 to 255), so 256 shades."});
+add({id:"gt5",sk:4,st:"t",k:"n",p:"A grayscale image is <b>10 pixels wide and 10 tall</b>. At 1 byte per pixel, how many bytes is it?",a:10*10*1,h:"Pixels × bytes per pixel: 10 × 10 × 1.",e:"100 pixels × 1 byte = 100 bytes."});
+add({id:"gs1",sk:4,st:"s",k:"mc",p:"Which of these is a <b>gray</b>?",o:["rgb(120, 120, 120)","rgb(120, 60, 120)","rgb(255, 0, 0)","rgb(0, 255, 0)"],a:0});
+add({id:"gs2",sk:4,st:"s",k:"mc",p:"Which pixel is <b>NOT</b> gray?",o:["rgb(50, 50, 50)","rgb(255, 255, 255)","rgb(0, 0, 0)","rgb(90, 90, 120)"],a:3});
+add({id:"gs3",sk:4,st:"s",k:"n",txt:1,ph:"R,G,B",p:"Type the RGB values of a gray with brightness <b>200</b> as R,G,B.",a:rg([200,200,200])});
+add({id:"gs4",sk:4,st:"s",k:"n",p:"A grayscale image is <b>20 pixels wide and 5 tall</b>. How many <b>bytes</b> does it need (1 byte per pixel)?",a:20*5*1});
+add({id:"gs5",sk:4,st:"s",k:"n",p:"The <b>same 20 × 5 image in RGB</b> uses 3 bytes per pixel. How many bytes does it need?",a:20*5*3});
+add({id:"gs6",sk:4,st:"s",k:"n",txt:1,hex:1,ph:"6 characters",p:"What is the hex code for the gray <b>rgb(128, 128, 128)</b>?",a:hex(128,128,128)});
+add({id:"gs7",sk:4,st:"s",k:"mc",p:"If you remove two of the three channels (go from RGB to grayscale), what happens to the data?",o:["Less information is stored, and colour is lost","More information is stored","Nothing changes"],a:0});
+// Skill 5: why 1 byte is not enough
+add({id:"bc",sk:5,st:"c",k:"mc",p:"With a 3-3-2 split of one byte, what is true about each colour channel?",o:["It only has a few shades (levels), so colours look blocky","It has 256 levels","It can show 16.7 million colours"],a:0,h:"Count the levels: 3 bits only give 2 × 2 × 2 levels.",e:"Sharing 8 bits leaves each channel with very few levels, so there are no subtle shades."});
+add({id:"bt1",sk:5,st:"t",k:"n",p:"How many <b>bits</b> are in 1 byte?",a:8,h:"Think of the 8 switches from Skill 1.",e:"1 byte = 8 bits."});
+add({id:"bt2",sk:5,st:"t",k:"n",p:"How many different values can <b>1 byte</b> hold?",a:pw(8),h:"Each extra bit doubles the choices: 2 × 2 × … eight times.",e:"2⁸ = 256 values (0 to 255)."});
+add({id:"bt3",sk:5,st:"t",k:"mc",p:"All 8 bits are given to <b>red</b>. Which colour can you <b>NOT</b> make?",o:["Yellow","Bright red","Dark red","Black"],a:0,h:"Yellow is made from red AND green light. Is there any green?",e:"With no bits for green or blue, only shades of red (and black) are possible."});
+add({id:"bt4",sk:5,st:"t",k:"n",p:"In a 3-3-2 split, red gets <b>3 bits</b>. How many red shades (levels) is that?",a:pw(3),h:"Each bit doubles the levels: 2 × 2 × 2.",e:"2³ = 8 red levels."});
+add({id:"bt5",sk:5,st:"t",k:"n",p:"Blue only gets <b>2 bits</b>. How many blue shades (levels) is that?",a:pw(2),h:"2 × 2.",e:"2² = 4 blue levels."});
+add({id:"bt6",sk:5,st:"t",k:"n",p:"Multiply the levels in a 3-3-2 split: 8 × 8 × 4 = ? colours in total.",a:8*8*4,h:"8 × 8 = 64, then × 4.",e:"256 colours in total. That’s all one byte can ever give."});
+add({id:"bt7",sk:5,st:"t",k:"n",p:"Red has 8 shades (levels) between 0 and 255, so there are 7 jumps. About how big is <b>each jump</b>? (255 ÷ 7, rounded to a whole number)",a:Math.round(255/7),h:"Work out 255 ÷ 7.",e:"About 36. Red can only be 0, 36, 73, 109… with nothing in between, so there are no subtle shades."});
+add({id:"bs1",sk:5,st:"s",k:"mc",p:"Why can’t <b>one byte per pixel</b> show subtle shades of every colour?",o:["The 256 values must be shared between R, G and B, so each channel gets very few levels","Computers can’t store bytes","A byte can only store 0 or 1"],a:0});
+add({id:"bs2",sk:5,st:"s",k:"n",p:"If <b>2 bits</b> go to green, how many green shades (levels) are there?",a:pw(2)});
+add({id:"bs3",sk:5,st:"s",k:"n",p:"A split gives red <b>4 bits</b>, green 2 bits and blue 2 bits. How many red shades (levels)?",a:pw(4)});
+add({id:"bs4",sk:5,st:"s",k:"n",p:"Using that 4-2-2 split, how many colours can the byte show in total?",a:pw(4)*pw(2)*pw(2)});
+add({id:"bs5",sk:5,st:"s",k:"n",p:"How many <b>bytes</b> does a full RGB pixel use, so each channel gets 256 levels?",a:3});
+add({id:"bs6",sk:5,st:"s",k:"n",p:"How many colours can <b>3 bytes</b> show? (256 × 256 × 256, type digits only)",a:256*256*256});
+add({id:"bs7",sk:5,st:"s",k:"mc",p:"Which would show a smooth sunset better?",o:["3 bytes per pixel (RGB)","1 byte per pixel (3-3-2 split)"],a:0});
+add({id:"bs8",sk:5,st:"s",k:"mc",p:"“One byte gives 256 colours, so it’s just as good as RGB.” Is this true?",o:["False: 256 is far fewer than 16.7 million, so there are no subtle shades","True"],a:0});
+</script>
+
+<script id="ui">
+const $=id=>document.getElementById(id),SK=["","Bytes and switches","Pixels and RGB","Hex colour codes","Grayscale","Why 1 byte isn’t enough"];
+// Supabase: student responses are collected only for WE DO questions.
+const SUPABASE_URL="https://agkixedmhuxskfdrfbcn.supabase.co";
+const SUPABASE_KEY="sb_publishable_F6OHTBrA9vYWhWLUagmWvA_tojihS8U";
+const ACCESS_TOKEN="1fffc619-0994-45a6-9aab-daa18bf92935";
+let supabaseClient=null,dbQuestionIds={},pendingResponses={};
+function dbStatus(message){const e=$("dbstatus");if(e)e.textContent=message}
+async function flushResponse(id){
+ if(!supabaseClient||!dbQuestionIds[id]||!Object.prototype.hasOwnProperty.call(pendingResponses,id))return;
+ const firstName=String(S.name||"").trim().split(/\s+/)[0];
+ if(!firstName){dbStatus("Enter your first name on the Start page to save your WE DO answers.");return}
+ const answer=pendingResponses[id];delete pendingResponses[id];
+ try{
+  const {error}=await supabaseClient.rpc("submit_lesson_response",{p_access_token:ACCESS_TOKEN,p_question_id:dbQuestionIds[id],p_answer:String(answer),p_student_name:firstName});
+  if(error)throw error;
+  dbStatus("Connected · WE DO response saved for "+firstName);
+ }catch(error){pendingResponses[id]=answer;dbStatus("Response not submitted yet: "+error.message)}
+}
+function queueResponse(id,answer){const q=Qm[id];if(!q||q.st!=="t")return;pendingResponses[id]=String(answer);flushResponse(id)}
+function setStudentName(value){S.name=String(value||"").trim().split(/\s+/)[0]||"";save();if(S.name)Object.keys(pendingResponses).forEach(id=>flushResponse(id))}
+async function startDatabase(){
+ try{
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const {error:authError}=await supabaseClient.auth.signInAnonymously();
+  if(authError)throw new Error("Student sign-in failed: "+authError.message);
+  const {data,error}=await supabaseClient.rpc("get_lesson_questions",{p_access_token:ACCESS_TOKEN});
+  if(error)throw new Error("Lesson question retrieval failed: "+error.message);
+  if(!data||!data.length)throw new Error("No questions were returned for this lesson.");
+  dbQuestionIds={};
+  data.forEach(row=>{if(row.question_code&&row.question_id)dbQuestionIds[row.question_code]=row.question_id});
+  const expected=Q.filter(q=>q.st==="t").length;
+  const matched=Q.filter(q=>q.st==="t"&&dbQuestionIds[q.id]).length;
+  if(matched!==expected)dbStatus("Connected, but "+matched+" of "+expected+" WE DO questions are linked. Please check lesson setup.");
+  else dbStatus("Connected · WE DO responses enabled");
+  Object.keys(pendingResponses).forEach(id=>flushResponse(id));
+ }catch(error){dbStatus("Response collection unavailable: "+error.message)}
+}
+
+const SUB={1:"I can explain bits and bytes and work out how many patterns n bits can make.",2:"I can explain what a pixel is and how RGB values make a colour.",3:"I can recognise how hex colour codes map to RGB values.",4:"I can explain what grayscale is and why a gray has R = G = B and needs only 1 byte.",5:"I can explain why one byte per pixel gives only 256 colours with no subtle shades, and why RGB uses 3 bytes."};
+const STG={w:"I DO · Watch",t:"WE DO · Try",s:"YOU DO · Solo"};
+const N=[["w","👋 Start"],["1","1 · Bits & bytes"],["2","2 · 🎨 Pixels & RGB"],["3","3 · Hex colours"],["4","4 · ⚫ Grayscale"],["5","5 · Why 1 byte?"],["p","🔲 Pixel grid"],["g","🎯 Guess"],["r","✍️ Reflect"],["h","📄 Hand in"]];
+const RP=["In your own words, what is the difference between a bit and a byte?","Why do colour values go from 0 to 255? Use the words bit, byte and switches in your answer.","Explain how a computer uses three bytes to make one colour. What does rgb(255, 0, 0) mean, and why can each value only go from 0 to 255?","Explain the difference between a grayscale pixel and an RGB pixel. Why does a gray have R = G = B, and why is a grayscale image smaller?","One byte can hold 256 values. Explain why one byte per pixel is not enough to show subtle shades of every colour, and how RGB fixes this."];
+let S={name:"",q:{},r:["","","","",""],pg:"w",st:{1:"w",2:"w",3:"w",4:"w",5:"w"},gw:0,gs:0,th:""},DL=null,W={n:1,b:[1,0,1,1,0,0,1,0],k:0,num:178,c:[255,128,0],px:Array(64).fill(null)},CP="";
+try{Object.assign(S,JSON.parse(localStorage.getItem("dr-v2")||"{}"))}catch(e){}
+S.st=Object.assign({5:"w"},S.st);while(S.r.length<5)S.r.push("");
+const KEY="dr-v2";let OK=true;
+try{localStorage.setItem(KEY+"-t","1");localStorage.removeItem(KEY+"-t")}catch(e){OK=false}
+const svt=()=>{const e=$("sv");if(e)e.textContent=OK?"💾 Saved on this computer":"⚠️ Can’t save here. Use Export"};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));OK=true}catch(e){OK=false}svt()};
+addEventListener("pagehide",save);
+const dmsg=t=>{const e=$("dpm");if(e){e.style.display="block";e.textContent=t}};
+const DEF=()=>({name:"",q:{},r:["","","","",""],pg:"w",st:{1:"w",2:"w",3:"w",4:"w",5:"w"},gw:0,gs:0,th:""});
+function datapanel(){return `<div class="card"><h2>💾 My saved work</h2><p>Your answers save automatically <b>on this computer</b>. If you move to a different computer, <b>Export</b> your work first, then <b>Import</b> it on the new one. On a shared computer, delete your data when you finish.</p><div class="ctr"><button class="btn" onclick="exportJSON()">⬇ Export my work (.json)</button><button class="btn" onclick="$('imp').click()">⬆ Import my work</button><input type="file" id="imp" accept=".json,application/json" style="display:none" onchange="importJSON(this.files[0])"><button class="btn" style="background:var(--card);color:var(--no);border-color:var(--no)" onclick="$('dpc').style.display='block'">🗑 Delete all my data</button></div><div id="dpc" class="fb no" style="display:none">Delete ALL saved answers, your name and your score from this computer? This can’t be undone. Export first if you might want it back.<div class="ctr"><button class="btn" style="background:var(--no);border-color:var(--no)" onclick="wipe()">Yes, delete everything</button><button class="btn" onclick="$('dpc').style.display='none'">Cancel</button></div></div><div id="dpm" class="fb info" style="display:none"></div></div>`}
+async function exportJSON(){const fn=`Data Representation - ${(S.name||"").trim().replace(/[\\/:*?"<>|]/g,"")||"student"}.json`,blob=new Blob([JSON.stringify({app:"dr-v2",saved:new Date().toISOString(),data:S},null,1)],{type:"application/json"});
+ if(!DL){try{DL=await window.claude.use("downloads")}catch(e){}}
+ if(DL){try{await DL.save({filename:fn,data:blob});return dmsg("✅ Exported. Keep that file safe.")}catch(e){if(e&&e.code=="declined")return dmsg("No worries. Click again when you’re ready.")}}
+ try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);dmsg("✅ Exported. Check your Downloads folder.")}catch(e){dmsg("The download didn’t work here.")}}
+function importJSON(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result),d=o&&o.data;if(!d||typeof d.q!="object")throw 0;S=Object.assign(DEF(),d,{th:S.th});S.st=Object.assign(DEF().st,S.st);while(S.r.length<5)S.r.push("");save();render();dmsg("✅ Work imported.")}catch(e){dmsg("That file isn’t a saved-work file from this page.")}};r.readAsText(f)}
+function wipe(){try{localStorage.removeItem(KEY)}catch(e){}S=DEF();W.px.fill(null);Z.grid=zmk();G.st=0;G.t=null;G.g=[];document.documentElement.removeAttribute("data-theme");render();scrollTo(0,0)}
+const qs=id=>S.q[id]||(S.q[id]={n:0,t:0,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]});
+const done=sk=>Q.filter(q=>(!sk||q.sk==sk)&&qs(q.id).d).length,tot=sk=>Q.filter(q=>!sk||q.sk==sk).length;
+function theme(){const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=S.th=dark?"light":"dark";save()}
+if(S.th)document.documentElement.dataset.theme=S.th;
+let tt;function toast(){const m=["✅ Nice one!","🎉 Correct!","🔥 You’ve got it!","⭐ Spot on!"];$("toast").textContent=m[Math.floor(Math.random()*m.length)];$("toast").className="s";clearTimeout(tt);tt=setTimeout(()=>$("toast").className="",1400)}
+function go(p){S.pg=p;save();render();scrollTo(0,0)}
+function hdr(){$("nav").innerHTML=N.map(([p,l])=>`<button class="${S.pg==p?"on":""}" onclick="go('${p}')">${l}${"12345".includes(p)?` (${done(+p)}/${tot(+p)})`:""}</button>`).join("");$("bar").style.width=Math.round(100*done()/tot())+"%";svt();$("sc").textContent=`✅ ${done()} / ${tot()}`}
+const grid=(b,cur,tg)=>`<div class="g">${PV.map((p,i)=>`<div class="c ${i==cur?"cur":""}"><small>${p}</small>${tg?`<button class="bt b${b[i]}" onclick="tog(${i})">${b[i]}</button>`:`<div class="bt b${b[i]}">${b[i]}</div>`}</div>`).join("")}</div>`;
+const nm=()=>`<input type="text" class="s" style="width:min(100%,380px)" placeholder="Type your first name" aria-label="First name" autocomplete="given-name" maxlength="30" value="${(S.name||"").replace(/"/g,"&quot;")}" oninput="S.name=this.value;save()" onblur="setStudentName(this.value);this.value=S.name">`;
+// ---------- questions ----------
+function remNow(q,s){let r=q.n;s.ch.forEach((c,j)=>{if(c)r-=PV[j]});return r}
+function inner(q,n){const s=qs(q.id),lock=s.d||s.rev;let b=`<div class="qh"><span class="n">${n}</span>${q.p} ${s.d?"✅":s.rev?"💡":""}</div>`;
+ if(q.k=="mc")b+=q.o.map((o,i)=>`<button class="opt ${s.x.includes(i)?"x":""} ${lock&&i==q.a?"v":""}" ${lock?"disabled":""} onclick="chk('${q.id}',${i})">${o}</button>`).join("");
+ if(q.k=="n")b+=`<input type="${q.bin||q.txt?"text":"number"}" class="s" id="in-${q.id}" ${lock?"disabled":""} value="${s.d||s.rev?s.a:""}" placeholder="${q.ph||(q.bin?"8 bits":"Your answer")}" onkeydown="if(event.key=='Enter')chk('${q.id}',this.value)"> <button class="btn" ${lock?"disabled":""} onclick="chk('${q.id}',$('in-${q.id}').value)">Check ✔</button>`;
+ if(q.k=="b2d"){let rows="",kept=[];for(let i=0;i<s.i;i++){const on=s.ch[i];if(on)kept.push(PV[i]);rows+=`<tr class="${on?"y":"n"}"><td>${PV[i]}</td><td>${q.bits[i]}</td><td>${on?"Yes → add "+PV[i]:"No → add 0"}</td></tr>`}
+  b+=grid(q.bits.split(""),s.i<8?s.i:-1)+(s.i?`<table><tr><th>Place value</th><th>Bit</th><th>Decision</th></tr>${rows}</table>`:"");
+  if(s.i<8)b+=`<div class="big">The bit under <b>${PV[s.i]}</b> is <b>${q.bits[s.i]}</b>. What do we add?</div><div class="ctr"><button class="yn" onclick="gc('${q.id}',0)">Add 0</button><button class="yn" onclick="gc('${q.id}',1)">Add ${PV[s.i]}</button></div>`;
+  else b+=`<div class="big eq">${kept.join(" + ")||0} = ?</div><input type="number" class="s" id="in-${q.id}" ${s.fin?"disabled":""} value="${s.fin?s.a:""}" placeholder="Total" onkeydown="if(event.key=='Enter')tot2('${q.id}')"> <button class="btn" ${s.fin?"disabled":""} onclick="tot2('${q.id}')">Check ✔</button>`}
+ if(q.k=="d2b"){let r=q.n,rows="",bb=Array(8).fill("_");for(let j=0;j<s.i;j++){bb[j]=s.ch[j];rows+=`<tr class="${s.ch[j]?"y":"n"}"><td>${PV[j]}</td><td>${r}</td><td>${s.ch[j]?"Yes":"No"}</td><td>${s.ch[j]}</td></tr>`;if(s.ch[j])r-=PV[j]}
+  b+=grid(bb,s.i<8?s.i:-1)+(s.i?`<table><tr><th>Place value</th><th>Left before</th><th>Fits?</th><th>Bit</th></tr>${rows}</table>`:"");
+  if(s.i<8)b+=`<div class="big">You have <b>${r}</b> left. Does <b>${PV[s.i]}</b> fit into ${r}?</div><div class="ctr"><button class="yn" onclick="gc('${q.id}',1)">Yes → 1</button><button class="yn" onclick="gc('${q.id}',0)">No → 0</button></div>`}
+ if(q.k=="gk"){let rw="";for(let i=0;i<s.i;i++){const p=q.px[i],on=s.ch[i];rw+=`<tr class="${on?"y":"n"}"><td><span style="display:inline-block;width:2.4em;height:1.2em;border-radius:6px;vertical-align:middle;background:rgb(${p})"></span> rgb(${p.join(", ")})</td><td>${on?"Gray":"Colour"}</td></tr>`}
+  b+=(s.i?`<table><tr><th>Pixel</th><th>Your decision</th></tr>${rw}</table>`:"");
+  if(s.i<q.px.length){const p=q.px[s.i];b+=`<div class="big"><span style="display:inline-block;width:3em;height:1.4em;border-radius:8px;vertical-align:middle;background:rgb(${p})"></span> <b>rgb(${p.join(", ")})</b>: is this pixel a gray or a colour?</div><div class="ctr"><button class="yn" onclick="gk('${q.id}',1)">⚪ Gray</button><button class="yn" onclick="gk('${q.id}',0)">🌈 Colour</button></div>`}}
+ if(s.m)b+=`<div class="fb ${s.d?"ok":s.rev?"info":"no"}">${s.m}</div>`;
+ if(s.rev&&(q.k=="b2d"||q.k=="d2b"||q.k=="gk"))b+=`<div class="ctr"><button class="btn" onclick="redo('${q.id}')">🔁 Try this one again</button></div>`;
+ return b}
+const card=(q,n)=>`<div class="card" id="c-${q.id}">${inner(q,n)}</div>`;
+const draw=id=>{const q=Qm[id];$("c-"+id).innerHTML=inner(q,$("c-"+id).querySelector(".n").textContent);hdr();save()};
+function chk(id,v){const q=Qm[id],s=qs(id);if(s.d||s.rev)return;let ok,val=q.k=="mc"?v:String(v).trim();
+ if(q.k=="n"){if(val==="")return;if(q.txt)val=val.toLowerCase().replace(q.hex?/[^0-9a-f]/g:/[^0-9,]/g,"");else if(q.bin){val=val.replace(/\s/g,"");if(!/^[01]{8}$/.test(val)){s.m="🧩 Write exactly 8 bits, using only 0s and 1s (a byte has 8 bits).";return draw(id)}}else if(isNaN(Number(val))){s.m="🔢 Type just a number.";return draw(id)}}
+ s.n++;s.a=q.k=="mc"?String(q.o[v]):val;if(q.st==="t")queueResponse(id,s.a);ok=q.k=="mc"?v==q.a:q.bin||q.txt?val==q.a:Number(val)==q.a;
+ if(ok){s.d=1;s.m="✅ "+(q.e||"Correct!");toast()}else{s.t++;if(q.k=="mc")s.x.push(v);
+  if(q.st=="s")s.m="🤔 Not yet. Have another go.";else if(s.t>=3){s.rev=1;s.m=`💡 The answer is <b>${q.k=="mc"?q.o[q.a]:q.a}</b>. ${q.e}`}else s.m=`🤔 ${typeof q.h=="function"?q.h(val):q.h} (try ${s.t} of 3)`}
+ draw(id)}
+function fin(q,s,x){s.fin=1;if(q.st==="t"&&q.k==="d2b")queueResponse(q.id,s.a);if(s.rv){s.rev=1;s.m=(x||"")+" 💡 Some steps were shown to you, so this one is marked “not yet correct”. Have another go later!"}else{s.d=1;s.m=`✅ ${q.k=="b2d"?`${q.bits} = ${q.a}`:`${q.n} = ${q.a}`}. Perfect, no help needed!`;toast()}}
+function gc(id,c){const q=Qm[id],s=qs(id);if(s.i>7)return;const i=s.i,r=q.k=="d2b"?remNow(q,s):0,right=q.k=="b2d"?+q.bits[i]:(PV[i]<=r?1:0);s.n++;
+ const step=()=>{s.ch.push(right);s.i++;s.s=0};
+ if(c==right){step();s.m="👍 Yes!";if(s.i==8){if(q.k=="d2b"){s.a=q.a;fin(q,s)}else s.m="👍 All 8 bits done. Now add up what you kept."}}
+ else{s.t++;s.s++;const h=q.k=="b2d"?(right?`The bit is 1, so this place value counts. Add ${PV[i]}.`:"The bit is 0, so nothing is added from this place. Add 0."):(right?`${PV[i]} is not bigger than ${r}, so it fits. Say Yes, then subtract it.`:`${PV[i]} is bigger than ${r}, so it can’t fit. Write a 0 and keep ${r}.`);
+  if(s.s>=3){s.rv=1;step();s.m=`💡 Answer shown: ${h} Moving on.`;if(s.i==8&&q.k=="d2b"){s.a=q.a;fin(q,s,s.m)}}else s.m=`🤔 ${h} (try ${s.s} of 3)`}
+ draw(id)}
+function tot2(id){const q=Qm[id],s=qs(id),v=$("in-"+id).value.trim();if(v===""||s.fin)return;s.n++;if(q.st==="t")queueResponse(id,v);const kept=s.ch.map((c,i)=>c?PV[i]:0).filter(Boolean);
+ if(Number(v)==q.a){s.a=v;fin(q,s)}else{s.t++;s.s++;if(s.s>=3){s.rv=1;s.a=v;fin(q,s,`💡 The total is <b>${q.a}</b> (${kept.join(" + ")||0}).`)}else s.m=`🤔 Add up only the values you kept: ${kept.join(" + ")||0}. (try ${s.s} of 3)`}draw(id)}
+function gk(id,c){const q=Qm[id],s=qs(id);if(s.fin)return;const p=q.px[s.i],right=(p[0]==p[1]&&p[1]==p[2])?1:0;s.n++;const step=()=>{s.ch.push(right);s.i++;s.s=0};
+ if(c==right){step();s.m="👍 Yes!"}else{s.t++;s.s++;const h=right?`R, G and B are all ${p[0]}, so they are the same: that’s a gray.`:`R, G and B are not all the same (${p.join(", ")}), so it’s a colour.`;
+  if(s.s>=3){s.rv=1;step();s.m=`💡 Answer shown: ${h} Moving on.`}else s.m=`🤔 Compare the three numbers: are they all equal? (try ${s.s} of 3)`}
+ if(s.i==q.px.length){s.fin=1;s.a=s.ch.map(v=>v?"Gray":"Colour").join(", ");if(q.st==="t")queueResponse(id,s.a);if(s.rv){s.rev=1;s.m="💡 Some answers were shown, so this one is “not yet correct”. Have another go!"}else{s.d=1;s.m="✅ All five sorted with no help needed!";toast()}}
+ draw(id)}
+function redo(id){const s=qs(id),n=s.n,t=s.t;S.q[id]={n,t,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]};draw(id)}
+// ---------- watch widgets ----------
+function w1(){let r="";for(let k=1;k<=W.n;k++)r+=`<tr class="${k==W.n?"hl":""}"><td>${k}</td><td>${dbl(k)}</td><td><b>${pw(k)}</b></td></tr>`;
+ const chips=W.n<=3?`<div class="chips">${Array.from({length:pw(W.n)},(_,j)=>`<span>${j.toString(2).padStart(W.n,"0")}</span>`).join("")}</div>`:"";
+ return `<div class="big">${W.n==1?"A <b>bit</b> is one tiny switch: 0 or 1. That makes <b>2</b> patterns.":`Add one more bit and every old pattern can get a 0 <i>or</i> a 1 in front. So the count <b>doubles</b>: ${pw(W.n-1)} × 2 = <b>${pw(W.n)}</b>.`}${W.n==8?"<br>🎉 <b>8 bits = 1 byte = 256 patterns.</b> They start at 0, so the biggest number is 255.":""}</div>${chips}<table><tr><th>Bits</th><th>Working</th><th>Patterns</th></tr>${r}</table><div class="ctr"><button class="btn" ${W.n>=8?"disabled":""} onclick="W.n++;render()">➕ Add a bit</button><button class="btn" onclick="W.n=1;render()">↺ Start again</button></div>`}
+function w2(){let rows="",ks=[],tot=0;W.b.forEach((b,i)=>{rows+=`<tr class="${b?"y":"n"}"><td>${PV[i]}</td><td>${b}</td><td>${b?"Yes → add "+PV[i]:"No → add 0"}</td></tr>`;if(b){ks.push(PV[i]);tot+=PV[i]}});
+ return `<div class="big">👆 <b>Click any bit</b> to flip it between 0 and 1. A <b>1</b> means “switch ON: count this place value”. A 0 means “skip it”.</div>${grid(W.b,-1,1)}<table><tr><th>Place value</th><th>Bit</th><th>Decision</th></tr>${rows}</table><div class="big eq">${W.b.join("")} = ${ks.join(" + ")||0} = <b>${tot}</b></div>`}
+function w3(){const n=Math.max(0,Math.min(255,W.num|0));let r=n,rows="",bb=Array(8).fill("_"),last="";for(let j=0;j<W.k;j++){const f=PV[j]<=r;bb[j]=f?1:0;last=`Does <b>${PV[j]}</b> fit into ${r}? ${f?`<b>Yes</b> → write 1, then ${r} − ${PV[j]} = <b>${r-PV[j]}</b>.`:`<b>No</b> → write 0 and keep <b>${r}</b>.`}`;rows+=`<tr class="${f?"y":"n"}"><td>${PV[j]}</td><td>${r}</td><td>${f?"Yes":"No"}</td><td>${f?1:0}</td></tr>`;if(f)r-=PV[j]}
+ const ks=bb.map((b,i)=>b==1?PV[i]:0).filter(Boolean);
+ return `<div class="big">Pick a number from 0 to 255: <input type="number" class="s" min="0" max="255" value="${n}" onchange="W.num=this.value;W.k=0;render()"></div>${grid(bb,W.k<8?W.k:-1)}<div class="big">${W.k==0?`We start with <b>${n}</b>. Go down the place values from 128 to 1 and ask: <i>does it fit?</i>`:last}${W.k==8?`<br>🎉 Check: ${ks.join(" + ")||0} = ${n}`:""}</div>${W.k?`<table><tr><th>Place value</th><th>Left before</th><th>Fits?</th><th>Bit</th></tr>${rows}</table>`:""}<div class="ctr"><button class="btn" ${W.k>=8?"disabled":""} onclick="W.k++;render()">▶ Next step</button><button class="btn" onclick="W.k=0;render()">↺ Start again</button></div>`}
+function tog(i){W.b[i]^=1;render()}
+function upd(){const c=W.c;c.forEach((v,i)=>{["wr","wn"].forEach(p=>{const e=$(p+i);if(e&&+e.value!=v)e.value=v});const b=$("wb"+i);if(b)b.textContent=d2b(v)});$("sw").style.background=`rgb(${c})`;$("ro").innerHTML=`<table><tr><th>Channel</th><th>Value (0–255)</th><th>Binary (1 byte)</th><th>Hex</th></tr>${["Red","Green","Blue"].map((n,i)=>`<tr class="${c[i]?"y":"n"}"><td>${n}</td><td>${c[i]}</td><td>${d2b(c[i])}</td><td>${hx(c[i])}</td></tr>`).join("")}</table><div class="big eq">rgb(${c.join(", ")}) = #${c.map(hx).join("")}<br>3 bytes = 24 bits for this one pixel</div>`}
+function setc(i,v){W.c[i]=cl(v);upd()}
+function paint(i){W.px[i]=W.c.slice();$("p"+i).style.background=`rgb(${W.c})`;const n=W.px.filter(Boolean).length;$("pc").textContent=`${n} pixels painted = ${n*3} bytes (${n} × 3)`}
+function w6(){const n=W.px.filter(Boolean).length;return w4()+`<div class="big">🖼 A picture is a grid of tiny squares called <b>pixels</b>, and each pixel is just <b>3 bytes</b>. Pick a colour with the sliders, then click pixels to paint!</div><div style="display:grid;grid-template-columns:repeat(8,48px);gap:4px;justify-content:center">${W.px.map((c,i)=>`<div id="p${i}" onclick="paint(${i})" style="width:48px;height:48px;border-radius:6px;cursor:pointer;border:2px solid var(--line);background:${c?`rgb(${c})`:"var(--bg)"}"></div>`).join("")}</div><div class="ctr"><b id="pc">${n} pixels painted = ${n*3} bytes</b> <button class="btn" onclick="W.px.fill(null);render()">🧹 Clear</button></div>`}
+function w5(){return `<div class="big">🔢 <b>Hexadecimal</b> means base 16: <i>hexa</i> = six + <i>decimal</i> = ten. Its 16 digits are 0–9 then A–F, so F means 15. One byte is written as <b>two hex digits</b> (00 to ff).</div><div class="scroll"><table class="hx"><tr><th>Decimal</th>${Array.from({length:16},(_,i)=>`<td>${i}</td>`).join("")}</tr><tr><th>Hex</th>${Array.from({length:16},(_,i)=>`<td class="hv">${i.toString(16).toUpperCase()}</td>`).join("")}</tr></table></div><div class="big">A hex colour is <b>#RRGGBB</b>: the first 2 digits are red, the middle 2 are green and the last 2 are blue. Drag the sliders and watch the pairs change. 👇</div>${w4()}`}
+function w4(){setTimeout(upd,0);return `<div class="big">🌈 Drag the sliders! Each colour channel is <b>one byte</b> (0–255): 0 means none of that light, 255 means full. Three bytes make <b>one pixel</b>.</div><div class="qg"><div>${["Red","Green","Blue"].map((n,i)=>`<div class="zr"><b style="color:${["#e03131","#2f9e44","#1c7ed6"][i]}">${n}</b><input type="range" min="0" max="255" id="wr${i}" value="${W.c[i]}" oninput="setc(${i},this.value)"><input type="number" min="0" max="255" id="wn${i}" value="${W.c[i]}" onchange="setc(${i},this.value)"><code id="wb${i}">${d2b(W.c[i])}</code></div>`).join("")}<div class="ctr">${[["Red",[255,0,0]],["Green",[0,255,0]],["Blue",[0,0,255]],["Yellow",[255,255,0]],["White",[255,255,255]],["Black",[0,0,0]]].map(([n,c])=>`<button class="btn" onclick="W.c=[${c}];render()">${n}</button>`).join("")}</div></div><div id="sw" style="height:220px;border-radius:20px;border:3px solid var(--line)"></div></div><div id="ro"></div>`}
+
+// ---------- skill 4 widgets ----------
+const Z={pc:[200,60,120],k:0,link:false,c:[200,60,120],grid:null};
+const zmk=()=>{const a=[];for(let y=0;y<6;y++)for(let x=0;x<6;x++)a.push([x*51,y*51,128]);return a};Z.grid=zmk();
+const lm=c=>Math.round(.299*c[0]+.587*c[1]+.114*c[2]),cl=v=>Math.max(0,Math.min(255,Math.round(+v||0)));
+const ZP=[["Orange",[255,128,0]],["Purple",[128,0,200]],["Teal",[0,150,150]],["Pink",[255,100,150]],["Rose",[200,60,120]]];
+function w7(){const c=Z.pc,L=lm(c),k=Z.k,f=n=>(n).toFixed(1),sum=.299*c[0]+.587*c[1]+.114*c[2];
+ const st=[`Start with an RGB pixel: <b>rgb(${c.join(", ")})</b>. That is three numbers, so <b>3 bytes</b>.`,
+ `We only care about <b>brightness</b>, so we mix the three channels into one number. Our eyes see green brightest, then red, then blue, so the mix is weighted: <b>0.299 × R + 0.587 × G + 0.114 × B</b>.`,
+ `Working: 0.299 × ${c[0]} + 0.587 × ${c[1]} + 0.114 × ${c[2]} = ${f(.299*c[0])} + ${f(.587*c[1])} + ${f(.114*c[2])} = ${f(sum)}, which rounds to <b>${L}</b>.`,
+ `Copy that brightness into all three channels: <b>rgb(${L}, ${L}, ${L})</b>. Now R = G = B, so it is a gray.`,
+ `One number is enough now. We store just <b>[${L}]</b>: <b>1 byte</b> instead of 3. 🎉`];
+ return `<div class="big">🎨 Pick a pixel, then press <b>Next step</b> to turn it into grayscale.<div class="ctr">${ZP.map(([n,v])=>`<button class="btn" onclick="Z.pc=[${v}];Z.k=0;render()">${n}</button>`).join("")}</div></div>
+ <div class="qg"><div class="ctr"><div style="display:flex;gap:20px;justify-content:center"><div><b>RGB</b><div style="width:150px;height:130px;border-radius:16px;border:3px solid var(--line);background:rgb(${c})"></div></div><div><b>Grayscale</b><div style="width:150px;height:130px;border-radius:16px;border:3px solid var(--line);background:${k>=3?`rgb(${L},${L},${L})`:"var(--bg)"};display:flex;align-items:center;justify-content:center;font-size:2.4em">${k>=3?"":"❓"}</div></div></div></div>
+ <div><table><tr><th>Step</th><th>What happens</th></tr>${st.slice(0,k+1).map((t,i)=>`<tr class="${i==k?"hl":""}"><td>${i+1}</td><td style="text-align:left">${t}</td></tr>`).join("")}</table></div></div>
+ <div class="ctr"><button class="btn" ${k>=4?"disabled":""} onclick="Z.k++;render()">▶ Next step</button><button class="btn" onclick="Z.k=0;render()">↺ Start again</button></div>`}
+function w8(){setTimeout(zup,0);return `<div class="big">🔗 Tick <b>grayscale mode</b> and drag: one number controls all three channels. Untick it to split them again and make colours. Click pixels in the grid to paint them.</div>
+ <div class="qg"><div><label class="lk"><input type="checkbox" ${Z.link?"checked":""} onchange="zlink(this.checked)">🔗 Grayscale mode (R = G = B)</label>${["Red","Green","Blue"].map((n,i)=>`<div class="zr"><b style="color:${["#e03131","#2f9e44","#1c7ed6"][i]}">${n}</b><input type="range" min="0" max="255" id="zr${i}" value="${Z.c[i]}" oninput="zset(${i},this.value)"><input type="number" min="0" max="255" id="zn${i}" value="${Z.c[i]}" onchange="zset(${i},this.value)"><code id="zb${i}"></code></div>`).join("")}<div id="zsw" style="height:120px;border-radius:18px;border:3px solid var(--line);margin:10px 0"></div><div id="zro"></div><div class="big" style="margin-top:16px"><b>🔍 Investigate! Use the sliders and grid to find out:</b><ol style="margin:8px 0 0;padding-left:1.3em"><li>Tick grayscale mode and drag the slider from 0 to 255. What do the three numbers do? How many bytes does the pixel need?<details><summary>Check your thinking</summary>They always match (R = G = B), so one number (1 byte) is enough.</details></li><li>Set R = 128, G = 128, B = 128. What is the hex code? What do you notice about the three pairs?<details><summary>Check your thinking</summary>#808080. All three pairs are the same, just like the three numbers.</details></li><li>Make a gray, then change <i>only</i> the blue a little. Is it still a gray? Why or why not?<details><summary>Check your thinking</summary>No. R, G and B are no longer equal, so it’s a colour with a slight tint and needs 3 bytes.</details></li><li>Predict first, then test: what is the hex code for a gray with brightness 51? (Hint: 51 is 33 in hex.)<details><summary>Check your thinking</summary>#333333. Brightness 51 is a dark gray, and the same pair is repeated three times.</details></li><li>Paint some pixels in colour, then tick grayscale mode. What happens to your colours? Can you get them back by unticking?<details><summary>Check your thinking</summary>They all turn gray, and unticking doesn’t bring them back. Colour information was thrown away. Use Restore colours to start again.</details></li></ol></div></div>
+ <div><b>Grayscale ramp</b> (click one)<div class="ramp">${Array.from({length:16},(_,i)=>i*17).map(v=>`<button onclick="zset(0,${v},1)" style="background:rgb(${v},${v},${v});color:${v>127?"#000":"#fff"}">${v}</button>`).join("")}</div>
+ <b>The image is an array of numbers</b><div class="zg" id="zgr"></div><div class="big" id="zgi"></div><div class="ctr"><button class="btn" onclick="Z.grid=zmk();zup()">↺ Restore colours</button></div></div></div>`}
+const ZR=[55,120,75,205,12,17,245,89,64,145,78,8,146,120,37,157,173,58,45,19,190,67,24,90,43],ZG=[145,78,186,201,34,90,132,178,55,160,12,99,200,17,230,64,141,88,250,35,120,76,210,5,180],ZB=[6,45,165,34,77,140,210,56,90,33,222,18,101,175,60,9,134,247,70,115,190,28,155,84,12];Z.sel=0;
+function w9(){return `<div id="ar9">${w9in()}</div>`}
+function zsel(i){Z.sel=i;$("ar9").innerHTML=w9in()}
+function w9in(){const s=Z.sel,r=ZR[s],g=ZG[s],b=ZB[s],y=lm([r,g,b]),GY=ZR.map((_,i)=>lm([ZR[i],ZG[i],ZB[i]]));
+ const ch=(A,t,n)=>`<div><b>${n}</b><div class="ag">${A.map((v,i)=>`<button class="${i==s?"sel":""}" style="background:${t}" onclick="zsel(${i})">${v}</button>`).join("")}</div></div>`;
+ const bits=(v,t,n)=>`<div class="bits">${d2b(v).split("").map(x=>`<i style="background:${t}">${x}</i>`).join("")}<span>} 1 byte (${n} = ${v})</span></div>`;
+ return `<div class="big">👆 Click any number. The same pixel lights up in every grid, so you can follow it from <b>RGB (3 numbers)</b> to <b>grayscale (1 number)</b>.</div><div class="al">${ch(ZR,"#ffb3b3","Red channel")}${ch(ZG,"#b3e6bf","Green channel")}${ch(ZB,"#b3d4f5","Blue channel")}<div class="ar">➜</div><div><b>Grayscale</b><div class="ag">${GY.map((v,i)=>`<button class="${i==s?"sel":""}" style="background:rgb(${v},${v},${v});color:${v>127?"#000":"#fff"}" onclick="zsel(${i})">${v}</button>`).join("")}</div></div></div><div class="big eq">Pixel ${s+1}: 0.299 × ${r} + 0.587 × ${g} + 0.114 × ${b} = <b>${y}</b></div><div class="qg"><div><b>1 pixel in RGB mode = 3 bytes</b>${bits(r,"#ffb3b3","R")}${bits(g,"#b3e6bf","G")}${bits(b,"#b3d4f5","B")}</div><div><b>1 pixel in grayscale mode = 1 byte</b>${bits(y,"#d9d9d9","gray")}<div class="fb info">RGB image: 25 pixels × 3 = <b>75 numbers</b> (75 bytes). Grayscale image: <b>25 numbers</b> (25 bytes). That’s why grayscale files are smaller.</div></div></div>`}
+Z.bk=0;Z.ba=[3,3,2];Z.bt=[200,60,120];
+const oqz=(v,b)=>{if(!b)return 0;const L=2**b;return Math.round(Math.round(v/255*(L-1))*255/(L-1))},olv=b=>b?Array.from({length:2**b},(_,i)=>Math.round(i*255/(2**b-1))):[0];
+const BC=["#ffb3b3","#b3e6bf","#b3d4f5"],BL=["R","G","B"];
+function ospl(a){const o=[];a.forEach((n,i)=>{for(let j=0;j<n;j++)o.push(`<i style="background:${BC[i]}">${BL[i]}</i>`)});while(o.length<8)o.push(`<i style="background:var(--hl)">·</i>`);return `<div class="bits">${o.join("")}<span>} 1 byte</span></div>`}
+function w11(){const k=Z.bk,sx=[`A byte is <b>8 bits</b>, so it can hold <b>2⁸ = 256</b> different patterns (00000000 up to 11111111). That sounds like plenty…`,`…but one pixel needs <b>red, green AND blue</b>. If a pixel only gets <b>one byte</b>, all three colours have to fit inside it.`,`<b>Option A:</b> give all 8 bits to one channel, say red. Red gets 256 shades, but green and blue get none. We can only make red (and black). No yellow, no purple, no white.`,`<b>Option B:</b> share the bits. A common split is <b>3 bits for red, 3 for green and 2 for blue</b> (3-3-2).`,`Think of a dimmer switch with only click-stops instead of a smooth dial. The number of click-stops is the number of <b>shades (levels)</b> a channel can show: 3 bits = 2³ = <b>8</b> levels for red and for green, and 2 bits = 2² = <b>4</b> for blue. Red can only be 0, 36, 73, 109, 146, 182, 219 or 255. Nothing in between!`,`Total colours: 8 × 8 × 4 = <b>256</b>. That’s all one byte can give, so a smooth sky or a face turns into <b>blocky bands</b>. There are no subtle shades. 😕`,`The fix: give <b>each channel its own byte</b>. 256 × 256 × 256 = <b>16,777,216</b> colours, and each step is just 1. That’s why an RGB pixel uses <b>3 bytes</b>. 🎉`];
+ const v=k<2?ospl([0,0,0]):k==2?ospl([8,0,0]):k<6?ospl([3,3,2]):[[8,0,0],[0,8,0],[0,0,8]].map(ospl).join("");
+ return `<div class="big">🧮 Can <b>one byte</b> hold a whole colour? Press <b>Next step</b> to find out.</div><div style="margin-bottom:10px"><b>${k>=6?"Three bytes":"The byte"}</b>${v}</div><table style="width:100%"><tr><th style="width:80px">Step</th><th>What happens</th></tr>${sx.slice(0,k+1).map((t,i)=>`<tr class="${i==k?"hl":""}"><td>${i+1}</td><td style="text-align:left">${t}</td></tr>`).join("")}</table><div class="ctr"><button class="btn" ${k>=6?"disabled":""} onclick="Z.bk++;render()">▶ Next step</button><button class="btn" onclick="Z.bk=0;render()">↺ Start again</button></div>`}
+function w12(){setTimeout(obz,0);const C=["#e03131","#2f9e44","#1c7ed6"],N=["Red","Green","Blue"];
+ return `<div class="big"><b>How to use this activity</b><br><b>Step 1.</b> One byte is 8 bits. Share the bits between red, green and blue using the <b>+</b> and <b>−</b> buttons (or try a preset).<br><b>Step 2.</b> Each channel can only show a few <b>shades</b>, like a dimmer switch with click-stops instead of a smooth dial. 1 bit gives 2 click-stops (off or full), 2 bits give 4, 3 bits give 8. Maths people call these shades <b>levels</b>. You’ll see them as coloured boxes below the buttons.<br><b>Step 3.</b> Pick a colour you want and see if your byte can store it exactly. Then scroll down and compare the two sunsets.</div><div class="qg"><div><h3 style="margin:.2em 0">1. Share the 8 bits</h3><div id="obb"></div>${N.map((n,i)=>`<div class="br"><b style="color:${C[i]}">${n}</b><span><button class="sb" onclick="obset(${i},-1)">−</button> <b id="obn${i}" style="display:inline-block;min-width:76px;text-align:center"></b> <button class="sb" onclick="obset(${i},1)">+</button></span><span id="obl${i}"></span></div>`).join("")}<div style="margin:6px 0;color:var(--mut)">Each box is a shade that channel is allowed to show. The number inside is its brightness: 0 = off, 255 = full.</div><div id="obi" class="big"></div><div class="ctr"><button class="btn" onclick="obpre([8,0,0])">All red</button><button class="btn" onclick="obpre([3,3,2])">3-3-2 split</button><button class="btn" onclick="obpre([2,2,4])">2-2-4 split</button></div></div><div><h3 style="margin:.2em 0">2. Pick a colour you want</h3>${N.map((n,i)=>`<div class="zr"><b style="color:${C[i]}">${n}</b><input type="range" min="0" max="255" id="obs${i}" value="${Z.bt[i]}" oninput="obt(${i},this.value)"><input type="number" min="0" max="255" id="obm${i}" value="${Z.bt[i]}" onchange="obt(${i},this.value)"></div>`).join("")}<div style="display:flex;gap:16px;margin:10px 0"><div style="flex:1;text-align:center"><b>You want</b><div id="obw" style="height:80px;border-radius:14px;border:3px solid var(--line)"></div></div><div style="flex:1;text-align:center"><b>Closest 1-byte colour</b><div id="obq" style="height:80px;border-radius:14px;border:3px solid var(--line)"></div></div></div><div id="obr"></div></div></div><h3 style="margin:.6em 0 .2em">3. Compare the sunset</h3><div id="obg" style="margin-top:6px"></div><div class="big"><b>🔍 Investigate!</b><ol style="margin:8px 0 0;padding-left:1.3em"><li>Press <b>All red</b>. Can you make orange, rgb(255, 128, 0)? Why or why not?<details><summary>Check your thinking</summary>No. Orange needs green, and all the bits went to red.</details></li><li>Use the <b>3-3-2 split</b> and pick rgb(200, 60, 120). Is it exact? How far off is each channel?<details><summary>Check your thinking</summary>It can’t be exact. Red can only be 0, 36, 73, 109… so it has to jump to the nearest level.</details></li><li>Compare the two sunset strips. How many colours does the 1-byte version lose? What do you see?<details><summary>Check your thinking</summary>It loses most of them, so you see blocky bands instead of a smooth fade: no subtle shades.</details></li><li>Can any split of 8 bits give you 256 levels of red, green AND blue?<details><summary>Check your thinking</summary>No. 256 levels for just one channel already needs all 8 bits. That’s why RGB gives each channel its own byte.</details></li></ol></div>`}
+Z.dm={b:2,v:0,t:null};
+function w13(){setTimeout(odz,0);return `<div class="big">💡 Imagine a red light with a dimmer. A <b>smooth dial</b> can be set to any brightness from 0 to 255. A dimmer with only <b>click-stops</b> can only sit on a few settings. Choose how many bits the click-stop dimmer gets, then press <b>Play</b> (or drag the slider) and watch the two lights.</div><div class="ctr">${[1,2,3,4,8].map(b=>`<button class="btn" id="odb${b}" onclick="Z.dm.b=${b};odz()">${b} bit${b>1?"s":""}</button>`).join("")}<button class="btn" id="odp" onclick="odplay()">▶ Play</button></div><div id="odi" style="text-align:center;margin:6px 0"></div><input type="range" min="0" max="255" id="odr" value="0" style="width:100%;height:32px" oninput="odset(this.value)"><div class="dm2"><div class="fb info">Notice: the smooth light fades gently, but the click-stop light stays stuck and then jumps. More bits means smaller jumps. With 8 bits you can’t see the jumps at all. That’s why one whole byte for each channel gives a smooth fade, but one byte shared by all three channels does not.</div><div class="rs"><div class="lr"><div id="ods" class="lp"></div><div class="ld"><b>Smooth dial</b><br><span id="odn"></span></div></div><div class="lr"><div id="odc" class="lp"></div><div class="ld"><b>Click-stop dimmer</b><br><span id="odm"></span></div></div></div></div>`}
+function odset(v){Z.dm.v=+v;odz()}
+function odplay(){const d=Z.dm;if(d.t){clearInterval(d.t);d.t=null;return odz()}if(d.v>=255)d.v=0;d.t=setInterval(()=>{if(!$("odc")){clearInterval(d.t);d.t=null;return}d.v=Math.min(255,d.v+2);if(d.v>=255){clearInterval(d.t);d.t=null}odz()},40);odz()}
+function odz(){if(!$("odc"))return;const d=Z.dm,v=d.v,q=oqz(v,d.b),l=olv(d.b);
+ [1,2,3,4,8].forEach(b=>{const e=$("odb"+b);if(e)e.style.opacity=b==d.b?1:.5});
+ $("odp").textContent=d.t?"⏸ Pause":"▶ Play";const r=$("odr");if(+r.value!=v)r.value=v;
+ $("ods").style.background=`rgb(${v},0,0)`;$("odc").style.background=`rgb(${q},0,0)`;
+ $("odn").innerHTML=`Brightness <b>${v}</b>`;
+ $("odm").innerHTML=`Brightness <b>${q}</b> ${q==v?"(exact)":`<span style="color:var(--no)">(you wanted ${v}, so it’s off by ${Math.abs(v-q)})</span>`}`;
+ $("odi").innerHTML=`${d.b} bit${d.b>1?"s":""} = <b>${l.length} click-stops</b>${l.length<=8?`: ${l.join(", ")}`:" (too many to list)"}`}
+function obset(i,d){const a=Z.ba,t=a[0]+a[1]+a[2];if(d>0&&t>=8)return;if(d<0&&!a[i])return;a[i]+=d;obz()}
+function obpre(a){Z.ba=a.slice();obz()}
+function obt(i,v){Z.bt[i]=cl(v);obz()}
+function obz(){if(!$("obi"))return;const a=Z.ba,T=Z.bt,t=a[0]+a[1]+a[2];$("obb").innerHTML=ospl(a);
+ a.forEach((b,i)=>{$("obn"+i).textContent=b+(b==1?" bit":" bits");const l=olv(b);$("obl"+i).innerHTML=b?`<b>${l.length} shades</b> <span style="color:var(--mut)">(levels)</span>`+(l.length<=16?`<div class="rib">${l.map(v=>`<i style="background:rgb(${[0,1,2].map(k=>k==i?v:0)});color:${i==1&&v>100?"#000":"#fff"}">${l.length<=8?v:""}</i>`).join("")}</div>`:`<div class="rib"><i style="background:linear-gradient(90deg,#000,rgb(${[0,1,2].map(k=>k==i?255:0)}))"></i></div><span style="color:var(--mut)">too many to show: it’s a smooth fade</span>`):`<b>1 shade</b>: always 0 (off)`;const s=$("obs"+i),m=$("obm"+i);if(+s.value!=T[i])s.value=T[i];if(+m.value!=T[i])m.value=T[i]});
+ const q=T.map((v,i)=>oqz(v,a[i])),ex=q.every((v,i)=>v==T[i]);
+ $("obi").innerHTML=`Bits used: <b>${t} / 8</b>${t<8?` · <b>${8-t} spare</b>: press + to use them`:""}<br>Total colours = red levels × green levels × blue levels = ${2**a[0]} × ${2**a[1]} × ${2**a[2]} = <b>${2**a[0]*2**a[1]*2**a[2]}</b>`;
+ $("obw").style.background=`rgb(${T})`;$("obq").style.background=`rgb(${q})`;
+ $("obr").innerHTML=ex?`<div class="fb ok">✔ Exact match! rgb(${T.join(", ")}) can be stored with this split.</div>`:`<div class="fb no">✘ Not exact. You want rgb(${T.join(", ")}) but the closest is <b>rgb(${q.join(", ")})</b>. Off by ${q.map((v,i)=>Math.abs(v-T[i])).join(", ")}.</div>`;
+ const A=[25,70,180],B=[255,170,110],n=96,col=j=>A.map((x,i)=>Math.round(x+(B[i]-x)*j/(n-1))),sm=[...Array(n).keys()].map(col),lo=sm.map(c=>c.map((v,i)=>oqz(v,a[i])));
+ const strip=L=>`<div class="strip">${L.map(c=>`<i style="background:rgb(${c})"></i>`).join("")}</div>`,cnt=L=>new Set(L.map(String)).size;
+ $("obg").innerHTML=`<b>Smooth sunset: 3 bytes per pixel</b> (${cnt(sm)} different colours in this strip)${strip(sm)}<b>The same sunset in 1 byte per pixel</b> (only ${cnt(lo)} different colours in this strip)${strip(lo)}`}
+function gridpage(){return `<h1>🔲 Pixel grid: an image is an array of numbers</h1><div class="card">${w8()}</div><div class="ctr"><button class="btn" onclick="go('g')">Guess the colour ➡</button></div>`}
+function zlink(on){Z.link=on;if(on){Z.c=Array(3).fill(lm(Z.c));Z.grid=Z.grid.map(c=>Array(3).fill(lm(c)))}render()}
+function zset(i,v,all){v=cl(v);Z.c=(Z.link||all)?[v,v,v]:Z.c.map((x,j)=>j==i?v:x);zup()}
+function zpaint(i){Z.grid[i]=Z.c.slice();zup()}
+function zup(){if(!$("zsw"))return;const c=Z.c,g=c[0]==c[1]&&c[1]==c[2],n=Z.grid.length,by=Z.link?1:3;
+ c.forEach((v,i)=>{["zr","zn"].forEach(p=>{const e=$(p+i);if(e&&+e.value!=v)e.value=v});$("zb"+i).textContent=d2b(v)});
+ $("zsw").style.background=`rgb(${c})`;
+ $("zro").innerHTML=`<table><tr><th>RGB</th><td><code>rgb(${c.join(", ")})</code></td></tr><tr><th>Hex</th><td><code>#${c.map(hx).join("")}</code></td></tr><tr><th>Stored as</th><td><code>${g?`[${c[0]}]`:`[${c.join(", ")}]`}</code> = ${g?"<b>1 byte</b>":"<b>3 bytes</b>"}</td></tr></table>${g?`<div class="fb ok">R = G = B, so this is a <b>gray</b>. One number is enough.</div>`:`<div class="fb info">R, G and B differ, so it is a <b>colour</b> and needs all three numbers.</div>`}`;
+ $("zgr").innerHTML=Z.grid.map((c,i)=>`<button style="color:${lm(c)>140?"#000":"#fff"};background:rgb(${c})" onclick="zpaint(${i})" title="rgb(${c})">${Z.link?c[0]:c.join("<br>")}</button>`).join("");
+ $("zgi").innerHTML=`<b>${n} pixels × ${by} byte${by>1?"s":""} = ${n*by} bytes</b> (${n*by*8} bits)<br><code>${Z.link?`[${Z.grid.slice(0,6).map(c=>c[0]).join(", ")}, …]`:`[${Z.grid.slice(0,3).map(c=>`[${c}]`).join(", ")}, …]`}</code><br><span style="color:var(--mut)">Switching to grayscale loses the colour for good. Restore to get it back.</span>`}
+// ---------- guessing game ----------
+const G={lvl:0,t:null,g:[],won:false,st:0,inp:["","",""],msg:""};
+const GL=[["Level 1: only 0 or 255",()=>[0,0,0].map(()=>Math.random()<.5?0:255)],["Level 2: grays (R = G = B)",()=>{const v=Math.floor(Math.random()*256);return[v,v,v]}],["Level 3: any colour",()=>[0,0,0].map(()=>Math.floor(Math.random()*256))]];
+function gnew(l){if(l!=null)G.lvl=l;G.t=GL[G.lvl][1]();G.g=[];G.won=false;G.inp=["","",""];render()}
+function gskip(){G.msg=`The answer was rgb(${G.t.join(", ")}) = #${G.t.map(hx).join("")}. Here’s a new colour.`;G.st=0;gnew()}
+function gamev(){if(!G.t)G.t=GL[G.lvl][1]();const t=G.t,NMS=["Red","Green","Blue"],CO=["#e03131","#2f9e44","#1c7ed6"];
+ const hist=G.g.length?`<table><tr><th>#</th><th>Your guess</th><th>R</th><th>G</th><th>B</th><th>Accuracy</th></tr>${G.g.map((r,k)=>`<tr><td>${G.g.length-k}</td><td><code>${r.g.join(", ")}</code></td>${r.d.map(d=>`<td class="${d==0?"y":"n"}">${d==0?"✔":d>0?"↑ higher":"↓ lower"}</td>`).join("")}<td>${Math.round(100-r.d.reduce((a,d)=>a+Math.abs(d),0)/765*100)}%</td></tr>`).join("")}</table>`:"";
+ return `<div class="kicker">CHALLENGE · ACTIVITY</div><h1>🎯 Guess the colour</h1><div class="card"><p>Type the <b>exact</b> R, G and B values (0 to 255) to match the target. Arrows show whether each channel should go higher or lower. Only an exact match wins! 🏆</p>
+ <div class="tabs">${GL.map((l,i)=>`<button class="${G.lvl==i?"on":""}" onclick="gnew(${i})">${l[0]}</button>`).join("")}</div>
+ <p>🏆 Wins: <b>${S.gw}</b> &nbsp; 🔥 Streak: <b>${G.st}</b> (best ${S.gs}) &nbsp; Guesses this round: <b>${G.g.length}</b></p>${G.msg?`<div class="fb info">${G.msg}</div>`:""}
+ <div class="qg"><div class="ctr"><b>Target</b><div style="height:170px;border-radius:18px;border:3px solid var(--line);background:rgb(${t})"></div></div><div class="ctr"><b>Your guess</b><div id="gsw" style="height:170px;border-radius:18px;border:3px solid var(--line)"></div></div></div>
+ ${G.won?`<div class="fb ok">🎉 Exact match in ${G.g.length} guess${G.g.length>1?"es":""}! <code>rgb(${t.join(", ")})</code> = <code>#${t.map(hx).join("")}</code></div><div class="ctr"><button class="btn" onclick="G.msg='';gnew()">Next colour ➡</button></div>`:
+ `<div class="ctr">${NMS.map((n,i)=>`<b style="color:${CO[i]}">${n}</b> <input type="number" class="s" style="width:120px" min="0" max="255" id="ga${i}" value="${G.inp[i]}" oninput="gav()" onkeydown="if(event.key=='Enter')gguess()"> `).join("")}<br><button class="btn" onclick="gguess()">Guess ✔</button><button class="btn" style="background:var(--card);color:var(--pri)" onclick="gskip()">Skip ⏭</button></div><div id="gm"></div>`}
+ ${hist}</div><div class="ctr"><button class="btn" onclick="go('r')">Reflect ➡</button></div>`}
+function gav(){const e=$("gsw");if(!e)return;const v=[0,1,2].map(i=>$("ga"+i)?$("ga"+i).value:G.inp[i]);G.inp=v;e.style.background=`rgb(${v.map(cl)})`}
+function gguess(){if(G.won)return;const raw=[0,1,2].map(i=>$("ga"+i).value);if(raw.some(v=>v===""))return void($("gm").innerHTML='<div class="fb info">Type all three numbers first.</div>');
+ const g=raw.map(cl),d=g.map((v,i)=>G.t[i]-v);G.g.unshift({g,d});G.inp=raw;G.msg="";
+ if(d.every(x=>x==0)){G.won=true;G.st++;S.gw++;S.gs=Math.max(S.gs,G.st);save();toast()}render()}
+// ---------- pages ----------
+function welcome(){return `<div class="card"><div class="kicker">START · WELCOME</div><h1>Data Representation: Pixels, RGB and Grayscale</h1><p>Welcome! 👋 Before computers can show a photo or a colour, they need to store <b>numbers</b>. Today you’ll learn how pixels, RGB colours and grayscale are stored as data.</p>
+<div class="big">Your first name: ${nm()}<p style="font-size:.85em;font-weight:normal">Enter your first name before starting. It will be attached to your WE DO answers.</p></div></div>
+<div class="qg"><div class="card"><h2>🧠 What we’re learning</h2><p>How computers use <b>bits</b> and <b>bytes</b> to store numbers from 0 to 255, then use three bytes to build any <b>RGB colour</b>, and one byte for a shade of <b>gray</b>.</p><div class="lo"><b>LEARNING INTENTION</b><br>We are learning to understand how digital images are represented using <b>pixels</b> and <b>RGB colour values</b>.</div><h2>✅ Success criteria</h2><ul><li><b>Skill 1:</b> ${SUB[1]}</li><li><b>Skill 2:</b> ${SUB[2]}</li><li><b>Skill 3:</b> ${SUB[3]}</li><li><b>Skill 4:</b> ${SUB[4]}</li><li><b>Skill 5:</b> ${SUB[5]}</li></ul></div>
+<div class="card"><h2>🧭 How this page works</h2><ul><li>Each skill has 3 steps: <b>I DO</b> (watch a worked example), <b>WE DO</b> (guided practice with hints), <b>YOU DO</b> (on your own).</li><li>In Try, a wrong answer gets a hint. After 3 tries the answer is shown.</li><li>Your score <b>✅ x / y</b> is at the top. Your progress saves on this computer.</li><li>After the 5 skills, play the <b>🎯 Guess the colour</b> game: type the exact R, G and B to match a colour.</li><li>At the end you <b>Reflect</b> and <b>download a Word file</b> to hand in.</li></ul></div></div>
+${datapanel()}<details class="card cue"><summary><b>TEACHER CUE</b> · 🧑‍🏫 Notes for the teacher or relief teacher</summary><p>About 55–60 minutes. Students work through the tabs in order at their own pace; the page checks everything and gives hints. Follows the Pixels and RGB slides: bytes and switches, pixels and RGB, hex colour codes, then grayscale, followed by an optional colour guessing game. Students have already learnt binary. Ask early finishers to explain why a byte stops at 255. Students download a .docx (name, score, every answer and attempts, reflections) and submit it as evidence.</p></details>
+<div class="ctr"><button class="btn" onclick="go('1')">Let’s go! ➡</button></div>`}
+function skill(sk){const st=S.st[sk],qs_=Q.filter(q=>q.sk==sk),lst=x=>qs_.filter(q=>q.st==x);
+ let h=`<div class="kicker">SKILL ${sk} OF 5 · ${STG[st].toUpperCase()}</div><h1>Skill ${sk}: ${SK[sk]}</h1><div class="lo">🎯 ${SUB[sk]}</div><div class="tabs">${["w","t","s"].map(x=>`<button class="${st==x?"on":""}" onclick="S.st[${sk}]='${x}';save();render()">${STG[x]}</button>`).join("")}</div>`;
+ if(st=="w")h+=`<div class="card"><div class="kicker">I DO</div><h2>Watch me model it</h2>${sk==1?w1():sk==2?w6():sk==3?w5():sk==4?w7():w11()}</div>${sk==5?`<div class="card"><h2>💡 The dimmer demo</h2>${w13()}</div><div class="card"><h2>🧮 Squeeze a colour into 1 byte</h2>${w12()}</div>`:""}${sk==4?`<div class="card"><h2>🧱 Layers: RGB to grayscale (it’s all arrays of numbers)</h2>${w9()}</div><div class="card"><h2>🔬 Explore: grayscale or RGB?</h2>${w8()}</div>`:""}<div class="cfu"><b>CHECK FOR UNDERSTANDING</b> · answer before you move on</div><div class="qg">${card(lst("c")[0],"⚡")}</div>`;
+ else{h+=`<h2>${st=="t"?"WE DO · Try it together (hints and 3 tries)":"YOU DO · On your own (no hints!)"}</h2><div class="qg">${lst(st).map((q,i)=>card(q,i+1)).join("")}</div>`}
+ const nx=st=="w"?`S.st[${sk}]='t'`:st=="t"?`S.st[${sk}]='s'`:`S.pg='${sk<5?sk+1:"g"}'`;
+ return h+`<div class="ctr"><button class="btn" onclick="${nx};save();render();scrollTo(0,0)">${st=="s"?(sk<5?"Next skill ➡":"Play the guessing game ➡"):"Next step ➡"}</button></div>`}
+function reflect(){return `<h1>✍️ Reflect</h1><p>Explain in your own words. Full sentences, please!</p><div class="qg">${RP.map((p,i)=>`<div class="card"><div class="qh"><span class="n">${i+1}</span>${p}</div><textarea oninput="S.r[${i}]=this.value;save();$('wc${i}').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length+' words'">${S.r[i]||""}</textarea><small id="wc${i}">${S.r[i].trim().split(/\s+/).filter(Boolean).length} words</small></div>`).join("")}</div><div class="ctr"><button class="btn" onclick="go('h')">Hand in ➡</button></div>`}
+const strip=s=>s.replace(/<[^>]+>/g,"");
+function rows(){return Q.map(q=>{const s=qs(q.id),i=Q.filter(z=>z.sk==q.sk).indexOf(q)+1;return{sk:q.sk,n:`${q.sk}.${i}`,p:strip(q.p),a:s.a||"—",res:s.d?"Correct":s.rev?"Not yet correct (answer was shown)":s.n?"Not yet correct":"Not attempted",c:s.d?"1B8A4B":"B7791F",tries:s.n}})}
+function handin(){const sub=[1,2,3,4,5].map(k=>`<tr><td>${SK[k]}</td><td>${done(k)} / ${tot(k)}</td></tr>`).join("");
+ return `<h1>📄 Hand in</h1><div class="card"><div class="big">Your name: ${nm()}</div><p>📅 ${new Date().toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"})} &nbsp; ✅ Score: <b>${done()} / ${tot()}</b></p><table><tr><th>Skill</th><th>Correct</th></tr>${sub}</table><p>Anything marked “not yet correct” is still included, so go back and try again if you have time. 💪</p>
+<div class="ctr"><button class="btn" onclick="dl()">⬇ Download my Word file</button><button class="btn" onclick="cp()">📋 Copy my answers</button></div><div id="hm" class="fb info" style="display:none"></div><textarea id="ct" style="display:none;margin-top:12px"></textarea></div>${datapanel()}`}
+const hm=t=>{$("hm").style.display="block";$("hm").textContent=t};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const when=()=>new Date().toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"});
+const NV="102B51";
+const run=(t,o={})=>`<w:r><w:rPr>${o.b?"<w:b/>":""}${o.c?`<w:color w:val="${o.c}"/>`:""}<w:sz w:val="${o.z||21}"/></w:rPr><w:t xml:space="preserve">${esc(t)}</w:t></w:r>`;
+const para=(t,o={})=>`<w:p><w:pPr>${o.keep?"<w:keepNext/>":""}${o.bd?`<w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${o.bd}"/></w:pBdr>`:""}${o.bg?`<w:shd w:val="clear" w:color="auto" w:fill="${o.bg}"/>`:""}<w:spacing w:before="${o.sb==null?60:o.sb}" w:after="${o.sa==null?60:o.sa}"/></w:pPr>${run(t,o)}</w:p>`;
+const tc=(t,w,o={})=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.bg?`<w:shd w:val="clear" w:color="auto" w:fill="${o.bg}"/>`:""}<w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:before="50" w:after="50"/>${o.jc?`<w:jc w:val="${o.jc}"/>`:""}</w:pPr>${run(t,o)}</w:p></w:tc>`;
+const tbl=(ws,head,rows)=>{const t=ws.reduce((a,x)=>a+x,0),bd=["top","left","bottom","right","insideH","insideV"].map(x=>`<w:${x} w:val="single" w:sz="4" w:space="0" w:color="BFC9D9"/>`).join("");
+ return `<w:tbl><w:tblPr><w:tblW w:w="${t}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${head?`<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>${head.map((h,i)=>tc(h,ws[i],{b:1,c:"FFFFFF",bg:"1761AD"})).join("")}</w:tr>`:""}${rows.map(r=>`<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.join("")}</w:tr>`).join("")}</w:tbl>`};
+async function mk(){const zip=new JSZip(),R=rows(),ws=[600,3800,2100,2238,900],
+ rs=r=>r.res=="Correct"?["E2F6E9","146C3B"]:r.res.startsWith("Not yet")?["FFF1CC","7A5200"]:["F1F3F5","555555"];
+ let b=para("Data Representation: Pixels, RGB and Grayscale",{b:1,z:40,c:"FFFFFF",bg:NV,sb:0,sa:0})
+ +para("Aveley Secondary College · Year 8 Digital Technologies",{z:20,c:"F0B22D",bg:NV,bd:"F0B22D",sb:0,sa:160})
+ +tbl([2200,7438],null,[["Name",S.name||"(not entered)"],["Date",when()],["Score",`${done()} / ${tot()} questions correct`],["Colour guessing game",`${S.gw} won (best streak ${S.gs})`]].map(r=>[tc(r[0],2200,{b:1,bg:"E4F0FB"}),tc(r[1],7438)]))
+ +para("Summary",{b:1,z:28,c:NV,sb:240,keep:1})
+ +tbl([6638,3000],["Skill","Correct"],[1,2,3,4,5].map(k=>[tc(`Skill ${k}: ${SK[k]}`,6638),tc(`${done(k)} / ${tot(k)}`,3000,{jc:"center"})]));
+ [1,2,3,4,5].forEach(k=>{b+=para(`Skill ${k}: ${SK[k]}  (${done(k)} / ${tot(k)})`,{b:1,z:26,c:NV,bg:"E4F0FB",sb:280,sa:100,keep:1})
+  +tbl(ws,["#","Question","Student answer","Result","Tries"],R.filter(r=>r.sk==k).map(r=>{const [bg,c]=rs(r);return [tc(r.n,ws[0],{jc:"center"}),tc(r.p,ws[1]),tc(r.a,ws[2]),tc(r.res,ws[3],{b:1,c,bg}),tc(String(r.tries),ws[4],{jc:"center"})]}))});
+ b+=para("Reflection",{b:1,z:28,c:NV,bd:"F0B22D",sb:320,sa:100,keep:1});
+ RP.forEach((p,i)=>{b+=para(`${i+1}. ${p}`,{b:1,c:NV,sb:180,keep:1})+(S.r[i]||"(not answered)").split(/\n+/).map(l=>para(l,{bg:"F1F5F9",sb:20,sa:20})).join("")});
+ const X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+ zip.file("[Content_Types].xml",X+`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
+ zip.file("_rels/.rels",X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+ zip.file("word/_rels/document.xml.rels",X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
+ zip.file("word/styles.xml",X+`<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="21"/><w:lang w:val="en-AU"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`);
+ zip.file("word/document.xml",X+`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${b}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+ return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})}
+async function dl(){if(!S.name.trim())return hm("✏️ Please type your name first.");
+ const fn=`Data Representation - ${S.name.trim().replace(/[\\/:*?"<>|]/g,"")}.docx`;
+ let blob;try{blob=await mk()}catch(e){return hm("Couldn’t build the file. Use “Copy my answers” instead.")}
+ if(!DL){try{DL=await window.claude.use("downloads")}catch(e){}}
+ if(DL){try{await DL.save({filename:fn,data:blob});return hm("✅ Saved! Hand that file in to your teacher.")}catch(e){if(e&&e.code=="declined")return hm("No worries. Click again when you’re ready.")}}
+ try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);hm("✅ Your Word file should be in your Downloads folder. If nothing appeared, use “Copy my answers” instead.")}catch(e){hm("The download didn’t work here. Use “Copy my answers” instead.")}}
+async function cp(){if(!S.name.trim())return hm("✏️ Please type your name first.");let t=`Data Representation: Pixels, RGB and Grayscale\nName: ${S.name}\nDate: ${when()}\nScore: ${done()} / ${tot()}\nColour guessing game: ${S.gw} won (best streak ${S.gs})\n\n`+rows().map(r=>`${r.n}. ${r.p}\n   Answer: ${r.a} | ${r.res} | tries: ${r.tries}`).join("\n")+"\n\nReflections:\n"+RP.map((p,i)=>`${p}\n${S.r[i]||"(not answered)"}`).join("\n\n");
+ const a=$("ct");a.value=t;a.style.display="block";a.select();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{ok=document.execCommand("copy")}catch(e2){}}hm(ok?"📋 Copied! Paste it into a document and hand it in.":"Select all the text in the box, copy it and paste it into a document.")}
+function render(){hdr();$("app").innerHTML=S.pg=="w"?welcome():"12345".includes(S.pg)?skill(+S.pg):S.pg=="p"?gridpage():S.pg=="g"?gamev():S.pg=="r"?reflect():handin();if(S.pg=="g")gav()}
+render();
+startDatabase();
+try{window.claude.use("downloads").then(d=>{if(d){DL=d;if(S.pg=="h")render()}}).catch(()=>{})}catch(e){}
+</script></body></html>
