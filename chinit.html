@@ -37,7 +37,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
  <div class="row" id="pConfirm" hidden><p id="confirmTxt"></p><button id="yes" type="button">Yes, that’s me</button><button id="back" class="alt" type="button">No, go back</button></div>
  <div class="row" id="pTyped" hidden><label for="typed">Your first name</label><input id="typed" maxlength="40" autocomplete="off"><button id="tgo" type="button">Continue</button></div>
  <div class="row" id="pWrite" hidden><p id="who"></p><textarea id="box" maxlength="300" placeholder="Type your response…"></textarea><button id="send" type="button">Submit response</button></div>
- <div class="row" id="done" hidden><div class="check">✓</div><h2 id="doneH">Response sent!</h2><p id="doneP">Your teacher has it. Eyes up!</p><button id="redo" class="alt" type="button">Change my response</button></div>
+ <div class="row" id="done" hidden><div class="check">✓</div><h2 id="doneH">Response sent!</h2><p id="doneP">Your teacher has it. Eyes up!</p></div>
  <p id="msg" role="status"></p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -45,7 +45,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 const URL_="https://agkixedmhuxskfdrfbcn.supabase.co",KEY_="sb_publishable_F6OHTBrA9vYWhWLUagmWvA_tojihS8U";
 const LESSON=(new URLSearchParams(location.search).get("key")||"").trim();
 const $=id=>document.getElementById(id);
-const st={mode:"loading",rows:[],name:"",sid:"",pend:"",busy:false,phase:"open",round:0,nonce:"",t:0,sent:false};
+const st={mode:"loading",rows:[],name:"",sid:"",pend:"",busy:false,phase:"open",round:0,nonce:"",t:0,sent:false,flipT:0};
 let sb,ch;
 const say=(t,bad)=>{const e=$("msg");e.textContent=t||"";e.style.color=bad?"var(--bad)":"var(--muted)"};
 function ui(){
@@ -61,7 +61,7 @@ function ui(){
   const p=st.rows.find(r=>r.student_id===st.pend);$("confirmTxt").textContent=p?"You chose "+p.student_name+". Is that you? You can’t change it afterwards.":"";
  }
  $("who").textContent=named?"Name: "+st.name:"";
- const open=st.phase==="open";$("box").disabled=!open;$("send").disabled=!open||!!st.nonce;$("doneH").textContent=open?"Response sent!":"Look up at the board!";$("doneP").textContent=open?"Your teacher has it. Eyes up!":"Here it comes…";$("redo").hidden=!open;
+ const open=st.phase==="open";$("box").disabled=!open;$("send").disabled=!open||!!st.nonce;$("doneH").textContent=open?"Response sent!":"Look up at the board!";$("doneP").textContent=open?"Your teacher has it. Eyes up!":"Here it comes…";
 }
 async function claim(){
  const r=st.rows.find(x=>x.student_id===st.pend);if(!r||st.busy)return;st.busy=true;
@@ -82,11 +82,12 @@ function connect(){
  ch.on("broadcast",{event:"state"},({payload:p})=>{
    if(!p)return;if(st.round&&p.round!==st.round){$("box").value="";st.nonce="";st.sent=false;say("")}
    st.round=p.round;st.phase=p.phase;
+   if(p.phase==="open"&&st.sent&&!st.flipT){st.sent=false;$("box").value=""}
    if(p.phase!=="open")say("Look up at the board!");else if(!st.nonce&&$("msg").textContent==="Look up at the board!")say("");
    ui()})
   .on("broadcast",{event:"ack"},({payload:p})=>{
    if(!p||p.nonce!==st.nonce)return;st.nonce="";clearTimeout(st.t);
-   if(p.ok){say("");st.sent=true;burst()}
+   if(p.ok){say("");st.sent=true;burst();clearTimeout(st.flipT);st.flipT=setTimeout(()=>{st.flipT=0;if(st.sent&&st.phase==="open"){st.sent=false;$("box").value="";ui()}},2600)}
    else say(p.reason==="closed"?"Too late. Wait for the next one.":p.reason==="name"?"Your name wasn’t recognised. Tell your teacher.":"Type a response first.",true);
    ui()})
   .subscribe(s=>{
@@ -105,7 +106,6 @@ $("yes").onclick=claim;
 $("tgo").onclick=()=>{const n=$("typed").value.trim().split(/\s+/)[0];if(n){st.name=n;ui()}};
 $("typed").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("tgo").click()}};
 $("send").onclick=submit;
-$("redo").onclick=()=>{st.sent=false;ui();$("box").focus()};
 function burst(){
  if(navigator.vibrate)navigator.vibrate(80);
  const c=document.querySelector(".card");c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash");
