@@ -2,23 +2,33 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Submit response</title>
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#14213d;--muted:#5c677d;--accent:#4f46e5;--accent-ink:#fff;--line:#c9d1e3;--bad:#c0262d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#1a1f2e;--ink:#f1f3f9;--muted:#9aa4bd;--accent:#7c78ff;--accent-ink:#0b0d14;--line:#323a52;--bad:#ff7b84}}
-:root[data-theme="dark"]{--bg:#10131c;--card:#1a1f2e;--ink:#f1f3f9;--muted:#9aa4bd;--accent:#7c78ff;--accent-ink:#0b0d14;--line:#323a52;--bad:#ff7b84}
+:root{--bg:#0c0720;--card:#1a1238;--ink:#f7f4ff;--muted:#a99fd1;--line:#3a2d70;--pink:#ff4f9a;--lime:#b6f23a;--cyan:#3fe0f5;--bad:#ff7b9c;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;width:min(100%,560px);display:flex;flex-direction:column;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
-h1{margin:0;font-size:1.4rem}p{margin:0;color:var(--muted)}
+body{background:radial-gradient(900px 500px at 10% -10%,#2a1240,transparent),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:26px;width:min(100%,560px);display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card.flash{animation:flash .7s ease-out}
+@keyframes flash{0%{border-color:var(--lime);box-shadow:0 0 0 0 rgba(182,242,58,.6),0 20px 60px rgba(0,0,0,.5)}100%{border-color:var(--line);box-shadow:0 0 0 60px rgba(182,242,58,0),0 20px 60px rgba(0,0,0,.5)}}
+h1{margin:0;font-size:1.5rem}p{margin:0;color:var(--muted)}
 [hidden]{display:none!important}
 .row{display:flex;flex-direction:column;gap:10px}
-label{font-weight:600}
-select,input,textarea{width:100%;font:inherit;font-size:1.1rem;padding:12px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+label{font-weight:700}
+select,input,textarea{width:100%;font:inherit;font-size:1.1rem;padding:13px;border-radius:12px;border:2px solid var(--line);background:#150b2e;color:var(--ink)}
 textarea{min-height:130px;resize:vertical}
-select:focus,input:focus,textarea:focus{outline:none;border-color:var(--accent)}
-button{font:inherit;font-weight:700;font-size:1.15rem;padding:14px 20px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--cyan)}
+button{font:inherit;font-weight:800;font-size:1.15rem;padding:15px 20px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--pink),#ff9f4a);color:#150b2e;cursor:pointer;transition:transform .12s}
+button:hover:not(:disabled){transform:translateY(-2px) scale(1.02)}
 button.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
-button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled{opacity:.55;cursor:not-allowed}
+#send:disabled{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.85}}
 #msg{min-height:1.3em;font-size:.95rem}
+#done{align-items:center;text-align:center;padding:8px 0}
+.check{width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,var(--lime),var(--cyan));color:#150b2e;display:grid;place-items:center;font-size:3.6rem;font-weight:900;animation:pop .55s cubic-bezier(.2,1.5,.4,1) both,glow 1.5s ease-out .25s 1}
+@keyframes pop{from{transform:scale(0) rotate(-45deg)}to{transform:scale(1) rotate(0)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(182,242,58,.7)}100%{box-shadow:0 0 0 50px rgba(182,242,58,0)}}
+#doneH{margin:6px 0 0;font-size:2.1rem}
+.confetti{position:fixed;left:50%;top:40%;width:10px;height:15px;border-radius:2px;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion:reduce){.check,.card.flash,#send:disabled{animation:none}}
 </style></head><body>
 <main class="card">
  <h1>✍️ Your response</h1>
@@ -27,6 +37,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
  <div class="row" id="pConfirm" hidden><p id="confirmTxt"></p><button id="yes" type="button">Yes, that’s me</button><button id="back" class="alt" type="button">No, go back</button></div>
  <div class="row" id="pTyped" hidden><label for="typed">Your first name</label><input id="typed" maxlength="40" autocomplete="off"><button id="tgo" type="button">Continue</button></div>
  <div class="row" id="pWrite" hidden><p id="who"></p><textarea id="box" maxlength="300" placeholder="Type your response…"></textarea><button id="send" type="button">Submit response</button></div>
+ <div class="row" id="done" hidden><div class="check">✓</div><h2 id="doneH">Response sent!</h2><p id="doneP">Your teacher has it. Eyes up!</p><button id="redo" class="alt" type="button">Change my response</button></div>
  <p id="msg" role="status"></p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -34,7 +45,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 const URL_="https://agkixedmhuxskfdrfbcn.supabase.co",KEY_="sb_publishable_F6OHTBrA9vYWhWLUagmWvA_tojihS8U";
 const LESSON=(new URLSearchParams(location.search).get("key")||"").trim();
 const $=id=>document.getElementById(id);
-const st={mode:"loading",rows:[],name:"",sid:"",pend:"",busy:false,phase:"open",round:0,nonce:"",t:0};
+const st={mode:"loading",rows:[],name:"",sid:"",pend:"",busy:false,phase:"open",round:0,nonce:"",t:0,sent:false};
 let sb,ch;
 const say=(t,bad)=>{const e=$("msg");e.textContent=t||"";e.style.color=bad?"var(--bad)":"var(--muted)"};
 function ui(){
@@ -42,7 +53,7 @@ function ui(){
  $("pName").hidden=!(st.mode==="roster"&&!named&&!st.pend);
  $("pConfirm").hidden=!(st.mode==="roster"&&!named&&st.pend);
  $("pTyped").hidden=!(st.mode==="typed"&&!named);
- $("pWrite").hidden=!named;
+ $("pWrite").hidden=!named||st.sent;$("done").hidden=!(named&&st.sent);
  $("intro").textContent=!LESSON?"This page needs the link from your teacher.":st.mode==="loading"?"Connecting…":named?"Type your response, then press Submit response.":"First, tell us who you are.";
  if(st.mode==="roster"&&!named){
   $("sel").innerHTML="";const o0=new Option("Choose your name…","");$("sel").add(o0);
@@ -50,7 +61,7 @@ function ui(){
   const p=st.rows.find(r=>r.student_id===st.pend);$("confirmTxt").textContent=p?"You chose "+p.student_name+". Is that you? You can’t change it afterwards.":"";
  }
  $("who").textContent=named?"Name: "+st.name:"";
- const open=st.phase==="open";$("box").disabled=!open;$("send").disabled=!open||!!st.nonce;
+ const open=st.phase==="open";$("box").disabled=!open;$("send").disabled=!open||!!st.nonce;$("doneH").textContent=open?"Response sent!":"Look up at the board!";$("doneP").textContent=open?"Your teacher has it. Eyes up!":"Here it comes…";$("redo").hidden=!open;
 }
 async function claim(){
  const r=st.rows.find(x=>x.student_id===st.pend);if(!r||st.busy)return;st.busy=true;
@@ -69,13 +80,13 @@ async function loadRoster(){
 function connect(){
  ch=sb.channel("chinit:"+LESSON,{config:{broadcast:{self:false}}});
  ch.on("broadcast",{event:"state"},({payload:p})=>{
-   if(!p)return;if(st.round&&p.round!==st.round){$("box").value="";st.nonce="";say("")}
+   if(!p)return;if(st.round&&p.round!==st.round){$("box").value="";st.nonce="";st.sent=false;say("")}
    st.round=p.round;st.phase=p.phase;
    if(p.phase!=="open")say("Look up at the board!");else if(!st.nonce&&$("msg").textContent==="Look up at the board!")say("");
    ui()})
   .on("broadcast",{event:"ack"},({payload:p})=>{
    if(!p||p.nonce!==st.nonce)return;st.nonce="";clearTimeout(st.t);
-   if(p.ok)say("Submitted ✓ You can change it and submit again until your teacher starts the countdown.");
+   if(p.ok){say("");st.sent=true;burst()}
    else say(p.reason==="closed"?"Too late. Wait for the next one.":p.reason==="name"?"Your name wasn’t recognised. Tell your teacher.":"Type a response first.",true);
    ui()})
   .subscribe(s=>{
@@ -94,6 +105,16 @@ $("yes").onclick=claim;
 $("tgo").onclick=()=>{const n=$("typed").value.trim().split(/\s+/)[0];if(n){st.name=n;ui()}};
 $("typed").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("tgo").click()}};
 $("send").onclick=submit;
+$("redo").onclick=()=>{st.sent=false;ui();$("box").focus()};
+function burst(){
+ if(navigator.vibrate)navigator.vibrate(80);
+ const c=document.querySelector(".card");c.classList.remove("flash");void c.offsetWidth;c.classList.add("flash");
+ if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ const cols=["#ff4f9a","#ffd23f","#3fe0f5","#b6f23a","#a78bfa","#ff9f4a"];
+ for(let i=0;i<44;i++){const e=document.createElement("i");e.className="confetti";e.style.background=cols[i%6];document.body.appendChild(e);
+  const a=Math.random()*Math.PI*2,d=140+Math.random()*280;
+  e.animate([{transform:"translate(0,0) rotate(0)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+(Math.sin(a)*d+170)+"px) rotate("+Math.random()*900+"deg)",opacity:0}],{duration:1100+Math.random()*700,easing:"cubic-bezier(.15,.7,.3,1)"}).onfinish=()=>e.remove()}
+}
 $("box").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submit()}};
 (async()=>{
  if(!LESSON){ui();return}
