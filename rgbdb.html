@@ -53,7 +53,8 @@ ul{padding-left:1.2em}details{margin-top:14px}summary{cursor:pointer;font-weight
 :root{--bg:#f1f5f9;--card:#fff;--ink:#12233c;--mut:#53677d;--pri:#1761ad;--pi:#fff;--ok:#167a53;--okb:#e2f6e9;--no:#a34228;--nob:#fdeee9;--line:#c6d7e7;--hl:#e4f0fb;--on:#f0b22d;--oni:#102b51;--navy:#102b51;--gold:#f0b22d}
 body{font-family:Arial,Helvetica,sans-serif}body::before{background:var(--navy)}
 .sh{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:6px solid var(--gold)}
-.brand{font-size:13px;letter-spacing:2px;font-weight:700}.brand strong{display:block;font-size:22px;letter-spacing:0}
+.stuname{font-size:36px;font-weight:800;color:#fff;line-height:1.1;word-break:break-word}.stuname.empty{font-size:18px;font-weight:700;color:var(--gold)}
+nav button:disabled{opacity:.45;cursor:not-allowed}
 .tag{background:#e8f2ff;color:#12345a;padding:6px 12px;border-radius:5px;font-size:12px;font-weight:700}
 header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font-weight:700;background:var(--card);color:var(--ink);border:1px solid var(--line)}nav button.on{background:var(--pri);color:var(--pi);border-color:var(--pri)}
 .progress{height:9px;background:var(--line)}.bar{height:100%;width:0;background:#2d9b73;transition:width .2s}
@@ -63,7 +64,7 @@ header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font
 .cue{border-left:5px solid var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--card));padding:12px 16px}details.cue summary{cursor:pointer}
 .cfu{border-left:5px solid #1c9a91;background:color-mix(in srgb,#1c9a91 14%,var(--card));padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
 </style></head><body>
-<div class="sh"><div class="brand">AVELEY SECONDARY COLLEGE<strong>EXPLICIT DIRECT INSTRUCTION</strong></div><div class="tag">YEAR 8 DIGITAL TECHNOLOGIES · DATA REPRESENTATION: PIXELS, RGB AND GRAYSCALE</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><span id="dbstatus" class="dbstatus">Connecting to class response collection…</span><button class="th" onclick="theme()" title="Light or dark">🌓</button></header>
+<div class="sh"><div class="stuname empty" id="stuName">✏️ Type your first name to begin</div><div class="tag">YEAR 8 DIGITAL TECHNOLOGIES · DATA REPRESENTATION: PIXELS, RGB AND GRAYSCALE</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><span id="dbstatus" class="dbstatus">Connecting to class response collection…</span><button class="th" onclick="theme()" title="Light or dark">🌓</button></header>
 <div class="progress"><div class="bar" id="bar"></div></div><main id="app"></main><div id="toast"></div>
 
 <!-- WE DO QUESTION LIST. Order here = database question numbers 1..N.
@@ -414,10 +415,14 @@ const done=sk=>Q.filter(q=>live(q)&&(!sk||q.sk==sk)&&qs(q.id).d).length,tot=sk=>
 function theme(){const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=S.th=dark?"light":"dark";save()}
 if(S.th)document.documentElement.dataset.theme=S.th;
 let tt;function toast(){const m=["✅ Nice one!","🎉 Correct!","🔥 You’ve got it!","⭐ Spot on!"];$("toast").textContent=m[Math.floor(Math.random()*m.length)];$("toast").className="s";clearTimeout(tt);tt=setTimeout(()=>$("toast").className="",1400)}
-function go(p){S.pg=p;save();render();scrollTo(0,0)}
-function hdr(){$("nav").innerHTML=N.map(([p,l])=>`<button class="${S.pg==p?"on":""}" onclick="go('${p}')">${l}${"12345".includes(p)?` (${done(+p)}/${tot(+p)})`:""}</button>`).join("");$("bar").style.width=Math.round(100*done()/tot())+"%";svt();$("sc").textContent=`✅ ${done()} / ${tot()}`}
+// Name gate: nothing past the Start page works until a first name is entered.
+const fn=()=>String(S.name||"").trim().split(/\s+/)[0];
+function showName(){const e=$("stuName"),n=fn();e.textContent=n?n:"✏️ Type your first name to begin";e.className="stuname"+(n?"":" empty")}
+function gate(){const b=$("startBtn"),h=$("startHint");if(b)b.disabled=!fn();if(h)h.style.display=fn()?"none":"block";if(fn())Object.keys(pendingResponses).forEach(id=>flushResponse(id))}
+function go(p){if(p!="w"&&!fn()){S.pg="w";render();return}S.pg=p;save();render();scrollTo(0,0)}
+let navH="";function hdr(){const nh=N.map(([p,l])=>`<button class="${S.pg==p?"on":""}" ${p!="w"&&!fn()?"disabled":""} onclick="go('${p}')">${l}${"12345".includes(p)?` (${done(+p)}/${tot(+p)})`:""}</button>`).join("");if(nh!==navH){navH=nh;$("nav").innerHTML=nh}showName();$("bar").style.width=Math.round(100*done()/tot())+"%";svt();$("sc").textContent=`✅ ${done()} / ${tot()}`}
 const grid=(b,cur,tg)=>`<div class="g">${PV.map((p,i)=>`<div class="c ${i==cur?"cur":""}"><small>${p}</small>${tg?`<button class="bt b${b[i]}" onclick="tog(${i})">${b[i]}</button>`:`<div class="bt b${b[i]}">${b[i]}</div>`}</div>`).join("")}</div>`;
-const nm=()=>`<input type="text" class="s" style="width:min(100%,380px)" placeholder="Type your first name" aria-label="First name" autocomplete="given-name" maxlength="30" value="${(S.name||"").replace(/"/g,"&quot;")}" oninput="S.name=this.value;save()" onblur="setStudentName(this.value);this.value=S.name">`;
+const nm=()=>`<input type="text" class="s" style="width:min(100%,380px)" placeholder="Type your first name" aria-label="First name" autocomplete="given-name" maxlength="30" value="${(S.name||"").replace(/"/g,"&quot;")}" oninput="S.name=this.value;save();hdr();gate()" onkeydown="if(event.key=='Enter'&&fn())go('1')" onblur="setStudentName(this.value);this.value=S.name;hdr();gate()">`;
 // ---------- questions ----------
 function remNow(q,s){let r=q.n;s.ch.forEach((c,j)=>{if(c)r-=PV[j]});return r}
 function inner(q,n){const s=qs(q.id),lock=s.d||s.rev;let b=`<div class="qh"><span class="n">${n}</span>${q.p} ${s.d?"✅":s.rev?"💡":""}</div>`;
@@ -459,6 +464,12 @@ function gk(id,c){const q=Qm[id],s=qs(id);if(s.fin)return;const p=q.px[s.i],righ
  if(s.i==q.px.length){s.fin=1;s.a=s.ch.map(v=>v?"Gray":"Colour").join(", ");if(q.st==="t")queueResponse(id,s.a);if(s.rv){s.rev=1;s.m="💡 Some answers were shown, so this one is “not yet correct”. Have another go!"}else{s.d=1;s.m="✅ All five sorted with no help needed!";toast()}}
  draw(id)}
 function redo(id){const s=qs(id),n=s.n,t=s.t;S.q[id]={n,t,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]};draw(id)}
+// Clears this skill's WE DO answers from the worksheet only. Nothing is deleted from the database:
+// answers already submitted stay there, and any new answer after a reset is submitted as normal.
+function resetWeDo(sk){
+ Q.filter(q=>q.sk==sk&&q.st==="t").forEach(q=>{delete S.q[q.id];delete pendingResponses[q.id]});
+ save();render();scrollTo(0,0)}
+function askReset(sk,on){const e=$("rsc"+sk);if(e)e.style.display=on?"block":"none"}
 // ---------- watch widgets ----------
 function w1(){let r="";for(let k=1;k<=W.n;k++)r+=`<tr class="${k==W.n?"hl":""}"><td>${k}</td><td>${dbl(k)}</td><td><b>${pw(k)}</b></td></tr>`;
  const chips=W.n<=3?`<div class="chips">${Array.from({length:pw(W.n)},(_,j)=>`<span>${j.toString(2).padStart(W.n,"0")}</span>`).join("")}</div>`:"";
@@ -568,11 +579,11 @@ function welcome(){return `<div class="card"><div class="kicker">START · WELCOM
 <div class="qg"><div class="card"><h2>🧠 What we’re learning</h2><p>How computers use <b>bits</b> and <b>bytes</b> to store numbers from 0 to 255, then use three bytes to build any <b>RGB colour</b>, and one byte for a shade of <b>gray</b>.</p><div class="lo"><b>LEARNING INTENTION</b><br>We are learning to understand how digital images are represented using <b>pixels</b> and <b>RGB colour values</b>.</div><h2>✅ Success criteria</h2><ul><li><b>Skill 1:</b> ${SUB[1]}</li><li><b>Skill 2:</b> ${SUB[2]}</li><li><b>Skill 3:</b> ${SUB[3]}</li><li><b>Skill 4:</b> ${SUB[4]}</li><li><b>Skill 5:</b> ${SUB[5]}</li></ul></div>
 <div class="card"><h2>🧭 How this page works</h2><ul><li>Each skill has 3 steps: <b>I DO</b> (watch a worked example), <b>WE DO</b> (guided practice with hints), <b>YOU DO</b> (on your own).</li><li>In Try, a wrong answer gets a hint. After 3 tries the answer is shown.</li><li>Your score <b>✅ x / y</b> is at the top. Your progress saves on this computer.</li><li>After the 5 skills, play the <b>🎯 Guess the colour</b> game: type the exact R, G and B to match a colour.</li><li>At the end you <b>Reflect</b> and <b>download a Word file</b> to hand in.</li></ul></div></div>
 ${datapanel()}<details class="card cue"><summary><b>TEACHER CUE</b> · 🧑‍🏫 Notes for the teacher or relief teacher</summary><p>About 55–60 minutes. Students work through the tabs in order at their own pace; the page checks everything and gives hints. Follows the Pixels and RGB slides: bytes and switches, pixels and RGB, hex colour codes, then grayscale, followed by an optional colour guessing game. Students have already learnt binary. Ask early finishers to explain why a byte stops at 255. Students download a .docx (name, score, every answer and attempts, reflections) and submit it as evidence.</p></details>
-<div class="ctr"><button class="btn" onclick="go('1')">Let’s go! ➡</button></div>`}
+<div class="ctr"><button class="btn" id="startBtn" ${fn()?"":"disabled"} onclick="go('1')">Let’s go! ➡</button><div class="fb info" id="startHint" style="display:${fn()?"none":"block"};max-width:520px;margin:12px auto">✏️ Type your first name above to unlock the lesson.</div></div>`}
 function skill(sk){const st=(S.weClosed&&S.st[sk]=="t")?"s":S.st[sk],qs_=Q.filter(q=>q.sk==sk),lst=x=>qs_.filter(q=>q.st==x);
  let h=`<div class="kicker">SKILL ${sk} OF 5 · ${STG[st].toUpperCase()}</div><h1>Skill ${sk}: ${SK[sk]}</h1><div class="lo">🎯 ${SUB[sk]}</div><div class="tabs">${["w","t","s"].filter(x=>!(S.weClosed&&x=="t")).map(x=>`<button class="${st==x?"on":""}" onclick="S.st[${sk}]='${x}';save();render()">${STG[x]}</button>`).join("")}</div>`;
  if(st=="w")h+=`<div class="card"><div class="kicker">I DO</div><h2>Watch me model it</h2>${sk==1?w1():sk==2?w6():sk==3?w5():sk==4?w7():w11()}</div>${sk==5?`<div class="card"><h2>💡 The dimmer demo</h2>${w13()}</div><div class="card"><h2>🧮 Squeeze a colour into 1 byte</h2>${w12()}</div>`:""}${sk==4?`<div class="card"><h2>🧱 Layers: RGB to grayscale (it’s all arrays of numbers)</h2>${w9()}</div><div class="card"><h2>🔬 Explore: grayscale or RGB?</h2>${w8()}</div>`:""}<div class="cfu"><b>CHECK FOR UNDERSTANDING</b> · answer before you move on</div><div class="qg">${card(lst("c")[0],"⚡")}</div>`;
- else{h+=`<h2>${st=="t"?"WE DO · Try it together (hints and 3 tries)":"YOU DO · On your own (no hints!)"}</h2><div class="qg">${lst(st).map((q,i)=>card(q,i+1)).join("")}</div>`}
+ else{h+=`<h2>${st=="t"?"WE DO · Try it together (hints and 3 tries)":"YOU DO · On your own (no hints!)"}</h2>${st=="t"?`<div class="ctr" style="margin:0 0 14px"><button class="btn" style="background:var(--card);color:var(--pri)" onclick="askReset(${sk},true)">🔁 Reset my WE DO answers for this skill</button></div><div id="rsc${sk}" class="fb info" style="display:none;margin-bottom:14px">Clear your WE DO answers for <b>Skill ${sk}</b> from this worksheet so you can try them again? Your earlier answers have already been sent to your teacher, so nothing is lost. Your YOU DO answers are not changed.<div class="ctr"><button class="btn" onclick="resetWeDo(${sk})">Yes, reset them</button><button class="btn" style="background:var(--card);color:var(--pri)" onclick="askReset(${sk},false)">Cancel</button></div></div>`:""}<div class="qg">${lst(st).map((q,i)=>card(q,i+1)).join("")}</div>`}
  const nx=st=="w"?`S.st[${sk}]='${S.weClosed?"s":"t"}'`:st=="t"?`S.st[${sk}]='s'`:`S.pg='${sk<5?sk+1:"g"}'`;
  return h+`<div class="ctr"><button class="btn" onclick="${nx};save();render();scrollTo(0,0)">${st=="s"?(sk<5?"Next skill ➡":"Play the guessing game ➡"):"Next step ➡"}</button></div>`}
 function reflect(){return `<h1>✍️ Reflect</h1><p>Explain in your own words. Full sentences, please!</p><div class="qg">${RP.map((p,i)=>`<div class="card"><div class="qh"><span class="n">${i+1}</span>${p}</div><textarea oninput="S.r[${i}]=this.value;save();$('wc${i}').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length+' words'">${S.r[i]||""}</textarea><small id="wc${i}">${S.r[i].trim().split(/\s+/).filter(Boolean).length} words</small></div>`).join("")}</div><div class="ctr"><button class="btn" onclick="go('h')">Hand in ➡</button></div>`}
@@ -616,7 +627,7 @@ async function dl(){if(!S.name.trim())return hm("✏️ Please type your name fi
  try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);hm("✅ Your Word file should be in your Downloads folder. If nothing appeared, use “Copy my answers” instead.")}catch(e){hm("The download didn’t work here. Use “Copy my answers” instead.")}}
 async function cp(){if(!S.name.trim())return hm("✏️ Please type your name first.");let t=`Data Representation: Pixels, RGB and Grayscale\nName: ${S.name}\nDate: ${when()}\nScore: ${done()} / ${tot()}\nColour guessing game: ${S.gw} won (best streak ${S.gs})\n\n`+rows().map(r=>`${r.n}. ${r.p}\n   Answer: ${r.a} | ${r.res} | tries: ${r.tries}`).join("\n")+"\n\nReflections:\n"+RP.map((p,i)=>`${p}\n${S.r[i]||"(not answered)"}`).join("\n\n");
  const a=$("ct");a.value=t;a.style.display="block";a.select();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{ok=document.execCommand("copy")}catch(e2){}}hm(ok?"📋 Copied! Paste it into a document and hand it in.":"Select all the text in the box, copy it and paste it into a document.")}
-function render(){hdr();$("app").innerHTML=S.pg=="w"?welcome():"12345".includes(S.pg)?skill(+S.pg):S.pg=="p"?gridpage():S.pg=="g"?gamev():S.pg=="r"?reflect():handin();if(S.pg=="g")gav()}
+function render(){if(!fn()&&S.pg!="w")S.pg="w";hdr();$("app").innerHTML=S.pg=="w"?welcome():"12345".includes(S.pg)?skill(+S.pg):S.pg=="p"?gridpage():S.pg=="g"?gamev():S.pg=="r"?reflect():handin();if(S.pg=="g")gav()}
 render();
 startDatabase();
 try{window.claude.use("downloads").then(d=>{if(d){DL=d;if(S.pg=="h")render()}}).catch(()=>{})}catch(e){}
