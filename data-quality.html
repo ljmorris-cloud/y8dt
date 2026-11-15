@@ -66,11 +66,7 @@ header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font
 .sf{width:100%;border:2px solid var(--line);border-radius:10px;display:block;background:#fff;margin:8px 0}
 .mt td,.mt th{text-align:left;padding:6px 12px}
 .cellb{font:inherit;font-weight:700;padding:6px 14px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer;min-width:72px}.cellb.on{background:var(--nob);border-color:var(--no);color:var(--no)}
-body{font-size:18px}main{max-width:1900px;padding:14px 24px 60px}h1{font-size:1.8em;margin:.1em 0}h2{font-size:1.3em;margin:.2em 0 .4em}.card{padding:14px 20px;margin-bottom:14px}.qg{gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr))}.big{margin:10px 0;padding:12px 16px}
-.wg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;margin-bottom:18px}.wg>.wl{margin:0;padding:10px 14px}.wg>.wl.st{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px)}.wg .wl h3{margin:0}.wg .wl p{margin:2px 0 4px}.wg .wl iframe{margin:4px 0 0}.wq{display:grid;gap:12px}.wq .card{margin:0}@media(max-width:1000px){.wg{grid-template-columns:1fr}.wg>.wl{position:static}}
-body{font-size:17px}.qh{font-size:15.5px;margin-bottom:8px}.qh .n{width:1.55em;height:1.55em;font-size:.9em}.opt{font-size:15px;padding:8px 14px;margin:5px 0;border-width:2px;border-radius:10px}.btn,.yn{font-size:15px;padding:8px 18px;margin:4px;border-width:2px;border-radius:10px}.yn{min-width:0}input[type=number],input[type=text]{font-size:15px;padding:7px 10px;border-width:2px}input.s{width:160px}.fb{font-size:14.5px;padding:8px 12px;margin-top:8px}.wq .card{padding:12px 16px}.big{font-size:1em}table{font-size:15px}.lo,.cfu{font-size:.95em}
-[id^="c-"] .qi{max-width:min(100%,400px)}
-.qm{display:block!important;column-count:3;column-gap:14px}.qm>.card{break-inside:avoid;display:block;margin:0 0 14px}@media(max-width:1250px){.qm{column-count:2}}@media(max-width:760px){.qm{column-count:1}}
+.wg{display:block;margin-bottom:22px}.wg>.wl{margin:0 0 22px}.wg .wl h3{margin:0 0 6px}.wq{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,620px),1fr));gap:22px;margin-bottom:22px}.wq .card{margin:0}.wg>.wq:last-child{margin-bottom:0}
 .dbstatus{font-size:14px;color:var(--mut);padding:4px 8px;max-width:100%;text-align:center}
 select.s{font:inherit;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(100%,380px)}
 .namelock{display:inline-block;font-size:1.3em;font-weight:800;padding:8px 18px;border-radius:14px;background:var(--card);border:3px solid var(--line)}
@@ -78,14 +74,12 @@ select.s{font:inherit;padding:10px 14px;border:3px solid var(--line);border-radi
 .stuname{font-size:36px;font-weight:800;color:#fff;line-height:1.1;word-break:break-word}.stuname.empty{font-size:18px;font-weight:700;color:var(--gold)}
 nav button:disabled{opacity:.45;cursor:not-allowed}
 /* I DO steppers: visual on the left, steps on the right */
-.sp.side{display:grid;grid-template-columns:minmax(200px,36%) minmax(0,1fr);gap:20px;align-items:start}
+.sp.side{display:grid;grid-template-columns:minmax(200px,36%) minmax(0,1fr);gap:26px;align-items:start}
 .sp.side.wide{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
 .sp.side .spv .ctr{margin:0}.sp.side .spv .si{max-height:420px;margin:0 auto}.sp.side table{margin:0}
 .sp.side .sps .ctr{text-align:left}.sp.side .sps .btn{margin:10px 8px 0 0}
 @media(max-width:900px){.sp.side,.sp.side.wide{grid-template-columns:1fr}}
 /* header: keep the tabs on one row; the connection message gets its own thin line */
-header{gap:4px 12px;padding:8px 16px}
-nav{gap:6px}nav button{font-size:15px;padding:5px 10px}.th{font-size:15px;white-space:nowrap}
 #dbstatus{order:10;flex:1 0 100%;padding:0;font-size:13px}
 </style></head><body>
 <div class="sh"><div class="stuname empty" id="stuName">✏️ Type your first name to begin</div><div class="tag">YEAR 8 DIGITAL TECHNOLOGIES · DATA QUALITY: AUTHENTICITY, ACCURACY AND TIMELINESS</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><span id="dbstatus" class="dbstatus">Connecting to class response collection…</span><button class="th" id="thb" onclick="theme()" title="Switch between light and dark mode">🌙 Dark mode</button></header>
@@ -673,7 +667,7 @@ async function cp(){if(!S.name.trim())return hm("✏️ Please type your name fi
  const a=$("ct");a.value=t;a.style.display="block";a.select();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{ok=document.execCommand("copy")}catch(e2){}}hm(ok?"📋 Copied! Paste it into a document and hand it in.":"Select all the text in the box, copy it and paste it into a document.")}
 const fit=f=>{clearInterval(f._t);const run=()=>{try{const d=f.contentDocument;if(!d||!d.body)return;const n=Math.ceil(d.body.getBoundingClientRect().height)+6;if(n>60&&Math.abs(n-f.offsetHeight)>3)f.style.height=n+"px"}catch(e){}};f.addEventListener("load",run);f._t=setInterval(()=>{if(!f.isConnected){clearInterval(f._t);return}run()},400)};
 const DUPH=["lab-auth","lab-gr","lab-err","lab-time","sun","bus"];   // the card above already shows their title
-function render(){if(!fn()&&S.pg!="w")S.pg="w";hdr();$("app").innerHTML=S.pg=="w"?welcome():"123".includes(S.pg)?skill(+S.pg):S.pg=="x"?mix():S.pg=="r"?reflect():handin();document.querySelectorAll("iframe[data-w]").forEach(f=>{f.srcdoc=f.dataset.fx?WG[f.dataset.w].replace("</head>","<style>main{max-width:none!important;padding:8px 14px 10px!important;margin:0!important}</style></head>").replace("</body>",()=>DUPH.includes(f.dataset.w)?"<script>addEventListener(\'load\',()=>setTimeout(()=>{const h=[...document.querySelectorAll(\'h1,h2\')].find(e=>e.offsetParent!==null);if(h)h.style.display=\'none\'},60))<\/script></body>":"</body>"):WG[f.dataset.w];f.addEventListener("load",()=>wTheme(f));if(f.dataset.fx)fit(f)})}
+function render(){if(!fn()&&S.pg!="w")S.pg="w";hdr();$("app").innerHTML=S.pg=="w"?welcome():"123".includes(S.pg)?skill(+S.pg):S.pg=="x"?mix():S.pg=="r"?reflect():handin();document.querySelectorAll("iframe[data-w]").forEach(f=>{f.srcdoc=f.dataset.fx?WG[f.dataset.w].replace("</head>","<style>main{max-width:none!important;padding:8px 14px 10px!important;margin:0!important}body{zoom:1.2}</style></head>").replace("</body>",()=>DUPH.includes(f.dataset.w)?"<script>addEventListener(\'load\',()=>setTimeout(()=>{const h=[...document.querySelectorAll(\'h1,h2\')].find(e=>e.offsetParent!==null);if(h)h.style.display=\'none\'},60))<\/script></body>":"</body>"):WG[f.dataset.w];f.addEventListener("load",()=>wTheme(f));if(f.dataset.fx)fit(f)})}
 render();
 startDatabase();
 try{window.claude.use("downloads").then(d=>{if(d){DL=d;if(S.pg=="h")render()}}).catch(()=>{})}catch(e){}
