@@ -392,7 +392,9 @@ async function pickName(id){
 async function startDatabase(){
  try{
   supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  const {error:authError}=await supabaseClient.auth.signInAnonymously();
+  const {data:{session:oldSession}}=await supabaseClient.auth.getSession();
+  // Reuse this device's existing anonymous sign-in; signing in again on every load orphaned the student's chosen name.
+  let authError=null;if(!oldSession||!oldSession.user||!oldSession.user.is_anonymous){authError=(await supabaseClient.auth.signInAnonymously()).error}
   if(authError)throw new Error("Student sign-in failed: "+authError.message);
   // Has the teacher deleted this lesson? If so, close WE DO (YOU DO and I DO are untouched).
   const {data:lessonState,error:stateError}=await supabaseClient.rpc("get_lesson_status",{p_access_token:ACCESS_TOKEN});
