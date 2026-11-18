@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outliers in the sunflower garden</title>
+<style>
+:root{--bg:#ffffff;--fg:#1c2218;--muted:#5d6657;--faint:#8a9284;--line:#dfe3d9;--strong:#b9c0b0;--surface:#f4f6ef;--info-bg:#e8f0fb;--info-fg:#1d4a82;--accent:#f2a900;--ok-bg:#eaf3de;--ok-fg:#2b5410}
+@media (prefers-color-scheme:dark){:root{--bg:#161a14;--fg:#eef1e8;--muted:#b4bbab;--faint:#818a78;--line:#2d3329;--strong:#4a5343;--surface:#1f251c;--info-bg:#1b2c45;--info-fg:#b9d4f6;--ok-bg:#223318;--ok-fg:#c7e3a6}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Avenir Next","Segoe UI",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 18px 64px}
+h1{font-size:30px;line-height:1.2;margin:0 0 8px;font-weight:700}
+h2{font-size:21px;margin:44px 0 6px;font-weight:700}
+.lead{color:var(--muted);margin:0 0 20px;max-width:62ch}
+button{font:inherit;font-size:15px;color:var(--fg);background:transparent;border:1px solid var(--strong);border-radius:8px;padding:6px 14px;cursor:pointer}
+button:hover{background:var(--surface)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 12px}
+.stat{background:var(--surface);border-radius:8px;padding:12px 14px}
+.stat small{display:block;font-size:13px;color:var(--muted)}
+.stat b{font-size:24px;font-weight:700}
+#msg{padding:12px 14px;border-radius:8px;background:var(--info-bg);color:var(--info-fg);font-size:15px}
+.q{border-top:1px solid var(--line);padding:16px 0}
+.q p{margin:0 0 10px}
+.q textarea{width:100%;font:inherit;font-size:15px;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;resize:vertical;margin-bottom:8px}
+.ans{margin-top:10px;padding:10px 14px;border-radius:8px;background:var(--ok-bg);color:var(--ok-fg);font-size:15px}
+.tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media (max-width:520px){.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>Outliers in the sunflower garden</h1>
+<p class="lead">Eight sunflowers grew in the school garden. Seven grew to about the same height. The eighth is different, and you control how tall it gets. Watch what happens to the mean and the median.</p>
+
+<div class="row" style="margin-bottom:8px">
+  <svg id="plot" viewBox="0 0 414 240" role="img" aria-label="Dot plot of sunflower heights with mean and median markers" style="touch-action:none;display:block;flex:1 1 340px;min-width:0"></svg>
+  <svg id="garden" viewBox="0 0 250 244" width="250" height="244" role="img" aria-label="Drawing of eight sunflowers; the one on the right grows taller or shorter" style="touch-action:none;display:block;flex:0 0 250px;max-width:100%"></svg>
+</div>
+
+<div class="row" style="align-items:center;margin:8px 0 12px">
+  <label for="sl" style="color:var(--muted);font-size:15px">Height of the moving sunflower</label>
+  <input type="range" id="sl" min="0" max="200" step="1" value="48" style="flex:1;min-width:160px;accent-color:#d85a30">
+  <b id="slv" style="min-width:60px">48 cm</b>
+</div>
+<div class="row" style="align-items:center;margin:0 0 14px">
+  <button data-v="48">Typical</button>
+  <button data-v="80">A bit taller</button>
+  <button data-v="200">Giant sunflower</button>
+  <button data-v="5">Tiny seedling</button>
+  <label style="margin-left:auto;font-size:15px"><input type="checkbox" id="inc" checked> Include the moving sunflower</label>
+</div>
+
+<div class="stats">
+  <div class="stat"><small>Mean (balance point)</small><b id="mean" style="color:#7f77dd">0</b></div>
+  <div class="stat"><small>Median (middle value)</small><b id="med" style="color:#1d9e75">0</b></div>
+  <div class="stat"><small>Gap: mean minus median</small><b id="gap">0</b></div>
+</div>
+<div id="msg" aria-live="polite"></div>
+
+<h2>Check your understanding</h2>
+<div class="tools">
+  <p class="lead" style="margin:0">Write your answer, then press Show answer. Questions 2 to 8 use the garden above.</p>
+  <button id="all">Show all answers</button>
+</div>
+<div id="qs"></div>
+</main>
+
+<script>
+var base=[40,44,44,48,50,50,52];
+var LO=35,HI=59;
+var X0=20,X1=394,MAX=200,AX=170,R=8,GY=218,S=0.8;
+var sl=document.getElementById('sl'),inc=document.getElementById('inc'),svg=document.getElementById('plot'),gd=document.getElementById('garden');
+function sx(v){return X0+(v/MAX)*(X1-X0);}
+function med(a){var s=a.slice().sort(function(p,q){return p-q;}),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;}
+function mean(a){return a.reduce(function(p,q){return p+q;},0)/a.length;}
+function f(v){return (Math.round(v*10)/10).toFixed(1).replace('.0','')+' cm';}
+function setV(v){sl.value=v;draw();}
+function flower(x,h,ring){
+  var top=GY-h*S,s='';
+  s+='<line x1="'+x+'" y1="'+GY+'" x2="'+x+'" y2="'+top+'" stroke="#639922" stroke-width="3" stroke-linecap="round"/>';
+  if(h>28){var ly=GY-h*S*0.4;
+    s+='<ellipse cx="'+(x+7)+'" cy="'+ly+'" rx="7" ry="3" fill="#639922" transform="rotate(-25 '+x+' '+ly+')"/>';
+    s+='<ellipse cx="'+(x-7)+'" cy="'+(ly-6)+'" rx="7" ry="3" fill="#639922" transform="rotate(25 '+x+' '+(ly-6)+')"/>';}
+  for(var a=0;a<360;a+=30)s+='<ellipse cx="'+x+'" cy="'+(top-6.5)+'" rx="3.5" ry="5.5" fill="#ef9f27" transform="rotate('+a+' '+x+' '+top+')"/>';
+  s+='<circle cx="'+x+'" cy="'+top+'" r="5.5" fill="#854f0b"/>';
+  if(ring)s+='<circle cx="'+x+'" cy="'+top+'" r="15" fill="none" stroke="#d85a30" stroke-width="2" stroke-dasharray="3 3"/>';
+  return s;
+}
+function drawGarden(v,useO,isOut,m,md){
+  var s='',ym=GY-m*S,yd=GY-md*S,up=m>=md;
+  s+='<line x1="0" y1="'+ym+'" x2="250" y2="'+ym+'" stroke="#7f77dd" stroke-width="1.5" stroke-dasharray="5 4"/>';
+  s+='<line x1="0" y1="'+yd+'" x2="250" y2="'+yd+'" stroke="#1d9e75" stroke-width="1.5" stroke-dasharray="5 4"/>';
+  s+='<text x="2" y="'+(up?ym-4:ym+13)+'" font-size="12" font-weight="600" fill="#7f77dd">mean</text>';
+  s+='<text x="2" y="'+(up?yd+13:yd-4)+'" font-size="12" font-weight="600" fill="#1d9e75">median</text>';
+  s+='<line x1="0" y1="'+GY+'" x2="250" y2="'+GY+'" stroke="var(--strong)" stroke-width="3"/>';
+  for(var i=0;i<7;i++)s+=flower(56+i*25,base[i],false);
+  if(useO){
+    var ox=56+7*25;
+    s+=flower(ox,v,isOut);
+    s+='<rect id="oddgrab" x="'+(ox-13)+'" y="0" width="26" height="'+GY+'" fill="transparent" style="cursor:ns-resize"/>';
+    if(isOut)s+='<text x="'+ox+'" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#d85a30">outlier</text>';
+  }
+  gd.innerHTML=s;
+}
+function draw(){
+  var v=+sl.value,useO=inc.checked,isOut=v<LO||v>HI;
+  var data=useO?base.concat([v]):base.slice();
+  var m=mean(data),md=med(data);
+  document.getElementById('slv').textContent=v+' cm';
+  var s='';
+  for(var t=0;t<=MAX;t+=20){s+='<line x1="'+sx(t)+'" y1="'+AX+'" x2="'+sx(t)+'" y2="'+(AX+5)+'" stroke="var(--strong)"/><text x="'+sx(t)+'" y="206" text-anchor="middle" font-size="12" fill="var(--faint)">'+t+'</text>';}
+  s+='<line x1="'+X0+'" y1="'+AX+'" x2="'+X1+'" y2="'+AX+'" stroke="var(--strong)" stroke-width="3"/>';
+  var items=base.map(function(b){return {x:sx(b),o:false};});
+  if(useO)items.push({x:sx(v),o:true});
+  var placed=[];
+  items.forEach(function(it){var r=0;while(placed.some(function(p){return p.r===r&&Math.abs(p.x-it.x)<2*R+1;}))r++;it.r=r;placed.push(it);});
+  placed.forEach(function(it){
+    var cy=AX-R-2-it.r*(2*R+1);
+    if(it.o)s+='<circle id="odd" cx="'+it.x+'" cy="'+cy+'" r="'+(R+1)+'" fill="#d85a30" stroke="var(--bg)" stroke-width="2" style="cursor:grab"/>';
+    else s+='<circle cx="'+it.x+'" cy="'+cy+'" r="'+R+'" fill="#378add" stroke="var(--bg)" stroke-width="2"/>';
+  });
+  if(useO&&isOut)s+='<text x="'+sx(v)+'" y="'+(AX-R*2-14-placed[placed.length-1].r*17)+'" text-anchor="middle" font-size="12" font-weight="600" fill="#d85a30">outlier</text>';
+  var mx=sx(md);
+  s+='<line x1="'+mx+'" y1="52" x2="'+mx+'" y2="'+AX+'" stroke="#1d9e75" stroke-width="2" stroke-dasharray="5 4"/>';
+  s+='<text x="'+mx+'" y="44" text-anchor="middle" font-size="13" font-weight="600" fill="#1d9e75">median '+f(md)+'</text>';
+  var ax=sx(m);
+  s+='<polygon points="'+ax+','+(AX+4)+' '+(ax-13)+','+(AX+26)+' '+(ax+13)+','+(AX+26)+'" fill="#7f77dd"/>';
+  s+='<text x="'+ax+'" y="'+(AX+66)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#7f77dd">mean '+f(m)+'</text>';
+  svg.innerHTML=s;
+  drawGarden(v,useO,useO&&isOut,m,md);
+  document.getElementById('mean').textContent=f(m);
+  document.getElementById('med').textContent=f(md);
+  document.getElementById('gap').textContent=f(m-md);
+  var m0=mean(base),md0=med(base),box=document.getElementById('msg');
+  if(!useO)box.textContent='With just the seven similar sunflowers, the mean ('+f(m)+') and median ('+f(md)+') are close together. Both describe a typical sunflower well.';
+  else if(!isOut)box.textContent='The moving sunflower is still within the range of the others, so the mean and median both hardly move. Keep dragging it further away.';
+  else{
+    var dir=v>HI?'up':'down';
+    box.textContent='Now it is an outlier, a value far from the rest. It pulled the mean '+dir+' by '+f(Math.abs(m-m0))+', but the median only moved '+f(Math.abs(md-md0))+'. One extreme value drags the mean along. The median stays near the middle of the group.';
+  }
+}
+function clamp(v){return Math.max(0,Math.min(MAX,v));}
+function fromPlot(e){var r=svg.getBoundingClientRect();return clamp(Math.round(((e.clientX-r.left)/r.width*414-X0)/(X1-X0)*MAX));}
+function fromGarden(e){var r=gd.getBoundingClientRect();return clamp(Math.round((GY-(e.clientY-r.top)/r.height*244)/S));}
+var drag=null;
+svg.addEventListener('pointerdown',function(e){if(e.target.id==='odd'){drag='p';svg.setPointerCapture(e.pointerId);}});
+svg.addEventListener('pointermove',function(e){if(drag==='p'){sl.value=fromPlot(e);draw();}});
+svg.addEventListener('pointerup',function(){drag=null;});
+gd.addEventListener('pointerdown',function(e){if(e.target.id==='oddgrab'){drag='g';gd.setPointerCapture(e.pointerId);sl.value=fromGarden(e);draw();}});
+gd.addEventListener('pointermove',function(e){if(drag==='g'){sl.value=fromGarden(e);draw();}});
+gd.addEventListener('pointerup',function(){drag=null;});
+sl.addEventListener('input',draw);inc.addEventListener('change',draw);
+document.querySelectorAll('button[data-v]').forEach(function(b){b.addEventListener('click',function(){setV(+b.dataset.v);});});
+draw();
+
+var Q=[
+['In your own words, what is an outlier?','An outlier is a value that sits far away from the rest of the data.'],
+['Press "Typical" (48 cm). What are the mean and the median? Is the moving sunflower an outlier?','Mean 47 cm and median 48 cm. It is not an outlier, because it fits in with the other seven.'],
+['Press "Giant sunflower" (200 cm). What are the mean and the median now? Which one changed more?','Mean 66 cm and median 49 cm. The mean jumped about 19 cm from 47, but the median only moved about 1 cm.'],
+['With the giant sunflower, how many of the other 7 sunflowers are shorter than the mean?','All 7. Every one of them is 52 cm or less, and the mean is 66 cm. The mean is not a good description of a typical sunflower here.'],
+['When there is a giant sunflower, which describes a typical sunflower better: the mean or the median? Why?','The median (49 cm). It sits in the middle of the group, while the mean is taller than seven of the eight sunflowers.'],
+['Untick "Include the moving sunflower". What are the mean and median of the other seven?','Mean 46.9 cm (328 ÷ 7) and median 48 cm. They are close together because there is no extreme value.'],
+['Challenge: drag the slider until the mean reaches exactly 60 cm. How tall is the moving sunflower?','152 cm. The seven sunflowers add up to 328, and (328 + 152) ÷ 8 = 60.'],
+['Outliers can be small too. Press "Tiny seedling" (5 cm). What happens to the mean and median?','Mean 41.6 cm and median 46 cm. A very small value pulls the mean down, and the median barely moves.'],
+['Pen and paper: eight trees in a park have this many nests: 2, 3, 3, 4, 4, 4, 4, 36. Find the median and the mean. Which one is better here?','Median 4 and mean 7.5. The median is better, because seven of the eight trees have 4 nests or fewer. The 36 is the outlier.'],
+['A reading log shows minutes read: 20, 25, 25, 30, 30, 35, 35, 300. One number looks very different. What should you do before deleting it?','Find out why it is different. It might be a mistake (for example 30 typed as 300) or it might be real. Only remove it if you can show it is an error. Mean with it: 62.5 min. Median: 30 min.'],
+['True or false: an outlier always changes the median by a lot.','False. The median only depends on the middle of the ordered list, so it moves very little. That is why it is called resistant to outliers.']
+];
+var qs=document.getElementById('qs'),allBtn=document.getElementById('all'),shown=false;
+Q.forEach(function(q,i){
+  var d=document.createElement('div');d.className='q';
+  d.innerHTML='<p><b>Q'+(i+1)+'.</b> '+q[0]+'</p><textarea aria-label="Your answer to question '+(i+1)+'" placeholder="Write your answer here"></textarea><button aria-expanded="false">Show answer</button><div class="ans" hidden>'+q[1]+'</div>';
+  var b=d.querySelector('button'),a=d.querySelector('.ans');
+  b.addEventListener('click',function(){var open=a.hidden;a.hidden=!open;b.textContent=open?'Hide answer':'Show answer';b.setAttribute('aria-expanded',open);});
+  qs.appendChild(d);
+});
+allBtn.addEventListener('click',function(){
+  shown=!shown;
+  qs.querySelectorAll('.q').forEach(function(d){var b=d.querySelector('button'),a=d.querySelector('.ans');a.hidden=!shown;b.textContent=shown?'Hide answer':'Show answer';b.setAttribute('aria-expanded',shown);});
+  allBtn.textContent=shown?'Hide all answers':'Show all answers';
+});
+</script>
+</body>
+</html>
