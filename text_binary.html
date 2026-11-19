@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en-AU"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From Binary to Text</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f2f6fc;--card:#fff;--ink:#14213d;--mut:#55627f;--pri:#3b5bdb;--pi:#fff;--ok:#146c3b;--okb:#dff5e8;--no:#a61e1e;--nob:#fde7e7;--inf:#7a5200;--infb:#fff1cc;--line:#cfd8ec;--hl:#e8eeff;--on:#ffd43b;--oni:#3a2e00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1325;--card:#19203d;--ink:#eef1ff;--mut:#a9b3d6;--pri:#7c9bff;--pi:#0b1030;--ok:#7bf0ad;--okb:#12382a;--no:#ffa3a3;--nob:#401c25;--inf:#ffd988;--infb:#3b2f10;--line:#2f3a66;--hl:#26305e}}
+:root[data-theme="dark"]{--bg:#0e1325;--card:#19203d;--ink:#eef1ff;--mut:#a9b3d6;--pri:#7c9bff;--pi:#0b1030;--ok:#7bf0ad;--okb:#12382a;--no:#ffa3a3;--nob:#401c25;--inf:#ffd988;--infb:#3b2f10;--line:#2f3a66;--hl:#26305e}
+*{box-sizing:border-box}html{scroll-padding-top:90px}body{margin:0;background:var(--bg);color:var(--ink);font:21px/1.55 system-ui,"Segoe UI",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:2px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+nav{display:flex;flex-wrap:wrap;gap:8px;flex:1;justify-content:center}
+nav button,.th{font:inherit;font-size:18px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}
+nav button.on{background:var(--pri);color:var(--pi);border-color:var(--pri);font-weight:700}
+#sc{font-weight:800;background:var(--okb);color:var(--ok);border-radius:999px;padding:6px 18px}
+main{max-width:1500px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2.1em;margin:.2em 0}h2{font-size:1.5em;margin:.2em 0 .5em}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:22px}
+.big{background:var(--hl);border-radius:16px;padding:16px 20px;font-size:1.1em;margin:14px 0}
+.qg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,620px),1fr));gap:22px;align-items:start}.qg .card{margin:0}
+.qh{font-size:1.1em;margin-bottom:12px}.qh .n{display:inline-block;background:var(--pri);color:var(--pi);border-radius:50%;width:1.7em;height:1.7em;text-align:center;font-weight:700;margin-right:8px}
+.btn,.opt,.yn{font:inherit;font-weight:700;border:3px solid var(--pri);background:var(--card);color:var(--pri);border-radius:16px;padding:12px 26px;cursor:pointer;margin:6px}
+.btn{background:var(--pri);color:var(--pi)}.btn:disabled{opacity:.4;cursor:default}.ctr{text-align:center;margin-top:12px}
+.opt{display:block;width:100%;text-align:left;margin:8px 0}.opt.x{border-color:var(--no);color:var(--no);background:var(--nob)}.opt.v{border-color:var(--ok);color:var(--ok);background:var(--okb)}
+.yn{min-width:200px;font-size:1.1em}
+input[type=text],input[type=number],textarea{font:inherit;padding:10px 14px;border:3px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:100%}input.s{width:220px}textarea{min-height:130px}
+.fb{margin-top:12px;padding:12px 16px;border-radius:14px;font-weight:600}.fb.ok{background:var(--okb);color:var(--ok)}.fb.no{background:var(--nob);color:var(--no)}.fb.info{background:var(--infb);color:var(--inf)}
+.g{display:grid;grid-template-columns:repeat(8,minmax(0,84px));gap:8px;justify-content:center;margin:14px 0}.c{text-align:center;border-radius:14px;padding:4px}.c.cur{background:var(--hl);outline:3px solid var(--pri)}.c small{display:block;color:var(--mut);font-weight:700}
+.bt{display:block;width:100%;font:inherit;font-size:1.5em;font-weight:800;border:3px solid var(--line);border-radius:12px;padding:6px 0;background:var(--bg);color:var(--ink)}.bt.b1{background:var(--on);color:var(--oni);border-color:var(--on)}.bt.b_{color:var(--mut)}button.bt{cursor:pointer}
+table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:2px solid var(--line);padding:6px 12px;text-align:center}th{background:var(--hl)}tr.y td{background:var(--okb);color:var(--ok)}tr.n td{background:var(--nob);color:var(--no)}tr.hl td{background:var(--hl);font-weight:700}
+.chips span{display:inline-block;font-family:ui-monospace,Consolas,monospace;background:var(--on);color:var(--oni);border-radius:10px;padding:2px 12px;margin:4px;font-weight:700}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 22px}.tabs button{font:inherit;font-weight:700;font-size:1.05em;padding:10px 26px;border-radius:14px;border:3px solid var(--pri);background:var(--card);color:var(--pri);cursor:pointer}.tabs button.on{background:var(--pri);color:var(--pi)}
+.eq{font-family:ui-monospace,Consolas,monospace;font-size:1.15em;overflow-x:auto}.scroll{overflow-x:auto}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--ok);color:var(--pi);padding:14px 30px;border-radius:999px;font-weight:800;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}#toast.s{opacity:1}
+input[type=range]{width:100%;height:34px;accent-color:var(--pri);margin:4px 0 14px}
+ul{padding-left:1.2em}details{margin-top:14px}summary{cursor:pointer;font-weight:700}
+@media(max-width:700px){body{font-size:19px}.g{grid-template-columns:repeat(8,1fr);gap:4px}.bt{font-size:1.1em}.card{padding:16px}}
+.zr{display:grid;grid-template-columns:80px 1fr 90px 120px;gap:10px;align-items:center;margin:6px 0}.zr input[type=range]{margin:0}
+.lk{display:block;background:var(--hl);border-radius:14px;padding:10px 14px;margin-bottom:10px;font-weight:700;cursor:pointer}.lk input{width:24px;height:24px;vertical-align:-5px;margin-right:8px}
+.ramp{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));gap:6px;margin:10px 0}.ramp button,.zg button{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:10px;padding:10px 0;cursor:pointer}
+.zg{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:520px;margin:12px auto}.zg button{aspect-ratio:1;padding:2px;font-size:16px;line-height:1.1;font-family:ui-monospace,Consolas,monospace}
+.hx{table-layout:fixed;min-width:760px}.hx th,.hx td{padding:10px 2px;font-weight:800;font-family:ui-monospace,Consolas,monospace}.hx th:first-child{width:110px;padding:10px 8px;font-family:inherit}.hx td.hv{background:var(--on);color:var(--oni)}
+.br{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:6px 8px;margin:10px 0}.br>span:last-child{grid-column:1/-1}.rib{display:flex;gap:4px;margin:4px 0}.rib i{flex:1;min-height:38px;border-radius:6px;font-style:normal;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}.sb{font:inherit;font-weight:800;font-size:26px;line-height:1;width:48px;height:48px;border-radius:10px;border:2px solid var(--pri);background:var(--pri);color:var(--pi);cursor:pointer;padding:0}@media(max-width:700px){.br{grid-template-columns:70px 1fr}.br>span:last-child{grid-column:1/-1}}
+.lr{display:flex;align-items:center;gap:18px;margin:10px 0}.lp{width:170px;height:64px;border-radius:12px;border:3px solid var(--line);flex:none}.ld{font-size:1.05em}.dm2{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;margin-top:10px}.dm2>.fb{flex:1 1 320px;margin:0}.dm2>.rs{flex:1 1 400px}
+.strip{display:flex;height:56px;border-radius:10px;overflow:hidden;margin:6px 0 16px}.strip i{flex:1}tr.hl td{background:color-mix(in srgb,var(--gold) 25%,var(--card))}
+.zg{max-width:640px}.zg button{font-size:19px}
+.al{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;align-items:center;margin:14px 0}.ag{display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.ag button{font:inherit;font-family:ui-monospace,Consolas,monospace;font-weight:700;color:#14213d;border:2px solid rgba(0,0,0,.25);padding:6px 0;min-width:52px;cursor:pointer;font-size:16px}.ag button.sel{outline:4px solid var(--pri);outline-offset:1px;position:relative;z-index:1}.al b{display:block;text-align:center;margin-bottom:4px}.ar{font-size:50px;font-weight:800}
+.bits{display:flex;gap:4px;align-items:center;margin:6px 0}.bits i{font-style:normal;font-family:ui-monospace,Consolas,monospace;font-weight:700;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#14213d}.bits span{margin-left:10px}
+@media(max-width:700px){.zr{grid-template-columns:60px 1fr 76px}.zr code{display:none}}
+:root{--bg:#f1f5f9;--card:#fff;--ink:#12233c;--mut:#53677d;--pri:#1761ad;--pi:#fff;--ok:#167a53;--okb:#e2f6e9;--no:#a34228;--nob:#fdeee9;--line:#c6d7e7;--hl:#e4f0fb;--on:#f0b22d;--oni:#102b51;--navy:#102b51;--gold:#f0b22d}
+body{font-family:Arial,Helvetica,sans-serif}body::before{background:var(--navy)}
+.sh{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:6px solid var(--gold)}
+.brand{font-size:13px;letter-spacing:2px;font-weight:700}.brand strong{display:block;font-size:22px;letter-spacing:0}
+.tag{background:#e8f2ff;color:#12345a;padding:6px 12px;border-radius:5px;font-size:12px;font-weight:700}
+header{border-bottom:1px solid var(--line)}nav button,.th{border-radius:6px;font-weight:700;background:var(--card);color:var(--ink);border:1px solid var(--line)}nav button.on{background:var(--pri);color:var(--pi);border-color:var(--pri)}
+.progress{height:9px;background:var(--line)}.bar{height:100%;width:0;background:#2d9b73;transition:width .2s}
+.card{border-radius:10px;border:1px solid var(--line);box-shadow:0 2px 8px #1734510a}.btn,.opt,.yn,.tabs button{border-radius:8px}h1,h2{color:var(--ink)}
+.kicker{font-size:13px;color:var(--pri);font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.lo{background:var(--hl);border-left:6px solid var(--pri);padding:12px 18px;margin:15px 0;font-weight:600;border-radius:0 8px 8px 0}.big{border-left:6px solid var(--pri);border-radius:0 10px 10px 0}
+.cue{border-left:5px solid var(--gold);background:color-mix(in srgb,var(--gold) 16%,var(--card));padding:12px 16px}details.cue summary{cursor:pointer}
+.cfu{border-left:5px solid #1c9a91;background:color-mix(in srgb,#1c9a91 14%,var(--card));padding:12px 16px;margin:14px 0;border-radius:0 8px 8px 0}
+
+.xg{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin:12px 0}.xg button{font:inherit;font-weight:800;font-size:1.1em;padding:8px 0;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}.xg button.on{background:var(--pri);color:var(--pi)}
+pre.eq{background:var(--hl);border-radius:10px;padding:12px 16px;white-space:pre-wrap}code{background:var(--hl);padding:1px 6px;border-radius:6px}
+</style></head><body>
+<div class="sh"><div class="brand">AVELEY SECONDARY COLLEGE<strong>EXPLICIT DIRECT INSTRUCTION</strong></div><div class="tag">YEAR 7 DIGITAL TECHNOLOGIES · FROM BINARY TO TEXT</div></div><header><nav id="nav"></nav><span id="sc"></span><span id="sv" style="font-size:14px;color:var(--mut)"></span><button class="th" onclick="theme()" title="Light or dark">🌓</button></header>
+<div class="progress"><div class="bar" id="bar"></div></div><main id="app"></main><div id="toast"></div>
+
+<script id="logic">
+const PV=[128,64,32,16,8,4,2,1];
+const b2d=s=>parseInt(s,2),d2b=n=>n.toString(2).padStart(8,"0"),pw=k=>2**k;
+const Q=[],Qm={},add=o=>{Q.push(o);Qm[o.id]=o};
+const dbl=b=>Array(b).fill(2).join(" × ");
+const pat=(id,st,b,x)=>add({id,sk:1,st,k:"n",p:`With <b>${b} bits</b>, how many different patterns can you make? ${x||""}`,a:pw(b),h:`Start with 2 patterns for 1 bit, then double for each extra bit: ${dbl(b)}.`,e:`${dbl(b)} = ${pw(b)}.`});
+const mc=(id,sk,st,p,o,h,e)=>{let seed=[...id].reduce((a,c)=>a*31+c.charCodeAt(0),7),r=()=>(seed=(seed*1103515245+12345)%2147483648)/2147483648,ix=o.map((_,i)=>i);for(let i=ix.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[ix[i],ix[j]]=[ix[j],ix[i]]}add({id,sk,st,k:"mc",p,o:ix.map(i=>o[i]),a:ix.indexOf(0),h,e})};
+const nn=(id,sk,st,p,a,h,e,x)=>add({id,sk,st,k:"n",p,a,h,e,...x});
+// Skill 1: bits and bytes
+mc("1c",1,"c","Which sentence is correct?",["A byte is a group of 8 bits","A bit is a group of 8 bytes","A byte is a single 0 or 1","A bit and a byte are the same"],"A bit is one 0 or 1. A byte is the bigger group.","A bit is one 0 or 1, and a byte is 8 bits together.");
+nn("1t1",1,"t","How many bits make <b>one byte</b>?",8,"Look at the doubling table: it stops at the size of a byte.","1 byte = 8 bits.");
+pat("1t2","t",2,"(00, 01, 10, 11)");pat("1t3","t",3);
+nn("1t4",1,"t","A byte has 8 bits, so 2 × 2 × 2 × 2 × 2 × 2 × 2 × 2. How many patterns?",256,"Keep doubling: 2, 4, 8, 16, 32, 64, 128 …","Eight 2s multiplied make 256.");
+nn("1t5",1,"t","Patterns start counting at <b>0</b>. What is the <b>largest number</b> one byte can show?",255,"There are 256 patterns and the first is 0. The last is 256 − 1.","0 is a pattern too, so 256 patterns run from 0 to 255.");
+mc("1s1",1,"s","Why do computers use <b>binary</b>?",["They are built from switches that are ON or OFF","They are bad at maths","0 and 1 look cool","Decimal is illegal"]);
+pat("1s2","s",4);pat("1s3","s",5);
+nn("1s4",1,"s","How many <b>bytes</b> are in 24 bits?",3);
+nn("1s5",1,"s","What is the <b>smallest</b> number one byte can show?",0);
+mc("1s6",1,"s","Why is the biggest number in one byte 255 and <b>not</b> 256?",["There are 256 patterns but counting starts at 0","Bytes can’t count past 255 for no reason","256 is unlucky","Because 8 × 32 = 256"]);
+// Skill 2: binary workout
+nn("2c",2,"c","What is the place value of the <b>4th bit from the right</b>?",8,"From the right: 1, 2, 4 … keep doubling.","1, 2, 4, 8: the 4th from the right is 8.");
+["00001011","10000001","01100100"].forEach((s,i)=>add({id:"2t"+(i+1),sk:2,st:"t",k:"b2d",bits:s,p:`Convert <b>${s}</b> to decimal, one bit at a time.`,a:b2d(s)}));
+[13,100,200].forEach((n,i)=>add({id:"2t"+(i+4),sk:2,st:"t",k:"d2b",n,p:`Write <b>${n}</b> as 8-bit binary, one place value at a time.`,a:d2b(n)}));
+["00000101","00110011","10000000","00001100"].forEach((s,i)=>nn("2s"+(i+1),2,"s",`Convert <b>${s}</b> to decimal.`,b2d(s)));
+[5,37,129,255].forEach((n,i)=>nn("2s"+(i+5),2,"s",`Write <b>${n}</b> as 8-bit binary.`,d2b(n),0,0,{bin:1}));
+mc("2s9",2,"s","Which is <b>bigger</b>?",["10000000","01111111"]);
+// Skill 3: ASCII
+mc("3c",3,"c","How does a computer store the letter <b>A</b>?",["As a number","As a tiny picture of an A","As a sound","As a colour"],"Computers only store binary numbers.","Every character is stored as a number. ASCII says which number.");
+nn("3t1",3,"t","ASCII: <b>A = 65</b>. What number is <b>B</b>?",66,"B is the next letter, so add 1.","A = 65, B = 66, C = 67 …");
+nn("3t2",3,"t","ASCII: <b>a = 97</b>. What number is <b>c</b>?",99,"a = 97, b = 98, c = ?","a = 97, b = 98, c = 99.");
+nn("3t3",3,"t","<b>A = 65</b> and <b>a = 97</b>. How far apart are they? (97 − 65)",32,"Use the explorer: only the 32 bit differs.","The gap is 32, so capitals and lowercase differ by one bit.");
+mc("3t4",3,"t","Do <b>A</b> and <b>a</b> have the same ASCII number?",["No, they are different characters","Yes, they are the same letter"],"Capital A and small a look different, so they are different characters.","Different characters get different numbers: 65 and 97.");
+nn("3t5",3,"t","ASCII uses the numbers 0 to 127. How many <b>different characters</b> is that?",128,"Count from 0 up to 127, so include the 0.","0 to 127 is 128 numbers.");
+nn("3s1",3,"s","<b>A = 65</b>. What is the ASCII number of <b>D</b>?",68);
+nn("3s2",3,"s","<b>a = 97</b>. What is the ASCII number of <b>d</b>?",100);
+nn("3s3",3,"s","<b>A = 65</b>. What is the ASCII number of <b>Z</b>? (Z is the 26th letter)",90);
+mc("3s4",3,"s","Which number is the ASCII code for <b>a</b>?",["97","65","32","1"]);
+mc("3s5",3,"s","Why does ASCII give <b>A</b> and <b>a</b> different numbers?",["They are different characters","It made a mistake","Only capitals matter","They are the same"]);
+// Skill 4: letter to binary
+mc("4c",4,"c","What is <b>Step 1</b> when turning a character into binary?",["Find its ASCII number","Write eight 1s","Add 32","Pick an emoji"],"You can’t make binary until you have a number.","First the ASCII number, then convert the number to 8 bits.");
+add({id:"4t1",sk:4,st:"t",k:"d2b",n:66,p:"The letter <b>B</b> is ASCII <b>66</b>. Write it as 8 bits, one place value at a time.",a:d2b(66)});
+add({id:"4t2",sk:4,st:"t",k:"d2b",n:97,p:"The letter <b>a</b> is ASCII <b>97</b>. Write it as 8 bits.",a:d2b(97)});
+add({id:"4t3",sk:4,st:"t",k:"b2d",bits:"01000011",p:"Decode <b>01000011</b>. What ASCII number is it?",a:67});
+mc("4t4",4,"t","<b>01000011</b> is 67. Which letter is that? (A = 65)",["C","A","B","D"],"A = 65, B = 66, then …","65 = A, 66 = B, 67 = C.");
+nn("4s1",4,"s","Write <b>C</b> (ASCII 67) as 8 bits.",d2b(67),0,0,{bin:1});
+nn("4s2",4,"s","Write <b>H</b> (ASCII 72) as 8 bits.",d2b(72),0,0,{bin:1});
+nn("4s3",4,"s","Write <b>T</b> (ASCII 84) as 8 bits.",d2b(84),0,0,{bin:1});
+mc("4s4",4,"s","🕵️ Decode: <b>01000011 01000001 01010100</b> (67, 65, 84)",["CAT","COT","CUT","BAT"]);
+mc("4s5",4,"s","🕵️ Decode: <b>01000100 01001111 01000111</b>",["DOG","DIG","DOT","LOG"]);
+mc("4s6",4,"s","How is the letter <b>B</b> (ASCII 66) stored in binary?",["01000010","01000001","01100010","00100010"]);
+mc("4s7",4,"s","<b>A</b> = 01000001 and <b>a</b> = 01100001. What is different?",["Only the 32 bit changed","Every bit changed","Only the 1 bit changed","Nothing"]);
+// Skill 5: emoji
+mc("5c",5,"c","Why can’t <b>one byte</b> store the emoji 😀 (number 128512)?",["One byte only has 256 patterns (0 to 255), far too few","Emojis are pictures, not data","Bytes can’t store numbers","Emojis are deleted"],"Compare 128512 with the biggest number one byte can hold.","128512 is much bigger than 255, so it needs more bytes.");
+nn("5t1",5,"t","How many <b>bits</b> are in a byte?",8,"Think of the 8 switches.","8 bits = 1 byte.");
+nn("5t2",5,"t","How many <b>patterns</b> can one byte make?",256,"2 × 2 eight times.","2⁸ = 256.");
+nn("5t3",5,"t","What is the <b>largest whole number</b> one byte can show?",255,"256 patterns, starting at 0.","0 to 255.");
+nn("5t4",5,"t","<b>2 bytes</b> = 16 bits. How many patterns is that? (256 × 256)",65536,"256 × 256. Try 256 × 200 first, then add 256 × 56.","More bytes means many more patterns: 65,536.");
+nn("5t5",5,"t","Use the <b>Emoji lab</b>: how many bytes does 😀 use in UTF-8?",4,"Type 😀 into the lab and read the Bytes column.","In UTF-8 the grinning face uses 4 bytes (32 bits).");
+nn("5s1",5,"s","In ASCII each letter is 1 byte. How many <b>bytes</b> is the word <b>HELLO</b>?",5);
+nn("5s2",5,"s","A message has <b>6 letters</b> (1 byte each) and <b>2 emojis</b> (4 bytes each). How many bytes in total?",14);
+mc("5s3",5,"s","What is the difference between <b>ASCII</b> and <b>Unicode</b>?",["Unicode covers over 100,000 characters including emojis, ASCII only 128","ASCII has more characters than Unicode","They are exactly the same","Unicode only has numbers"]);
+mc("5s4",5,"s","Which needs <b>more bytes</b> in UTF-8?",["😀","A","a","!"]);
+nn("5s5",5,"s","32 bits is how many <b>bytes</b>?",4);
+mc("5s6",5,"s","Unicode gives every character a ____ . UTF-8 turns that into ____ .",["a number; bytes","a colour; pixels","a sound; waves","a name; letters"]);
+</script>
+
+
+<script id="ui">
+const $=id=>document.getElementById(id),SK=["","Bits, bytes and 256","Binary workout","Letters are numbers (ASCII)","Letter → binary","The emoji problem"];
+const SUB={1:"I can explain bits and bytes, and why one byte can show 256 patterns (0 to 255).",2:"I can convert binary to decimal and decimal to 8-bit binary.",3:"I can explain that characters are stored as numbers, and use ASCII to find them.",4:"I can turn a character into 8 bits, and decode bytes back into a word.",5:"I can explain why an emoji needs more than one byte, and the difference between ASCII and Unicode."};
+const STG={w:"I DO · Watch",t:"WE DO · Try",s:"YOU DO · Solo"};
+const N=[["w","👋 Start"],["1","1 · Bits & bytes"],["2","2 · 🔢 Binary workout"],["3","3 · 🔤 ASCII"],["4","4 · Letter → binary"],["5","5 · 😀 Emoji problem"],["m","🧪 Message lab"],["b","💎 ASCII bracelet"],["g","🕵️ Decode game"],["r","✍️ Reflect"],["h","📄 Hand in"]];
+const RP=["In your own words, what is the difference between a bit and a byte? How many bits are in a byte?","Why do computers use binary, and why can one byte only show the numbers 0 to 255?","Explain how the letter B (ASCII 66) is stored as binary. Write out the steps you used.","Explain how <b>A</b> and <b>a</b> are different in ASCII, and how you decoded 01000011 01000001 01010100.","Why can’t one byte store an emoji? Use the words byte, patterns and Unicode in your answer."];
+const DEF=()=>({name:"",bn:"ADA",b1:"#e03131",b0:"#1c7ed6",q:{},r:["","","","",""],pg:"w",st:{1:"w",2:"w",3:"w",4:"w",5:"w"},gw:0,gs:0,th:""});
+let S=DEF(),DL=null,W={n:1,b:[1,0,1,1,0,0,1,0],k:0,num:65,ch:"A",lt:"A",e:"A😀",my:0,pb:1},CP="";
+const KEY="b2t-v1";let OK=true;
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+S.st=Object.assign(DEF().st,S.st);while(S.r.length<5)S.r.push("");
+try{localStorage.setItem(KEY+"-t","1");localStorage.removeItem(KEY+"-t")}catch(e){OK=false}
+const svt=()=>{const e=$("sv");if(e)e.textContent=OK?"💾 Saved on this computer":"⚠️ Can’t save here. Use Export"};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));OK=true}catch(e){OK=false}svt()};
+addEventListener("pagehide",save);
+const dmsg=t=>{const e=$("dpm");if(e){e.style.display="block";e.textContent=t}};
+
+function datapanel(){return `<div class="card"><h2>💾 My saved work</h2><p>Your answers save automatically <b>on this computer</b>. If you move to a different computer, <b>Export</b> your work first, then <b>Import</b> it on the new one. On a shared computer, delete your data when you finish.</p><div class="ctr"><button class="btn" onclick="exportJSON()">⬇ Export my work (.json)</button><button class="btn" onclick="$('imp').click()">⬆ Import my work</button><input type="file" id="imp" accept=".json,application/json" style="display:none" onchange="importJSON(this.files[0])"><button class="btn" style="background:var(--card);color:var(--no);border-color:var(--no)" onclick="$('dpc').style.display='block'">🗑 Delete all my data</button></div><div id="dpc" class="fb no" style="display:none">Delete ALL saved answers, your name and your score from this computer? This can’t be undone. Export first if you might want it back.<div class="ctr"><button class="btn" style="background:var(--no);border-color:var(--no)" onclick="wipe()">Yes, delete everything</button><button class="btn" onclick="$('dpc').style.display='none'">Cancel</button></div></div><div id="dpm" class="fb info" style="display:none"></div></div>`}
+async function exportJSON(){const fn=`Binary to Text - ${(S.name||"").trim().replace(/[\\/:*?"<>|]/g,"")||"student"}.json`,blob=new Blob([JSON.stringify({app:"b2t-v1",saved:new Date().toISOString(),data:S},null,1)],{type:"application/json"});
+ if(!DL){try{DL=await window.claude.use("downloads")}catch(e){}}
+ if(DL){try{await DL.save({filename:fn,data:blob});return dmsg("✅ Exported. Keep that file safe.")}catch(e){if(e&&e.code=="declined")return dmsg("No worries. Click again when you’re ready.")}}
+ try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);dmsg("✅ Exported. Check your Downloads folder.")}catch(e){dmsg("The download didn’t work here.")}}
+function importJSON(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result),d=o&&o.data;if(!d||typeof d.q!="object")throw 0;S=Object.assign(DEF(),d,{th:S.th});S.st=Object.assign(DEF().st,S.st);while(S.r.length<5)S.r.push("");save();render();dmsg("✅ Work imported.")}catch(e){dmsg("That file isn’t a saved-work file from this page.")}};r.readAsText(f)}
+function wipe(){try{localStorage.removeItem(KEY)}catch(e){}S=DEF();G.st=0;G.w=null;document.documentElement.removeAttribute("data-theme");render();scrollTo(0,0)}
+const qs=id=>S.q[id]||(S.q[id]={n:0,t:0,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]});
+const done=sk=>Q.filter(q=>(!sk||q.sk==sk)&&qs(q.id).d).length,tot=sk=>Q.filter(q=>!sk||q.sk==sk).length;
+function theme(){const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=S.th=dark?"light":"dark";save()}
+if(S.th)document.documentElement.dataset.theme=S.th;
+let tt;function toast(){const m=["✅ Nice one!","🎉 Correct!","🔥 You’ve got it!","⭐ Spot on!"];$("toast").textContent=m[Math.floor(Math.random()*m.length)];$("toast").className="s";clearTimeout(tt);tt=setTimeout(()=>$("toast").className="",1400)}
+function go(p){S.pg=p;save();render();scrollTo(0,0)}
+function hdr(){$("nav").innerHTML=N.map(([p,l])=>`<button class="${S.pg==p?"on":""}" onclick="go('${p}')">${l}${"12345".includes(p)?` (${done(+p)}/${tot(+p)})`:""}</button>`).join("");$("bar").style.width=Math.round(100*done()/tot())+"%";svt();$("sc").textContent=`✅ ${done()} / ${tot()}`}
+const grid=(b,cur,tg)=>`<div class="g">${PV.map((p,i)=>`<div class="c ${i==cur?"cur":""}"><small>${p}</small>${tg?`<button class="bt b${b[i]}" onclick="tog(${i})">${b[i]}</button>`:`<div class="bt b${b[i]}">${b[i]}</div>`}</div>`).join("")}</div>`;
+const nm=()=>`<input type="text" class="s" style="width:min(100%,380px)" placeholder="Type your name" value="${(S.name||"").replace(/"/g,"&quot;")}" oninput="S.name=this.value;save()">`;
+// ---------- questions ----------
+function remNow(q,s){let r=q.n;s.ch.forEach((c,j)=>{if(c)r-=PV[j]});return r}
+function inner(q,n){const s=qs(q.id),lock=s.d||s.rev;let b=`<div class="qh"><span class="n">${n}</span>${q.p} ${s.d?"✅":s.rev?"💡":""}</div>`;
+ if(q.k=="mc")b+=q.o.map((o,i)=>`<button class="opt ${s.x.includes(i)?"x":""} ${lock&&i==q.a?"v":""}" ${lock?"disabled":""} onclick="chk('${q.id}',${i})">${o}</button>`).join("");
+ if(q.k=="n")b+=`<input type="${q.bin||q.txt?"text":"number"}" class="s" id="in-${q.id}" ${lock?"disabled":""} value="${s.d||s.rev?s.a:""}" placeholder="${q.ph||(q.bin?"8 bits":"Your answer")}" onkeydown="if(event.key=='Enter')chk('${q.id}',this.value)"> <button class="btn" ${lock?"disabled":""} onclick="chk('${q.id}',$('in-${q.id}').value)">Check ✔</button>`;
+ if(q.k=="b2d"){let rows="",kept=[];for(let i=0;i<s.i;i++){const on=s.ch[i];if(on)kept.push(PV[i]);rows+=`<tr class="${on?"y":"n"}"><td>${PV[i]}</td><td>${q.bits[i]}</td><td>${on?"Yes → add "+PV[i]:"No → add 0"}</td></tr>`}
+  b+=grid(q.bits.split(""),s.i<8?s.i:-1)+(s.i?`<table><tr><th>Place value</th><th>Bit</th><th>Decision</th></tr>${rows}</table>`:"");
+  if(s.i<8)b+=`<div class="big">The bit under <b>${PV[s.i]}</b> is <b>${q.bits[s.i]}</b>. What do we add?</div><div class="ctr"><button class="yn" onclick="gc('${q.id}',0)">Add 0</button><button class="yn" onclick="gc('${q.id}',1)">Add ${PV[s.i]}</button></div>`;
+  else b+=`<div class="big eq">${kept.join(" + ")||0} = ?</div><input type="number" class="s" id="in-${q.id}" ${s.fin?"disabled":""} value="${s.fin?s.a:""}" placeholder="Total" onkeydown="if(event.key=='Enter')tot2('${q.id}')"> <button class="btn" ${s.fin?"disabled":""} onclick="tot2('${q.id}')">Check ✔</button>`}
+ if(q.k=="d2b"){let r=q.n,rows="",bb=Array(8).fill("_");for(let j=0;j<s.i;j++){bb[j]=s.ch[j];rows+=`<tr class="${s.ch[j]?"y":"n"}"><td>${PV[j]}</td><td>${r}</td><td>${s.ch[j]?"Yes":"No"}</td><td>${s.ch[j]}</td></tr>`;if(s.ch[j])r-=PV[j]}
+  b+=grid(bb,s.i<8?s.i:-1)+(s.i?`<table><tr><th>Place value</th><th>Left before</th><th>Fits?</th><th>Bit</th></tr>${rows}</table>`:"");
+  if(s.i<8)b+=`<div class="big">You have <b>${r}</b> left. Does <b>${PV[s.i]}</b> fit into ${r}?</div><div class="ctr"><button class="yn" onclick="gc('${q.id}',1)">Yes → 1</button><button class="yn" onclick="gc('${q.id}',0)">No → 0</button></div>`}
+ if(q.k=="gk"){let rw="";for(let i=0;i<s.i;i++){const p=q.px[i],on=s.ch[i];rw+=`<tr class="${on?"y":"n"}"><td><span style="display:inline-block;width:2.4em;height:1.2em;border-radius:6px;vertical-align:middle;background:rgb(${p})"></span> rgb(${p.join(", ")})</td><td>${on?"Gray":"Colour"}</td></tr>`}
+  b+=(s.i?`<table><tr><th>Pixel</th><th>Your decision</th></tr>${rw}</table>`:"");
+  if(s.i<q.px.length){const p=q.px[s.i];b+=`<div class="big"><span style="display:inline-block;width:3em;height:1.4em;border-radius:8px;vertical-align:middle;background:rgb(${p})"></span> <b>rgb(${p.join(", ")})</b>: is this pixel a gray or a colour?</div><div class="ctr"><button class="yn" onclick="gk('${q.id}',1)">⚪ Gray</button><button class="yn" onclick="gk('${q.id}',0)">🌈 Colour</button></div>`}}
+ if(s.m)b+=`<div class="fb ${s.d?"ok":s.rev?"info":"no"}">${s.m}</div>`;
+ if(s.rev&&(q.k=="b2d"||q.k=="d2b"||q.k=="gk"))b+=`<div class="ctr"><button class="btn" onclick="redo('${q.id}')">🔁 Try this one again</button></div>`;
+ return b}
+const card=(q,n)=>`<div class="card" id="c-${q.id}">${inner(q,n)}</div>`;
+const draw=id=>{const q=Qm[id];$("c-"+id).innerHTML=inner(q,$("c-"+id).querySelector(".n").textContent);hdr();save()};
+function chk(id,v){const q=Qm[id],s=qs(id);if(s.d||s.rev)return;let ok,val=q.k=="mc"?v:String(v).trim();
+ if(q.k=="n"){if(val==="")return;if(q.txt)val=val.toLowerCase().replace(q.hex?/[^0-9a-f]/g:/[^0-9,]/g,"");else if(q.bin){val=val.replace(/\s/g,"");if(!/^[01]{8}$/.test(val)){s.m="🧩 Write exactly 8 bits, using only 0s and 1s (a byte has 8 bits).";return draw(id)}}else if(isNaN(Number(val))){s.m="🔢 Type just a number.";return draw(id)}}
+ s.n++;s.a=q.k=="mc"?String(q.o[v]):val;ok=q.k=="mc"?v==q.a:q.bin||q.txt?val==q.a:Number(val)==q.a;
+ if(ok){s.d=1;s.m="✅ "+(q.e||"Correct!");toast()}else{s.t++;if(q.k=="mc")s.x.push(v);
+  if(q.st=="s")s.m="🤔 Not yet. Have another go.";else if(s.t>=3){s.rev=1;s.m=`💡 The answer is <b>${q.k=="mc"?q.o[q.a]:q.a}</b>. ${q.e}`}else s.m=`🤔 ${typeof q.h=="function"?q.h(val):q.h} (try ${s.t} of 3)`}
+ draw(id)}
+function fin(q,s,x){s.fin=1;if(s.rv){s.rev=1;s.m=(x||"")+" 💡 Some steps were shown to you, so this one is marked “not yet correct”. Have another go later!"}else{s.d=1;s.m=`✅ ${q.k=="b2d"?`${q.bits} = ${q.a}`:`${q.n} = ${q.a}`}. Perfect, no help needed!`;toast()}}
+function gc(id,c){const q=Qm[id],s=qs(id);if(s.i>7)return;const i=s.i,r=q.k=="d2b"?remNow(q,s):0,right=q.k=="b2d"?+q.bits[i]:(PV[i]<=r?1:0);s.n++;
+ const step=()=>{s.ch.push(right);s.i++;s.s=0};
+ if(c==right){step();s.m="👍 Yes!";if(s.i==8){if(q.k=="d2b"){s.a=q.a;fin(q,s)}else s.m="👍 All 8 bits done. Now add up what you kept."}}
+ else{s.t++;s.s++;const h=q.k=="b2d"?(right?`The bit is 1, so this place value counts. Add ${PV[i]}.`:"The bit is 0, so nothing is added from this place. Add 0."):(right?`${PV[i]} is not bigger than ${r}, so it fits. Say Yes, then subtract it.`:`${PV[i]} is bigger than ${r}, so it can’t fit. Write a 0 and keep ${r}.`);
+  if(s.s>=3){s.rv=1;step();s.m=`💡 Answer shown: ${h} Moving on.`;if(s.i==8&&q.k=="d2b"){s.a=q.a;fin(q,s,s.m)}}else s.m=`🤔 ${h} (try ${s.s} of 3)`}
+ draw(id)}
+function tot2(id){const q=Qm[id],s=qs(id),v=$("in-"+id).value.trim();if(v===""||s.fin)return;s.n++;const kept=s.ch.map((c,i)=>c?PV[i]:0).filter(Boolean);
+ if(Number(v)==q.a){s.a=v;fin(q,s)}else{s.t++;s.s++;if(s.s>=3){s.rv=1;s.a=v;fin(q,s,`💡 The total is <b>${q.a}</b> (${kept.join(" + ")||0}).`)}else s.m=`🤔 Add up only the values you kept: ${kept.join(" + ")||0}. (try ${s.s} of 3)`}draw(id)}
+function gk(id,c){const q=Qm[id],s=qs(id);if(s.fin)return;const p=q.px[s.i],right=(p[0]==p[1]&&p[1]==p[2])?1:0;s.n++;const step=()=>{s.ch.push(right);s.i++;s.s=0};
+ if(c==right){step();s.m="👍 Yes!"}else{s.t++;s.s++;const h=right?`R, G and B are all ${p[0]}, so they are the same: that’s a gray.`:`R, G and B are not all the same (${p.join(", ")}), so it’s a colour.`;
+  if(s.s>=3){s.rv=1;step();s.m=`💡 Answer shown: ${h} Moving on.`}else s.m=`🤔 Compare the three numbers: are they all equal? (try ${s.s} of 3)`}
+ if(s.i==q.px.length){s.fin=1;s.a=s.ch.map(v=>v?"Gray":"Colour").join(", ");if(s.rv){s.rev=1;s.m="💡 Some answers were shown, so this one is “not yet correct”. Have another go!"}else{s.d=1;s.m="✅ All five sorted with no help needed!";toast()}}
+ draw(id)}
+function redo(id){const s=qs(id),n=s.n,t=s.t;S.q[id]={n,t,d:0,rev:0,a:"",i:0,s:0,ch:[],m:"",x:[]};draw(id)}
+function w1(){let r="";for(let k=1;k<=W.n;k++)r+=`<tr class="${k==W.n?"hl":""}"><td>${k}</td><td>${dbl(k)}</td><td><b>${pw(k)}</b></td></tr>`;
+ const chips=W.n<=3?`<div class="chips">${Array.from({length:pw(W.n)},(_,j)=>`<span>${j.toString(2).padStart(W.n,"0")}</span>`).join("")}</div>`:"";
+ return `<div class="big">${W.n==1?"A <b>bit</b> is one tiny switch: 0 or 1. That makes <b>2</b> patterns.":`Add one more bit and every old pattern can get a 0 <i>or</i> a 1 in front. So the count <b>doubles</b>: ${pw(W.n-1)} × 2 = <b>${pw(W.n)}</b>.`}${W.n==8?"<br>🎉 <b>8 bits = 1 byte = 256 patterns.</b> They start at 0, so the biggest number is 255.":""}</div>${chips}<table><tr><th>Bits</th><th>Working</th><th>Patterns</th></tr>${r}</table><div class="ctr"><button class="btn" ${W.n>=8?"disabled":""} onclick="W.n++;render()">➕ Add a bit</button><button class="btn" onclick="W.n=1;render()">↺ Start again</button></div>`}
+function w2(){let rows="",ks=[],tot=0;W.b.forEach((b,i)=>{rows+=`<tr class="${b?"y":"n"}"><td>${PV[i]}</td><td>${b}</td><td>${b?"Yes → add "+PV[i]:"No → add 0"}</td></tr>`;if(b){ks.push(PV[i]);tot+=PV[i]}});
+ return `<div class="big">👆 <b>Click any bit</b> to flip it between 0 and 1. A <b>1</b> means “switch ON: count this place value”. A 0 means “skip it”.</div>${grid(W.b,-1,1)}<table><tr><th>Place value</th><th>Bit</th><th>Decision</th></tr>${rows}</table><div class="big eq">${W.b.join("")} = ${ks.join(" + ")||0} = <b>${tot}</b></div>`}
+function w3(){const n=Math.max(0,Math.min(255,W.num|0));let r=n,rows="",bb=Array(8).fill("_"),last="";for(let j=0;j<W.k;j++){const f=PV[j]<=r;bb[j]=f?1:0;last=`Does <b>${PV[j]}</b> fit into ${r}? ${f?`<b>Yes</b> → write 1, then ${r} − ${PV[j]} = <b>${r-PV[j]}</b>.`:`<b>No</b> → write 0 and keep <b>${r}</b>.`}`;rows+=`<tr class="${f?"y":"n"}"><td>${PV[j]}</td><td>${r}</td><td>${f?"Yes":"No"}</td><td>${f?1:0}</td></tr>`;if(f)r-=PV[j]}
+ const ks=bb.map((b,i)=>b==1?PV[i]:0).filter(Boolean);
+ return `<div class="big">Pick a number from 0 to 255: <input type="number" class="s" min="0" max="255" value="${n}" onchange="W.num=this.value;W.k=0;render()"></div>${grid(bb,W.k<8?W.k:-1)}<div class="big">${W.k==0?`We start with <b>${n}</b>. Go down the place values from 128 to 1 and ask: <i>does it fit?</i>`:last}${W.k==8?`<br>🎉 Check: ${ks.join(" + ")||0} = ${n}`:""}</div>${W.k?`<table><tr><th>Place value</th><th>Left before</th><th>Fits?</th><th>Bit</th></tr>${rows}</table>`:""}<div class="ctr"><button class="btn" ${W.k>=8?"disabled":""} onclick="W.k++;render()">▶ Next step</button><button class="btn" onclick="W.k=0;render()">↺ Start again</button></div>`}
+function tog(i){W.b[i]^=1;render()}
+
+// ---------- new widgets ----------
+const AC="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?.,".split("");
+const bg=n=>d2b(n).split("").map(Number);
+function wA(){const c=W.ch,n=c.charCodeAt(0),o=/[A-Za-z]/.test(c)?(c==c.toUpperCase()?c.toLowerCase():c.toUpperCase()):null;
+return `<div class="big">Computers don’t store the <i>shape</i> of a letter. They store a <b>number</b> for it. The agreed list of numbers is called <b>ASCII</b>. 👆 Click a character!</div><div class="xg">${AC.map(x=>`<button class="${x==c?"on":""}" onclick="W.ch='${x}';render()">${x}</button>`).join("")}</div><div class="big eq" style="font-size:1.3em"><b style="font-size:2em">${c}</b> → ASCII <b>${n}</b> → <b>${d2b(n)}</b></div>${grid(bg(n),-1)}${o?`<div class="big">Compare with <b>${o}</b> (ASCII ${o.charCodeAt(0)}): <b class="eq">${d2b(o.charCodeAt(0))}</b><br>They are exactly <b>32</b> apart. Only the <b>32</b> bit is different. 🤯</div>`:""}<div class="fb info">ASCII uses 0 to 127 (128 characters), so the first bit is always 0.</div>`}
+function setlt(v){const c=(v||"A")[0],n=c.charCodeAt(0);if(n>127){W.lt="A";W.num=65}else{W.lt=c;W.num=n}W.k=0;render()}
+const DC=[["01000011",67,"C"],["01000001",65,"A"],["01010100",84,"T"]];
+function w4(){return `<div class="big">🔤 <b>Character → binary in 4 steps</b>: <b>1.</b> find the ASCII number · <b>2.</b> write the place values · <b>3.</b> write 1 when it fits, then subtract · <b>4.</b> write all 8 bits.<br>Type any ASCII character: <input type="text" maxlength="1" class="s" style="width:90px" value="${W.lt}" onchange="setlt(this.value)"> its number is <b>${W.num}</b>.</div>${w3()}<h2>🔓 Now the other way: decode a word</h2><div class="big">Reverse the steps: binary → number → letter. Reveal the bytes one at a time.</div>${DC.map((d,i)=>`<div class="big eq">${d[0]} ${i<W.pb?`→ ${d[1]} → <b style="font-size:1.5em">${d[2]}</b>`:""}</div>`).join("")}<div class="ctr"><button class="btn" ${W.pb>=3?"disabled":""} onclick="W.pb++;render()">▶ Decode next byte</button><button class="btn" onclick="W.pb=0;render()">↺ Again</button></div>${W.pb>=3?`<div class="fb ok">🎉 C A T = CAT</div>`:""}`}
+const u8=new TextEncoder();
+function elab(){const ch=Array.from(W.e).slice(0,16);let tb=0;const rows=ch.map(c=>{const cp=c.codePointAt(0),by=[...u8.encode(c)];tb+=by.length;return `<tr class="${by.length>1?"n":"y"}"><td style="font-size:1.6em">${c==" "?"␣":c}</td><td>${cp}</td><td>U+${cp.toString(16).toUpperCase().padStart(4,"0")}</td><td><b>${by.length}</b></td><td class="eq">${by.map(d2b).join(" ")}</td></tr>`}).join("");
+return `<div class="scroll"><table><tr><th>Character</th><th>Number</th><th>Unicode</th><th>Bytes</th><th>Binary (UTF-8)</th></tr>${rows}</table></div><div class="big eq">${ch.length} character${ch.length==1?"":"s"} = <b>${tb} bytes</b> = <b>${tb*8} bits</b></div>`}
+function seteo(v){W.e=v;$("elo").innerHTML=elab()}
+const labin=()=>`<div class="big">Type anything: letters, numbers, even emojis. 🟢 green = 1 byte, 🔴 red = more than 1 byte.</div><input type="text" id="ein" value="${W.e.replace(/"/g,"&quot;")}" oninput="seteo(this.value)" style="font-size:1.3em"><div class="ctr">${["A","Hi!","CAT","😀","A😀","Hello 🌍","é"].map(x=>`<button class="btn" onclick="W.e='${x}';render()">${x}</button>`).join("")}</div><div id="elo">${elab()}</div>`;
+function wE(){const n=W.nb||1,p=2**(8*n);return `<div class="big">🤔 <b>The problem:</b> Unicode has over <b>100,000</b> characters, including emojis. 😀 is number <b>128512</b>. But one byte can only show <b>0 to 255</b>. 128512 just won’t fit!</div><div class="big">💡 <b>The fix: use more bytes.</b> Every extra byte multiplies the patterns by 256. How many patterns do you get?</div><div class="ctr">${[1,2,3,4].map(x=>`<button class="btn" style="${n==x?"":"background:var(--card);color:var(--pri)"}" onclick="W.nb=${x};render()">${x} byte${x>1?"s":""}</button>`).join("")}</div><div class="big eq" style="font-size:1.3em">${n} byte${n>1?"s":""} = ${8*n} bits → 2<sup>${8*n}</sup> = <b>${p.toLocaleString("en-AU")}</b> patterns${n==1?"<br>❌ not enough for 😀 (128,512)":n==2?"<br>❌ 65,536 is still smaller than 128,512":"<br>✅ plenty for every emoji!"}</div><div class="fb info"><b>Unicode vs UTF-8:</b> <b>Unicode</b> gives each character its own number (A = 65, 😀 = 128512). <b>UTF-8</b> is one way to turn those numbers into bytes, using 1 to 4 bytes per character. UTF-8 adds a few marker bits so the computer knows where each character starts, which is why 😀 uses 4 bytes. Plain English letters still use just 1.</div><h2>🧪 Emoji lab</h2>${labin()}`}
+const pyc=()=>pyui();
+function dec(v){const b=v.trim().split(/\s+/).filter(Boolean);if(!b.length)return"…";if(b.some(x=>!/^[01]{8}$/.test(x)))return"Type bytes of exactly 8 bits, separated by spaces.";try{return new TextDecoder("utf-8",{fatal:true}).decode(Uint8Array.from(b.map(x=>parseInt(x,2))))}catch(e){return"Those bytes don’t make a valid character."}}
+function lab(){return `<h1>🧪 Message lab</h1><div class="qg"><div class="card"><h2>Text → binary</h2>${labin()}</div><div class="card"><h2>Binary → text</h2><div class="big">Paste bytes with spaces between them and watch them become text. Try the mystery message!</div><textarea oninput="$('dco').textContent=dec(this.value)">01001000 01001001</textarea><div class="big eq" style="font-size:1.6em" id="dco">${dec("01001000 01001001")}</div></div></div><div class="card"><div class="kicker">PARTNER TRANSMISSION · 🧑‍🤝‍🧑</div><h2>Send a secret message</h2><ol><li>Think of a 3-letter word. Write its ASCII numbers, then each number as 8 bits <b>on paper</b>.</li><li>Swap papers with a partner and decode theirs.</li><li>Check your partner’s answer in the lab. 1 point each for correct binary, correct decoding and the right word!</li></ol><p><b>Bonus:</b> write your initials in binary. 🏆</p><div class="ctr"><button class="btn" onclick="go('b')">💎 Make your ASCII bracelet ➡</button></div></div>`}
+const GW=[["Level 1: 3 capitals",["CAT","DOG","SUN","HAT","BUS","PIG","BED","COW","CAR","BAT"]],["Level 2: 4 capitals",["CODE","BYTE","DATA","GAME","FISH","RAIN","BLUE","MATH"]],["Level 3: lowercase",["cat","bit","web","code","byte","data"]]];
+const G={lvl:0,w:null,ok:[],bad:[],st:0,won:false};
+function gpick(){const a=GW[G.lvl][1];let w;do{w=a[Math.floor(Math.random()*a.length)]}while(w==G.w);G.w=w;G.ok=[];G.bad=[];G.won=false}
+function gnew(l){if(l!=null)G.lvl=l;gpick();render()}
+function gchk(i){const e=$("gi"+i),v=e&&e.value.trim();if(!v)return;if(Number(v)==G.w.charCodeAt(i)){G.ok[i]=1;G.bad[i]=""}else{G.bad[i]=v;G.st=0}
+if(G.w.split("").every((_,j)=>G.ok[j])){G.won=true;G.st++;S.gw++;S.gs=Math.max(S.gs,G.st);save();toast()}render()}
+function gamev(){if(!G.w)gpick();const w=G.w;
+return `<h1>🕵️ Decode the secret message</h1><div class="card"><div class="big">An agent sent you a message in binary. For each byte: work out the <b>decimal number</b>, and the <b>letter is revealed</b>. Crack the whole word to win!<br>🏆 Won: <b>${S.gw}</b> · 🔥 Streak: <b>${G.st}</b> · Best: <b>${S.gs}</b></div><div class="ctr">${GW.map((l,i)=>`<button class="btn" style="${G.lvl==i?"":"background:var(--card);color:var(--pri)"}" onclick="gnew(${i})">${l[0]}</button>`).join("")}</div><details class="card cue"><summary><b>📖 ASCII cheat sheet</b> (use it for the letter lookup, not the binary!)</summary><div class="chips">${[..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"].map(c=>`<span>${c} ${c.charCodeAt(0)}</span>`).join("")}</div></details><div class="qg">${[...w].map((c,i)=>{const n=c.charCodeAt(0);return `<div class="card"><div class="ctr"><b class="eq" style="font-size:1.6em">${d2b(n)}</b></div>${grid(bg(n),-1)}${G.ok[i]?`<div class="fb ok">${n} → <b style="font-size:1.8em">${c}</b></div>`:`<input type="number" class="s" id="gi${i}" placeholder="Decimal" onkeydown="if(event.key=='Enter')gchk(${i})"> <button class="btn" onclick="gchk(${i})">Check ✔</button>${G.bad[i]?`<div class="fb no">${G.bad[i]} isn’t right. Add the place values that sit under a 1.</div>`:""}`}</div>`}).join("")}</div>${G.won?`<div class="fb ok" style="font-size:1.4em">🎉 Message cracked: <b>${w}</b>!</div><div class="ctr"><button class="btn" onclick="gnew()">Next message ➡</button></div>`:`<div class="ctr"><button class="btn" style="background:var(--card);color:var(--pri)" onclick="gnew()">⏭ Skip</button></div>`}</div>`}
+function welcome(){return `<div class="card"><div class="kicker">START · WELCOME</div><h1>From Binary to Text: How Computers Read Your Messages</h1><p>You already know binary. Today you become <b>computer detectives</b> and find out how all those 0s and 1s turn into <b>letters, words and even emojis</b>. 🕵️</p><div class="big">Your name: ${nm()}</div></div>
+<div class="card"><h2>🕵️ Mystery message</h2><div class="big eq" style="font-size:1.5em">01001000 01001001</div><p>Two groups of 8 bits. What could it say? Discuss with a partner first!</p>${W.my?`<div class="fb ok">It says <b>HI</b>! 01001000 = 72 = H and 01001001 = 73 = I. By the end you’ll crack these yourself. 🔓</div>`:`<div class="ctr"><button class="btn" onclick="W.my=1;render()">🔓 Reveal</button></div>`}</div>
+<div class="qg"><div class="card"><h2>🧠 What we’re learning</h2><div class="lo"><b>LEARNING INTENTION</b><br>We are learning how binary becomes <b>numbers → characters → words → emojis</b>.</div><h2>✅ Success criteria</h2><ul>${[1,2,3,4,5].map(k=>`<li><b>Skill ${k}:</b> ${SUB[k]}</li>`).join("")}</ul></div>
+<div class="card"><h2>🧭 How this page works</h2><ul><li>Each skill: <b>I DO</b> (watch and play with the widget), <b>WE DO</b> (hints, 3 tries), <b>YOU DO</b> (solo, no hints).</li><li>Skill 2 is a pure <b>binary workout</b>. You’ll use it for everything else!</li><li>Then visit the <b>🧪 Message lab</b>, design your <b>💎 ASCII bracelet</b> and play the <b>🕵️ Decode game</b>.</li><li>Finish with <b>Reflect</b> and download your Word file to hand in.</li></ul></div></div>
+${datapanel()}<details class="card cue"><summary><b>TEACHER CUE</b> · 🧑‍🏫 Lesson plan (about 60 minutes)</summary><table><tr><th>Min</th><th>Part</th></tr><tr><td>5</td><td>Mystery message above. Pairs guess before revealing.</td></tr><tr><td>10</td><td>Skill 1: bits, bytes, doubling to 256. Switch widget.</td></tr><tr><td>10</td><td>Skill 2: binary workout (extra practice; spend longer if needed).</td></tr><tr><td>10</td><td>Skills 3 and 4: ASCII explorer, the 4-step method, decode CAT.</td></tr><tr><td>10</td><td>Message lab pair activity, then the ASCII bracelet (on screen, or with real beads) and the Decode game.</td></tr><tr><td>10</td><td>Skill 5: emoji problem, Unicode vs UTF-8. Python lab (pretend console, 6 short missions) at the end of Skill 5.</td></tr><tr><td>5</td><td>Reflect = exit ticket.</td></tr></table><p>Teaching note: Unicode has 100,000+ characters, but many (like A) still fit in 1 byte in UTF-8. It is the characters with bigger numbers, like most emojis, that need 2 to 4 bytes.</p></details><div class="ctr"><button class="btn" onclick="go('1')">Let’s go! ➡</button></div>`}
+function skill(sk){const st=S.st[sk],L=x=>Q.filter(q=>q.sk==sk&&q.st==x);
+let h=`<div class="kicker">SKILL ${sk} OF 5 · ${STG[st].toUpperCase()}</div><h1>Skill ${sk}: ${SK[sk]}</h1><div class="lo">🎯 ${SUB[sk]}</div><div class="tabs">${["w","t","s"].map(x=>`<button class="${st==x?"on":""}" onclick="S.st[${sk}]='${x}';save();render()">${STG[x]}</button>`).join("")}</div>`;
+if(st=="w")h+=`<div class="card"><div class="kicker">I DO</div><h2>Watch me model it</h2>${[0,()=>w1()+w2(),()=>w2()+w3(),wA,w4,wE][sk]()}</div>${sk==5?`<div class="card">${pyc()}</div>`:""}<div class="cfu"><b>CHECK FOR UNDERSTANDING</b> · answer before you move on</div><div class="qg">${card(L("c")[0],"⚡")}</div>`;
+else h+=`<h2>${st=="t"?"WE DO · Try it together (hints and 3 tries)":"YOU DO · On your own (no hints!)"}</h2><div class="qg">${L(st).map((q,i)=>card(q,i+1)).join("")}</div>`;
+const nx=st=="w"?`S.st[${sk}]='t'`:st=="t"?`S.st[${sk}]='s'`:`S.pg='${sk<5?sk+1:"m"}'`;
+return h+`<div class="ctr"><button class="btn" onclick="${nx};save();render();scrollTo(0,0)">${st=="s"?(sk<5?"Next skill ➡":"Visit the Message lab ➡"):"Next step ➡"}</button></div>`}
+function render(){hdr();$("app").innerHTML=S.pg=="w"?welcome():"12345".includes(S.pg)?skill(+S.pg):S.pg=="m"?lab():S.pg=="b"?brace():S.pg=="g"?gamev():S.pg=="r"?reflect():handin()}
+
+function reflect(){return `<h1>✍️ Reflect</h1><p>Explain in your own words. Full sentences, please!</p><div class="qg">${RP.map((p,i)=>`<div class="card"><div class="qh"><span class="n">${i+1}</span>${p}</div><textarea oninput="S.r[${i}]=this.value;save();$('wc${i}').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length+' words'">${S.r[i]||""}</textarea><small id="wc${i}">${S.r[i].trim().split(/\s+/).filter(Boolean).length} words</small></div>`).join("")}</div><div class="ctr"><button class="btn" onclick="go('h')">Hand in ➡</button></div>`}
+const strip=s=>s.replace(/<[^>]+>/g,"");
+function rows(){return Q.map(q=>{const s=qs(q.id),i=Q.filter(z=>z.sk==q.sk).indexOf(q)+1;return{sk:q.sk,n:`${q.sk}.${i}`,p:strip(q.p),a:s.a||"—",res:s.d?"Correct":s.rev?"Not yet correct (answer was shown)":s.n?"Not yet correct":"Not attempted",c:s.d?"1B8A4B":"B7791F",tries:s.n}})}
+function handin(){const sub=[1,2,3,4,5].map(k=>`<tr><td>${SK[k]}</td><td>${done(k)} / ${tot(k)}</td></tr>`).join("");
+ return `<h1>📄 Hand in</h1><div class="card"><div class="big">Your name: ${nm()}</div><p>📅 ${new Date().toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"})} &nbsp; ✅ Score: <b>${done()} / ${tot()}</b></p><table><tr><th>Skill</th><th>Correct</th></tr>${sub}</table><p>Anything marked “not yet correct” is still included, so go back and try again if you have time. 💪</p>
+<div class="ctr"><button class="btn" onclick="dl()">⬇ Download my Word file</button><button class="btn" onclick="cp()">📋 Copy my answers</button></div><div id="hm" class="fb info" style="display:none"></div><textarea id="ct" style="display:none;margin-top:12px"></textarea></div>${datapanel()}`}
+const hm=t=>{$("hm").style.display="block";$("hm").textContent=t};
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const when=()=>new Date().toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"});
+const NV="102B51";
+const run=(t,o={})=>`<w:r><w:rPr>${o.b?"<w:b/>":""}${o.c?`<w:color w:val="${o.c}"/>`:""}<w:sz w:val="${o.z||21}"/></w:rPr><w:t xml:space="preserve">${esc(t)}</w:t></w:r>`;
+const para=(t,o={})=>`<w:p><w:pPr>${o.keep?"<w:keepNext/>":""}${o.bd?`<w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="${o.bd}"/></w:pBdr>`:""}${o.bg?`<w:shd w:val="clear" w:color="auto" w:fill="${o.bg}"/>`:""}<w:spacing w:before="${o.sb==null?60:o.sb}" w:after="${o.sa==null?60:o.sa}"/></w:pPr>${run(t,o)}</w:p>`;
+const tc=(t,w,o={})=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${o.bg?`<w:shd w:val="clear" w:color="auto" w:fill="${o.bg}"/>`:""}<w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:before="50" w:after="50"/>${o.jc?`<w:jc w:val="${o.jc}"/>`:""}</w:pPr>${run(t,o)}</w:p></w:tc>`;
+const tbl=(ws,head,rows)=>{const t=ws.reduce((a,x)=>a+x,0),bd=["top","left","bottom","right","insideH","insideV"].map(x=>`<w:${x} w:val="single" w:sz="4" w:space="0" w:color="BFC9D9"/>`).join("");
+ return `<w:tbl><w:tblPr><w:tblW w:w="${t}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="100" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map(w=>`<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${head?`<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>${head.map((h,i)=>tc(h,ws[i],{b:1,c:"FFFFFF",bg:"1761AD"})).join("")}</w:tr>`:""}${rows.map(r=>`<w:tr><w:trPr><w:cantSplit/></w:trPr>${r.join("")}</w:tr>`).join("")}</w:tbl>`};
+async function mk(){const zip=new JSZip(),R=rows(),ws=[600,3800,2100,2238,900],
+ rs=r=>r.res=="Correct"?["E2F6E9","146C3B"]:r.res.startsWith("Not yet")?["FFF1CC","7A5200"]:["F1F3F5","555555"];
+ let b=para("From Binary to Text",{b:1,z:40,c:"FFFFFF",bg:NV,sb:0,sa:0})
+ +para("Aveley Secondary College · Year 7 Digital Technologies",{z:20,c:"F0B22D",bg:NV,bd:"F0B22D",sb:0,sa:160})
+ +tbl([2200,7438],null,[["Name",S.name||"(not entered)"],["Date",when()],["Score",`${done()} / ${tot()} questions correct`],["Decode game",`${S.gw} won (best streak ${S.gs})`],["ASCII bracelet",`${bcl().join("")}: ${bcl().map(c=>d2b(c.charCodeAt(0))).join(" ")}`]].map(r=>[tc(r[0],2200,{b:1,bg:"E4F0FB"}),tc(r[1],7438)]))
+ +para("Summary",{b:1,z:28,c:NV,sb:240,keep:1})
+ +tbl([6638,3000],["Skill","Correct"],[1,2,3,4,5].map(k=>[tc(`Skill ${k}: ${SK[k]}`,6638),tc(`${done(k)} / ${tot(k)}`,3000,{jc:"center"})]));
+ [1,2,3,4,5].forEach(k=>{b+=para(`Skill ${k}: ${SK[k]}  (${done(k)} / ${tot(k)})`,{b:1,z:26,c:NV,bg:"E4F0FB",sb:280,sa:100,keep:1})
+  +tbl(ws,["#","Question","Student answer","Result","Tries"],R.filter(r=>r.sk==k).map(r=>{const [bg,c]=rs(r);return [tc(r.n,ws[0],{jc:"center"}),tc(r.p,ws[1]),tc(r.a,ws[2]),tc(r.res,ws[3],{b:1,c,bg}),tc(String(r.tries),ws[4],{jc:"center"})]}))});
+ b+=para("Reflection",{b:1,z:28,c:NV,bd:"F0B22D",sb:320,sa:100,keep:1});
+ RP.forEach((p,i)=>{b+=para(`${i+1}. ${p}`,{b:1,c:NV,sb:180,keep:1})+(S.r[i]||"(not answered)").split(/\n+/).map(l=>para(l,{bg:"F1F5F9",sb:20,sa:20})).join("")});
+ const X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+ zip.file("[Content_Types].xml",X+`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
+ zip.file("_rels/.rels",X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+ zip.file("word/_rels/document.xml.rels",X+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
+ zip.file("word/styles.xml",X+`<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/><w:sz w:val="21"/><w:lang w:val="en-AU"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="264" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`);
+ zip.file("word/document.xml",X+`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${b}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+ return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"})}
+async function dl(){if(!S.name.trim())return hm("✏️ Please type your name first.");
+ const fn=`Binary to Text - ${S.name.trim().replace(/[\\/:*?"<>|]/g,"")}.docx`;
+ let blob;try{blob=await mk()}catch(e){return hm("Couldn’t build the file. Use “Copy my answers” instead.")}
+ if(!DL){try{DL=await window.claude.use("downloads")}catch(e){}}
+ if(DL){try{await DL.save({filename:fn,data:blob});return hm("✅ Saved! Hand that file in to your teacher.")}catch(e){if(e&&e.code=="declined")return hm("No worries. Click again when you’re ready.")}}
+ try{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),10000);hm("✅ Your Word file should be in your Downloads folder. If nothing appeared, use “Copy my answers” instead.")}catch(e){hm("The download didn’t work here. Use “Copy my answers” instead.")}}
+async function cp(){if(!S.name.trim())return hm("✏️ Please type your name first.");let t=`From Binary to Text\nName: ${S.name}\nDate: ${when()}\nScore: ${done()} / ${tot()}\nDecode game: ${S.gw} won (best streak ${S.gs})\n\n`+rows().map(r=>`${r.n}. ${r.p}\n   Answer: ${r.a} | ${r.res} | tries: ${r.tries}`).join("\n")+"\n\nReflections:\n"+RP.map((p,i)=>`${p}\n${S.r[i]||"(not answered)"}`).join("\n\n");
+ const a=$("ct");a.value=t;a.style.display="block";a.select();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){try{ok=document.execCommand("copy")}catch(e2){}}hm(ok?"📋 Copied! Paste it into a document and hand it in.":"Select all the text in the box, copy it and paste it into a document.")}
+
+// ===== v2: ASCII bracelet + Python lab =====
+W.bi=0;W.bb=Array(8).fill(0);W.ph=[];W.pd={};
+const PAL=["#e03131","#f76707","#fcc419","#37b24d","#15aabf","#1c7ed6","#7048e8","#f06595","#212529","#ffffff"];
+const bcl=()=>Array.from(S.bn||"").filter(c=>c.charCodeAt(0)>32&&c.charCodeAt(0)<127).slice(0,10);
+const bead=(b,z)=>`<i style="display:inline-block;width:${z}px;height:${z}px;border-radius:50%;background:${b?S.b1:S.b0};border:2px solid var(--ink)"></i>`;
+const sw=k=>PAL.map(c=>`<button aria-label="colour ${c}" onclick="S.${k}='${c}';save();bzr()" style="width:46px;height:46px;border-radius:50%;background:${c};cursor:pointer;margin:3px;border:3px solid var(--line);${S[k]==c?"outline:4px solid var(--pri);outline-offset:2px":""}"></button>`).join("");
+function bsvg(L){const N=L.length*9,R=270,r=Math.min(17,Math.PI*R/N-1.5);let o="",i=0;
+ L.forEach(ch=>bg(ch.charCodeAt(0)).concat("L").forEach(b=>{const a=2*Math.PI*i++/N-Math.PI/2,x=(350+R*Math.cos(a)).toFixed(1),y=(350+R*Math.sin(a)).toFixed(1);
+  o+=b=="L"?`<circle cx="${x}" cy="${y}" r="${r+3}" fill="#f0b22d" stroke="#102b51" stroke-width="2"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${r+3}" font-weight="800" fill="#102b51">${esc(ch)}</text>`:`<circle cx="${x}" cy="${y}" r="${r}" fill="${b?S.b1:S.b0}" stroke="#102b51" stroke-opacity=".6" stroke-width="2"/>`}));
+ return `<svg viewBox="0 0 700 700" style="max-width:520px;width:100%" role="img" aria-label="Bracelet spelling ${esc(L.join(""))} in binary">${o}<text x="350" y="350" text-anchor="middle" dominant-baseline="central" font-size="52" font-weight="800" fill="var(--ink)">${esc(L.join(""))}</text></svg>`}
+function bzone(){const L=bcl();if(!L.length)return `<div class="fb info">Type your name above to start! Use letters, numbers or symbols (no emojis: they need more than one byte 😉).</div>`;
+ if(W.bi>=L.length)W.bi=0;
+ const rows=L.map(ch=>{const n=ch.charCodeAt(0);return `<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0"><b style="font-size:1.7em;width:1.1em;text-align:center">${esc(ch)}</b><span class="eq">${n} →</span><span style="display:flex;gap:4px">${bg(n).map(b=>bead(b,30)).join("")}</span><span class="eq">${d2b(n)}</span></div>`}).join("");
+ const t=L[W.bi],tn=t.charCodeAt(0),val=parseInt(W.bb.join(""),2),ok=val==tn,kept=W.bb.map((b,i)=>b?PV[i]:0).filter(Boolean);
+ return `<div class="qg"><div class="card"><h2>🎨 Pick your bead colours</h2><b>Bead for a 1:</b><br>${sw("b1")}<br><b>Bead for a 0:</b><br>${sw("b0")}<div class="ctr"><button class="btn" onclick="brnd()">🎲 Surprise me</button><button class="btn" onclick="bswap()">🔄 Swap 1 and 0</button></div></div><div class="card ctr">${bsvg(L)}</div></div>
+<div class="card"><h2>🔍 Your bracelet, letter by letter</h2><p>Each letter is <b>1 byte = 8 beads</b>, followed by a gold letter bead. Your name is <b>${L.length} byte${L.length>1?"s":""}</b> = <b>${L.length*8} bits</b>. 🧵 A real bracelet needs <b>${L.length*9} beads</b>.</p>${rows}<div class="fb info">💡 Try typing your name with a capital, then all lowercase. The bracelet changes, because <b>A</b> and <b>a</b> have different ASCII numbers!</div></div>
+<div class="card"><div class="kicker">YOUR TURN</div><h2>🛠 Build a letter bead by bead</h2><div class="ctr">${L.map((c,i)=>`<button class="btn" style="${i==W.bi?"":"background:var(--card);color:var(--pri)"}" onclick="bpick(${i})">${esc(c)}</button>`).join("")}</div><div class="big">The letter <b>${esc(t)}</b> is ASCII <b>${tn}</b>. Click the beads to switch them on (1) so the place values add up to <b>${tn}</b>.</div><div class="g">${PV.map((p,i)=>`<div class="c"><small>${p}</small><button onclick="btg(${i})" aria-label="bit ${p}" style="width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;background:${W.bb[i]?S.b1:S.b0};border:3px solid var(--ink)"></button></div>`).join("")}</div><div class="big eq">${W.bb.join("")} → ${kept.join(" + ")||0} = <b>${val}</b> → ${val>32&&val<127?esc(String.fromCharCode(val)):"?"}</div><div class="fb ${ok?"ok":"info"}">${ok?`✅ Yes! That’s <b>${esc(t)}</b>. Now pick another letter!`:`Not yet: you have ${val} but need ${tn}. Which place values add up to ${tn}?`}</div></div>`}
+const bzr=()=>{const e=$("bz");if(e)e.innerHTML=bzone()};
+function bpick(i){W.bi=i;W.bb=Array(8).fill(0);bzr()}
+function btg(i){W.bb[i]^=1;bzr();const L=bcl();if(L[W.bi]&&parseInt(W.bb.join(""),2)==L[W.bi].charCodeAt(0))toast()}
+function brnd(){S.b1=PAL[Math.floor(Math.random()*PAL.length)];do{S.b0=PAL[Math.floor(Math.random()*PAL.length)]}while(S.b0==S.b1);save();bzr()}
+function bswap(){[S.b1,S.b0]=[S.b0,S.b1];save();bzr()}
+const brace=()=>`<div class="kicker">CREATE · 💎</div><h1>💎 ASCII bracelet</h1><div class="lo">🎯 Turn your name into binary and design a bracelet that spells it in code.</div><div class="card"><div class="big"><b>1.</b> Type your name or nickname (up to 10 characters).<br><b>2.</b> Each letter becomes <b>8 beads</b>: one colour for a <b>1</b>, another for a <b>0</b>.<br><b>3.</b> A gold bead marks the end of each letter.</div><input type="text" id="bn" maxlength="10" style="font-size:1.4em;max-width:420px" value="${(S.bn||"").replace(/"/g,"&quot;")}" placeholder="Your name" oninput="S.bn=this.value;save();W.bi=0;W.bb=Array(8).fill(0);bzr()"></div><div id="bz">${bzone()}</div><div class="ctr"><button class="btn" onclick="go('g')">🕵️ Play the Decode game ➡</button></div>`;
+// ----- pretend Python console -----
+function pyev(e){e=e.trim();let m;
+ if(m=e.match(/^(.+?)\s*([+-])\s*(\d+)$/)){const a=pyev(m[1]);if(typeof a!="number")throw"TypeError: you can only add numbers to numbers";return m[2]=="+"?a+ +m[3]:a-m[3]}
+ if(m=e.match(/^(["'])(.*)\1$/))return m[2];
+ if(/^\d+$/.test(e))return +e;
+ if(m=e.match(/^ord\((.*)\)$/)){const s=pyev(m[1]);if(typeof s!="string"||Array.from(s).length!=1)throw"TypeError: ord() needs exactly ONE character inside quote marks";return s.codePointAt(0)}
+ if(m=e.match(/^chr\((.*)\)$/)){const n=pyev(m[1]);if(typeof n!="number"||n>1114111)throw"TypeError: chr() needs a number";return String.fromCodePoint(n)}
+ if(m=e.match(/^format\((.+),\s*(["'])08b\2\)$/)){const n=pyev(m[1]);if(typeof n!="number")throw"TypeError: format() needs a number first";return n.toString(2).padStart(8,"0")}
+ if(m=e.match(/^int\((["'])([01]+)\1,\s*2\)$/))return parseInt(m[2],2);
+ throw'SyntaxError: check your ( ) brackets and " " quote marks. This lab knows ord, chr, format, int and print.'}
+const PS=[`ord("A")`,`ord("a")`,`chr(72)`,`int("01001000", 2)`,`format(ord("A"), "08b")`,`ord("😀")`];
+const PMI=[[`Find the number for <b>A</b>. Type <code>ord("A")</code>`,(i,o)=>/ord\(/.test(i)&&o=="65"],
+[`Find the ASCII number of the <b>first letter of your bracelet name</b>.`,(i,o)=>/ord\(/.test(i)&&o==String((bcl()[0]||"A").charCodeAt(0))],
+[`Turn binary into a number: <code>int("01001000", 2)</code>. The 2 means “base 2”.`,(i,o)=>/int\(/.test(i)&&o=="72"],
+[`Number to letter! <code>chr()</code> does the opposite of <code>ord()</code>. Which letter is 72?`,(i,o)=>/chr\(/.test(i)&&o=="H"],
+[`Skill 4 in one line! Get <b>A</b> as 8 bits: <code>format(ord("A"), "08b")</code>`,(i,o)=>/format\(/.test(i)&&o=="01000001"],
+[`The emoji problem: find the number for 😀. Is it bigger than 255?`,(i,o)=>/ord\(/.test(i)&&o=="128512"]];
+const pymH=()=>PMI.map((m,i)=>`<div class="big" style="margin:6px 0;${W.pd[i]?"background:var(--okb);color:var(--ok)":""}">${W.pd[i]?"✅":"⬜"} <b>Mission ${i+1}:</b> ${m[0]}</div>`).join("")+(Object.keys(W.pd).length==PMI.length?`<div class="fb ok">🎉 All missions done! Python did in a blink what took us a whole lesson. 🐍</div>`:"");
+const pyoH=()=>`<div style="background:#0b1030;color:#7bf0ad;font:20px/1.5 ui-monospace,Consolas,monospace;border-radius:12px;padding:14px 18px;min-height:90px;max-height:260px;overflow:auto">`+(W.ph.length?W.ph.map(h=>`<div style="color:#fff">&gt;&gt;&gt; ${esc(h.i)}</div><div style="${h.e?"color:#ffa3a3":""}">${esc(h.o)}</div>`).join(""):`<span style="color:#a9b3d6">A pretend Python console. Type below ⬇</span>`)+`</div>`;
+const pyui=()=>`<div class="kicker">PYTHON LAB · 🐍</div><h2>Can Python do this for us?</h2><p>You’ve used Python to draw with turtle. Now let’s use it on <b>text</b>! This is a pretend console: type a line, then press <b>Run</b>. Predict the answer first, and check it against what you’ve learned.</p><div id="pym">${pymH()}</div><div id="pyo">${pyoH()}</div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><input type="text" id="pyi" style="flex:1 1 300px;font-family:ui-monospace,Consolas,monospace" placeholder='Type Python here, e.g. ord("A")' autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key=='Enter')pyrun()"><button class="btn" onclick="pyrun()">▶ Run</button></div><p style="margin-bottom:0"><small>Stuck typing quotes? Tap a button to fill the line, then press Run (or edit it first!):</small></p><div>${PS.map((p,i)=>`<button class="btn" style="background:var(--card);color:var(--pri);font-family:ui-monospace,Consolas,monospace;padding:6px 12px;margin:4px" onclick="pyfill(${i})">${esc(p)}</button>`).join("")}</div>`;
+function pyfill(i){const e=$("pyi");e.value=PS[i];e.focus()}
+function pyrun(){const el=$("pyi"),s=el.value.trim();if(!s)return;let o,e=0;
+ try{let x=s,p=0;const m=x.match(/^print\((.*)\)$/);if(m){x=m[1];p=1}const v=pyev(x);o=p||typeof v!="string"?String(v):"'"+v+"'"}catch(z){e=1;o=typeof z=="string"?z:"SyntaxError: check your ( ) brackets and quote marks"}
+ W.ph.push({i:s,o,e});let nw=0;if(!e)PMI.forEach((m,i)=>{if(!W.pd[i]&&m[1](s,o)){W.pd[i]=1;nw=1}});
+ $("pyo").innerHTML=pyoH();$("pym").innerHTML=pymH();el.value="";el.focus();const b=$("pyo").firstChild;b.scrollTop=b.scrollHeight;if(nw)toast()}
+
+render();
+try{window.claude.use("downloads").then(d=>{if(d){DL=d;if(S.pg=="h")render()}}).catch(()=>{})}catch(e){}
+</script></body></html>
